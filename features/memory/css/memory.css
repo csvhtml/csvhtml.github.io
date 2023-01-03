@@ -1,0 +1,22 @@
+
+.memory-center {
+    margin: auto;
+    width: 90%;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    /* float: left; */
+  }
+
+.row {
+    text-align: center;
+
+}
+
+.memory-card {
+    /* margin: 5pt; */
+    /* display: block; */
+    /* background-color: blue; */
+    width: 100pt;
+    height: 100pt;
+}
