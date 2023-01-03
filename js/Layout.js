@@ -187,21 +187,23 @@ class clsCSVLayout {
     }
 
     HighlightRow(divID) {
-        // if row is not higlichted, then highlight row
         if (divID.includes("row:") || divID.includes("R:")) {
             this.row_highlight[0] = this.GetRowID(divID)
         }
-        
-        // else if row is already highlighted then edit mode
     }
 
     HighlightCol(colClass) {
-        // if row is not higlichted, then highlight row
         if (colClass.includes("col-")) {
             this.col_highlight[0] = colClass
         }
-        
-        // else if row is already highlighted then edit mode
+    }
+
+    HighlightCell(divID) {
+        assert(this.row_highlight[0] != "")
+        if (divID.includes("R:") && divID.includes("C:")) {
+            this.cellIDs_highlight[0][0] = divID;
+            this.row_highlight[0] = "";
+        }
     }
 
     GetRowID(divID) {
@@ -209,7 +211,7 @@ class clsCSVLayout {
     }
 
     _IDIsInsideTable(divID) {
-        if (this._IDIncludes(divID, ["R:", "header-", "tag-", "type-", "-input", "svg-", "save-edit"]))
+        if (this._IDIncludes(divID, ["R:", "header-", "tag-", "type-", "-input", "svg-", "save-edit", "save-NAME", "reftoNAME-"]))
             {return true}
         return false
     }
@@ -286,7 +288,7 @@ class clsCSVLayout {
                 if (value.indexOf("[NAME:")!=-1) {
                     let name = RetStringBetween(value,"[NAME:", "]")
                     let url = this._RetURL(name)
-                    let rpl = '<a href="' + url + '" target="_blank">' + name + '</a>'
+                    let rpl = '<a id="reftoNAME-'+ name + '" href="' + url + '" target="_blank">' + name + '</a>'
                     value = value.replace("[NAME:" + name + "]" , rpl)
                 }
             }

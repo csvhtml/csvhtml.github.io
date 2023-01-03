@@ -237,18 +237,15 @@ class clsCSV {
     }
 
     Edit(divID) {
-        this._HighlightCell(divID);
+        // this._HighlightCell(divID);
+        this.layout.HighlightCell(divID)
+        this.Print()
         this._CreateInputField(divID)
         this._svgAppend_Save(divID)
-        this._CreateRevertX(divID)
         this._CreateName(divID)
-        
-
-        this.DontDisplayValue(this.layout.cellIDs_highlight[0][0]);
         
         document.getElementById(this.name + "-input").focus();
         document.getElementById(this.name + "-input").select();
-        document.getElementById(this.name + "-input").value = this.ActiveCellValue();
     }
 
     Click(divID) {
@@ -320,11 +317,6 @@ class clsCSV {
         this.Print()
     }
 
-    DontDisplayValue(divID) {
-        // document.getElementById(divID).innerHTML = "<input" + RetStringOutside(document.getElementById(divID).innerHTML, "", "<input") 
-        document.getElementById(divID).innerHTML = "<textarea" + RetStringOutside(document.getElementById(divID).innerHTML, "", "<textarea") 
-    }
-
     Feature_Sum() {
         if (this.sum == -1) {
             this._SumCalculate()}
@@ -363,40 +355,32 @@ class clsCSV {
             oldinput.remove();}
 
         let div = document.getElementById(divID);
+        
         let input = document.createElement('textarea'); input.cols = "50"
         // ; input.rows = "5"
         input.id = this.name + "-input"
         input.classList.add("input-large", "form-control")
+        input.value = this.ActiveCellValue();
+        div.innerHTML = ""
         div.append(input);
         this.InputFiled_AutoHeight();
         this.layout.div_input = input;
     }
 
-    _CreateRevertX(divID) {
-        let div = document.getElementById(divID);
-        let a = document.createElement('a');
-        a.href = "#"
-        a.setAttribute('onclick', this.name + '.UnEdit()');
-        a.innerHTML = ' X '
-        a.style.margin = '5pt'
-        div.append(a);
-    }
-
+    // inhibited by clsCSV Click (will call a Print that will make onclick disaper)
     _CreateName(divID) {
         let div = document.getElementById(divID);
         let a = document.createElement('a');
+        a.id = "save-NAME"
         a.href = "#"
-        a.setAttribute('onclick', this.name + '._Prefill_Input("[NAME:]")');
-        a.innerHTML = ' [Name:] '
+        a.setAttribute('onclick', this.name + '._Prefill_Input()');
+        a.innerHTML = '[NAME:]'
         a.style.margin = '5pt'
         div.append(a);
     }
 
-    _Prefill_Input(text) {
-        if (text == "[NAME:]") {
-            document.getElementById(this.name + '-input').value += '[NAME:]'
-        }
-        
+    _Prefill_Input() {
+        document.getElementById(this.name + '-input').value += '[NAME:]'
     }
 
     _SaveCellValueToData(){
@@ -616,25 +600,6 @@ class clsCSV {
           let id = 'id = "' + cell.id + '-link"'  
           return '<a ' + id + ' href="' + cell.innerText +'"><img src="' + cell.innerText + '" height="80"></a>'}
     }
-
-    _HighlightCell(divID) {
-        if (divID.includes("R:") && divID.includes("C:")) {
-            this.layout.cellIDs_highlight[0][0] = divID;
-            this.layout.row_highlight[0] = "";
-        } else {
-            this.layout.cellIDs_highlight[0][0] = "";}
-        this.Print();
-    }
-
-    _HighlightRow(divID) {
-        if (divID.includes("row:")) {
-            this.layout.row_highlight[0] = divID;
-            this.layout.cellIDs_highlight[0][0] = "";
-        } else {
-            this.layout.row_highlight[0] = "";}
-        this.Print();
-    }
-
 
     _GetColValues(colname) {
         let tmp = []
