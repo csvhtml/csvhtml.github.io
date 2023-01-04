@@ -88,6 +88,17 @@ function dicct(keys, vals) {
 
 }
 
+function _byVal(data) {
+    let ret = data
+    if (Array.isArray(data)) {
+        ret = []
+        for (let element of data) {
+            ret.push(_byVal(element))
+        }
+    }
+    return ret
+}
+
 // ################################################################
 // Assert                                                         #
 // ################################################################
@@ -141,3 +152,37 @@ Object.defineProperties(Array.prototype, {
             }
         }
 });
+
+Object.defineProperties(Array.prototype, {
+    pushX: {
+        value: function(element) {
+            if (!this.includes(element)) {
+                this.push(element)}
+            }
+        }
+});
+
+
+// ################################################################
+// test                                                           #
+// ################################################################
+
+function test_clsData_1x1__byVal() {
+    let fname = arguments.callee.name;
+    liste = ["Super", "Mario", "Land"]
+    listeA = _byVal(liste)
+    listeB = liste
+
+    liste[1] = "Sonic"
+    assertEqualList(listeA, ["Super", "Mario", "Land"], fname)
+    assertEqualList(listeB, ["Super", "Sonic", "Land"], fname)
+
+    liste = ["Super", "Mario", "Land"]
+    liste = [liste, liste, liste]
+    listeA = _byVal(liste)
+    listeB = liste
+
+    liste[1][1] = "Sonic"
+    assertEqualList(listeA, [["Super", "Mario", "Land"], ["Super", "Mario", "Land"], ["Super", "Mario", "Land"]], fname)
+    assertEqualList(listeB, [["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"]], fname)
+}

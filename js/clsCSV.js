@@ -43,7 +43,8 @@ class clsCSV {
         // Styles
         
         // this.printMode = 'full'
-        this.filterValueEquals = {}
+        this.filterValueEquals = {"Type":[]}
+        this.filterValueIncludes = {"Tags":[]}
         this.filterCols = []
 
         this.filterTags = []
@@ -52,104 +53,43 @@ class clsCSV {
     }
 
     _DataSynch() {
-        this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals}) 
+        this.layout.FullCSVData(this.data1x1.headers, this.data1x1.data)
+        this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
         this.headers = this.dataSubSet.headers
         this.data = this.dataSubSet.data
         this.len = this.dataSubSet.len
 
-
-        // for (let key of Object.keys(MODES)) {
-        //     if (this.mode == key) {
-        //         this.dataSubSet = this.data1x1.Subset(MODES[key]) 
-        //         this.headers = this.dataSubSet.headers
-        //         this.data = this.dataSubSet.data
-        //         this.len = this.dataSubSet.len
-        //     }
-        // }
-
     }
 
-    
 
     Print() {
         this._DataSynch()
-        this.layout._Print(this.headers, this.data, this._RetFilteredRowsIndexList())
+        this.layout._Print(this.headers, this.data)
     }
 
     ReadCSV(csvtext, delimiter = ";" ) {
         var str = csvtext.replace(new RegExp('\r\n', "g") , '\n')           // '\r\n' is the standard for new line in windows. for clsCSV plain \n is used as new line
         str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     // '"' used to make csv xls readable. Not used here
         str = str.replace(new RegExp(delimiter + '"', "g") , delimiter)     // '"' used to make csv xls readable. Not used here
-        this.headers = str.slice(0, str.indexOf("\n")).split(delimiter);
-        if (!this.headers.includes("No.") && this.mode == "standard") {
+        this.data1x1.headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+        if (!this.data1x1.headers.includes("No.") && this.mode == "standard") {
             this.VirtualCol_No = true
-            this.headers.splice(0,0,"No.")
+            this.data1x1.headers.splice(0,0,"No.")
         } else {
             this.VirtualCol_No = false
         }
-        this.data = [];
+        this.data1x1.data = [];
         const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-        this.len = 0;
+        this.data1x1.len = 0;
         for (let row of rows) {
             if (this._IsValidRow(row)) {
                 if (this.VirtualCol_No) {
                     row = String(this.len+1) + delimiter + row
                 }
                 let tmp = row.split(delimiter)
-                this.data.push(tmp)
-                this.len +=1}
+                this.data1x1.data.push(tmp)
+                this.data1x1.len +=1}
         }
-        this.data1x1.headers = this.headers
-        this.data1x1.data = this.data
-        this.data1x1.len = this.len
-        this.layout.FullCSVData(this.data1x1.headers, this.data1x1.data)
-    }
-
-    _RetFilteredRowsIndexList() {
-        let ret = []
-        let returnCondition = this.filterTypes.length == 0 && this.filterTags.length == 0
-        if (returnCondition) {
-            for (let i = 0; i < this.len; i++) {
-                ret.push(i)}
-            return ret
-        }
-        else if (this.filterTypes.length == 0) {
-            let jG = this.headers.indexOf("Tags")
-            for (let i = 0; i < this.len; i++) {
-                for (let k = 0; k < this.filterTags.length; k++) {
-                    if (this.data[i][jG].includes(this.filterTags[k])) {
-                        ret.push(i)
-                        break
-                    }
-                }
-            }
-        }
-        else if (this.filterTags.length == 0) {
-            let jP = this.headers.indexOf("Type")
-            for (let i = 0; i < this.len; i++) {
-                for (let k = 0; k < this.filterTypes.length; k++) {
-                    if (this.data[i][jP] == this.filterTypes[k]) {
-                        ret.push(i)
-                        break
-                    }
-                }
-            }
-        }
-        else {
-            let jP = this.headers.indexOf("Type")
-            let jG = this.headers.indexOf("Tags")
-            for (let i = 0; i < this.len; i++) {
-                for (let k = 0; k < this.filterTypes.length; k++) {
-                    for (let l = 0; l < this.filterTags.length; l++) {
-                        if (this.data[i][jP] == this.filterTypes[k] && this.data[i][jG].includes(this.filterTags[k])) {
-                            ret.push(i)
-                            break
-                        }
-                    }
-                }
-            }
-        }
-        return ret
     }
 
     SetMode(mode) {
@@ -262,19 +202,21 @@ class clsCSV {
         if (this.layout._IDIncludes(divID, ["svg", "-input"]))  {
             return}
 
-        // if (this.layout._IDIncludesInput(divID)) {
-        //     return}
 
         if (divID.includes("tag-")) {
             let tag = RetStringBetween(divID,"tag-","")
-            this._toggle_TagFilter(tag)
-            this._ToggleTagColor(divID)
+            this.filterValueIncludes["Tags"].toggle(tag)
+            this.layout.filterDD["Tags"].toggle(tag)
+            Layout_toggleClass(divID, "bg-info") // make color change immedeately visible
+
         }
 
         if (divID.includes("type-")) {
-            let tag = RetStringBetween(divID,"type-","")
-            this._toggle_TypeFilter(tag)
-            this._ToggleTagColor(divID)
+            let type = RetStringBetween(divID,"type-","")
+            this.filterValueEquals["Type"].toggle(type)
+            this.layout.filterDD["Type"].toggle(type)
+            Layout_toggleClass(divID, "bg-info") // make color change immedeately visible
+            return
         }
 
         if (divID.includes("header-")) {
@@ -529,33 +471,6 @@ class clsCSV {
 
     }
 
-    _toggle_TypeFilter(tag) {
-        if (this.filterTypes.includes(tag)) {
-            this.filterTypes.remove(tag)
-        } else {
-            this.filterTypes.push(tag)
-        }
-        this.layout.Toggle_Filter("",tag)
-        if (this.filterTypes.length == 0) {
-            this.printMode = 'full' }
-        else {
-            this.printMode = '' }
-      }
-
-    _toggle_TagFilter(tag) {
-        if (this.filterTags.includes(tag)) {
-            this.filterTags.remove(tag)
-        } else {
-            this.filterTags.push(tag)
-        }
-        this.layout.Toggle_Filter(tag, "")
-
-        if (this.filterTags.length == 0) {
-            this.printMode = 'full' }
-        else {
-            this.printMode = '' }
-      }
-
     _Table_ToggleImg(colname) {
       var cells = document.getElementsByClassName("ecsvcell " + colname);
       for (let cell of cells) {
@@ -563,19 +478,6 @@ class clsCSV {
         }
     }
     
-    _ToggleTagColor(tagHeaderID) {
-        let EgoStyle = "bg-info"
-        let element = document.getElementById(tagHeaderID)
-        // create JS list
-        let classListe = []
-        for (let e of element.classList) {
-            classListe.push(e)
-        }
-        if (classListe.includes(EgoStyle)) {
-            element.classList.remove(EgoStyle)}
-        else {
-            element.classList.add(EgoStyle)}
-    }
 
     _Style(classname, styleDict) {
         var elements = document.getElementsByClassName(classname);
@@ -776,36 +678,3 @@ class clsCSV {
         console.log("Mouse over " + event.srcElement.id)
     }
 }
-
-
-
-
-    // _Print(headers, data, filter) {   // or filtered
-    //     // standard use case
-    //     var cDivOut = document.getElementById(ID_DIVOUT);
-    //     let cols = ["No.", "name", "description", "url", "value", "Type", "Tags"]
-    //     let widths = ["1", "15", "38", "15", "5", "5", "10"]
-    //     for (let i = 0; i < len(widths); i++) {
-    //         widths[i] = 'style="width:' + widths[i] + '%"'}
-    //     let colswidth = dicct(cols, widths)
-
-    //     cDivOut.innerHTML = this.layout._AsHTMLTable(headers, colswidth, data , filter)
-    //     // if (this.printMode == 'full') {
-    //     //     cDivOut.innerHTML = this._AsHTMLTable()
-    //     // } else {
-    //     //     cDivOut.innerHTML = this._AsHTMLTable(this._RetFilteredRowsIndexList())
-    //     // }
-        
-    //     if (this.mode == "memory") {
-    //         let TDs = document.getElementsByTagName("td")
-    //         for (let td of TDs) {
-    //             td.classList.add("memory-card", "memory-center")
-    //         }
-    //         let THs = document.getElementsByTagName("th")
-    //         for (let th of THs) {
-    //             th.classList.add("memory-center")
-    //         }
-    //     }
-            
-    //     this.layout.ApplyHighlightToSite()
-    // }

@@ -92,7 +92,7 @@ class clsCSVLayout {
         return ret
     }
 
-    _Print(headers, data, filter) {   // or filtered
+    _Print(headers, data) {   // or filtered
         // standard use case
         var cDivOut = document.getElementById(ID_DIVOUT);
         let cols = ["No.", "name", "description", "url", "value", "Type", "Tags"]
@@ -101,12 +101,7 @@ class clsCSVLayout {
             widths[i] = 'style="width:' + widths[i] + '%"'}
         let colswidth = dicct(cols, widths)
 
-        cDivOut.innerHTML = this._AsHTMLTable(headers, colswidth, data , filter)
-        // if (this.printMode == 'full') {
-        //     cDivOut.innerHTML = this._AsHTMLTable()
-        // } else {
-        //     cDivOut.innerHTML = this._AsHTMLTable(this._RetFilteredRowsIndexList())
-        // }
+        cDivOut.innerHTML = this._AsHTMLTable(headers, colswidth, data)
         
         if (this.mode == "memory") {
             let TDs = document.getElementsByTagName("td")
@@ -123,7 +118,7 @@ class clsCSVLayout {
     }
 
     
-    _AsHTMLTable(cols, colswidth, rows, listRowsIdx) {
+    _AsHTMLTable(cols, colswidth, rows) {
         let ret = '<table class="table"><thead><tr>';
         // table header
         for (let header of cols) {
@@ -143,7 +138,6 @@ class clsCSVLayout {
             // rowidx += 1
             rowidx = parseInt(row[0])-1
             var i = -1;
-            // if (listRowsIdx.includes(rowidx)) {
                 ret += '<tr id="row:' + rowidx + '!">';
                 for (let cell of row) {
                     i += 1;
@@ -154,7 +148,6 @@ class clsCSVLayout {
                     ret += '<td id="R:' + rowidx + 'C:' + i + 'H:' + cols[i] + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
                 }
               ret += '</tr>'
-            // }
         }
 
         // row body end
@@ -259,7 +252,7 @@ class clsCSVLayout {
       </svg></a>'
     }
 
-    _GetColValues(colname, cols, rows) {
+    _GetColValuesX(colname, cols, rows) {
         let tmp = []
         if (cols.includes(colname)) {
             let idx = cols.indexOf(colname)
@@ -277,6 +270,24 @@ class clsCSVLayout {
                         tmp.push(row[idx])}
                 }
             }
+        }
+        tmp.sort()  
+        return tmp
+    }
+
+    _GetColValues(header, delim = ",") {
+        assert(this.headers.includes(header))
+        let tmp = []
+        let idx = this.headers.indexOf(header)
+        for (let row of this.data) {
+            if (row[idx][0] === "[" && row[idx][0] === "]") {
+                let tags = RetStringBetween(row[idx], "[", "]")
+                tags = tags.replace(new RegExp(delim + ' ', "g") , delim)
+                let tmptmp = tags.split(delim)
+                for (let tmp3 of tmptmp) {
+                    tmp.pushX(tmp3)}
+            } else {
+                tmp.pushX(_byVal(row[idx]))}
         }
         tmp.sort()  
         return tmp
@@ -320,3 +331,14 @@ function Layout_DowpDown_ShowHide(className) {
         }
     }
 }
+
+function Layout_toggleClass(divID, className) {
+        let element = document.getElementById(divID)
+        let classListe = []
+        for (let e of element.classList) {
+            classListe.push(e)}
+        if (classListe.includes(className)) {
+            element.classList.remove(className)}
+        else {
+            element.classList.add(className)}
+    }

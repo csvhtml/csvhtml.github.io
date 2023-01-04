@@ -10,7 +10,7 @@ const MouseDown = (event) => {
 
 const MouseUp = (event) => { 
     mouseupTime = new Date().getTime();
-    console.log(mouseupTime-mousedownTime)
+    console.log(mouseupTime-mousedownTime, event.srcElement.id)
     // things that shall only happen at click events (quick mouseclick)
     if (mouseupTime-mousedownTime<300) {
         ecsv.Click(event.srcElement.id)

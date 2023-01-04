@@ -102,24 +102,46 @@ class clsData_1x1 {
 
     }
 
-    Subset({cols = [], valueEquals = {}}) {
+    Subset({cols = [], valueEquals = {}, valueIncludes = {}}) {
         assert(Array.isArray(cols), "headers is not of type list")
         assert(typeof valueEquals === 'object', "valueEquals is not of type object")
-        for (let key of Object.keys(valueEquals )) {
+        for (let key of Object.keys(valueEquals)) {
             assert(this.headers.indexOf(key) >-1, "valueEquals element " + key + " not in headers")
-            assert(typeof valueEquals[key] === 'object', "valueEquals element " + key + " is not of type list")
+            assert(Array.isArray(valueEquals[key]), "valueEquals element " + key + " is not of type list")
         }
-        if (cols.length == 0) { cols = this.headers }
+        assert(typeof valueIncludes === 'object', "valueIncludes is not of type object")
+        for (let key of Object.keys(valueIncludes)) {
+            assert(this.headers.indexOf(key) >-1, "valueIncludes element " + key + " not in headers")
+            assert(Array.isArray(valueIncludes[key]), "valueIncludes element " + key + " is not of type list")
+        }
 
-        let ret = new clsData_1x1()
+        if (cols.length == 0) {cols = this.headers}
+
+        let ret = new clsData_1x1(); let flag = true
         for (let col of cols) {
             ret.AddCol(col, -1, this.ColAsList(col))
         }
         for (let key of Object.keys(valueEquals)) {
             let j = ret.headers.indexOf(key)
             for (let i = ret.len-1; i > -1; i-- ) {
-                if (valueEquals[key] != ret.data[i][j]) {
-                    ret.RemoveRow(i)
+                flag = true
+                for (let val of valueEquals[key]) {
+                    if (val === ret.data[i][j]) {
+                        flag = false
+                        break
+                    }
+                }
+                if (flag && valueEquals[key].length >0) {ret.RemoveRow(i)}
+            }   
+        }
+        for (let key of Object.keys(valueIncludes)) {
+            let j = ret.headers.indexOf(key)
+            for (let i = ret.len-1; i > -1; i-- ) {
+                for (let val of valueIncludes[key]) {
+                    if (ret.data[i][j].indexOf(val) == -1) {
+                        ret.RemoveRow(i)
+                        break
+                    }
                 }
             }     
         }
@@ -138,16 +160,7 @@ class clsData_1x1 {
     }
 }
 
-function _byVal(data) {
-    let ret = data
-    if (Array.isArray(data)) {
-        ret = []
-        for (let element of data) {
-            ret.push(_byVal(element))
-        }
-    }
-    return ret
-}
+
 
 // ################################################################
 // test                                                           #
@@ -290,12 +303,31 @@ function test_clsData_1x1_Subset() {
     assertEqualList(datta2.headers, ["A", "C"], fname)
     assertEqualList(datta2.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
 
-    datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Hallo", "Oktoberfest", "Beer"]])
+    datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"], ["Bye", "Oktoberfest", "Beer"]])
     let valEq = {"A": ["Hallo"]} 
     datta2 = datta.Subset({valueEquals: valEq})
     assertEqualList(datta2.headers, ["A", "B", "C"], fname)
-    assertEqualList(datta2.data,[["Hallo", "Welt", "drausen"], ["Hallo", "Oktoberfest", "Beer"]], fname)
+    assertEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Hallo", "Oktoberfest", "Beer"]], fname)
     assertEqual(datta2.len, 2, fname)
+
+    valEq = {"A": ["Hallo", "Super"]} 
+    datta2 = datta.Subset({valueEquals: valEq})
+    assertEqualList(datta2.headers, ["A", "B", "C"], fname)
+    assertEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"]], fname)
+    assertEqual(datta2.len, 3, fname)
+
+    datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"]])
+    let valIn = {"B": ["12"]} 
+    datta2 = datta.Subset({valueIncludes: valIn})
+    assertEqualList(datta2.headers, ["A", "B", "C"], fname)
+    assertEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"]], fname)
+    assertEqual(datta2.len, 2, fname)
+
+    valEq = {"A": ["Hallo"]};valIn = {"B": ["12"]} 
+    datta2 = datta.Subset({valueEquals: valEq, valueIncludes: valIn})
+    assertEqualList(datta2.headers, ["A", "B", "C"], fname)
+    assertEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"]], fname)
+    assertEqual(datta2.len, 1, fname)
 
     // test assertions
     assertCalls = [
@@ -303,6 +335,9 @@ function test_clsData_1x1_Subset() {
         {"a": {valueEquals: 1}, "ermg": "valueEquals is not of type object"},
         {"a": {valueEquals: {"Z": 1}}, "ermg": "valueEquals element Z not in headers"},
         {"a": {valueEquals: {"B": 1}}, "ermg": "valueEquals element B is not of type list"},
+        {"a": {valueIncludes: 1}, "ermg": "valueIncludes is not of type object"},
+        {"a": {valueIncludes: {"Z": 1}}, "ermg": "valueIncludes element Z not in headers"},
+        {"a": {valueIncludes: {"B": 1}}, "ermg": "valueIncludes element B is not of type list"},
     ]
     var foo = function (a,b) {datta.Subset(a)}
     assertAssertions(foo, assertCalls)
@@ -316,22 +351,3 @@ function test_clsData_1x1_ColAsList() {
     assertEqualList(values, ["Hallo", "Super", "Munich"], fname)
 }
 
-function test_clsData_1x1__byVal() {
-    let fname = arguments.callee.name;
-    liste = ["Super", "Mario", "Land"]
-    listeA = _byVal(liste)
-    listeB = liste
-
-    liste[1] = "Sonic"
-    assertEqualList(listeA, ["Super", "Mario", "Land"], fname)
-    assertEqualList(listeB, ["Super", "Sonic", "Land"], fname)
-
-    liste = ["Super", "Mario", "Land"]
-    liste = [liste, liste, liste]
-    listeA = _byVal(liste)
-    listeB = liste
-
-    liste[1][1] = "Sonic"
-    assertEqualList(listeA, [["Super", "Mario", "Land"], ["Super", "Mario", "Land"], ["Super", "Mario", "Land"]], fname)
-    assertEqualList(listeB, [["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"]], fname)
-}
