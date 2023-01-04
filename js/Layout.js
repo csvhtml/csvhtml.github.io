@@ -125,7 +125,7 @@ class clsCSVLayout {
             ret += '<th id = "header-' + header + '" class="ecsvtable col-' + header + '" '+ colswidth[header] +'>' + header
             if (["Type", "Tags"].includes(header) ) {
                 ret += " " + this._svgText_ArrowDown(header)
-                ret += this.AddDropDownMenuFromValues(header, this._GetColValues(header, cols, rows), this.filterDD[header])}
+                ret += this.AddDropDownMenuFromValues(header, this._GetColValues(header), this.filterDD[header])}
             ret += '</th>'}
         ret += '</tr></thead>'
         
@@ -246,7 +246,7 @@ class clsCSVLayout {
         let para = "Layout_DowpDown_ShowHide('" + header + "')"
         let param = '"' + para + '"'
         return '<a href="#" onclick=' + param + '>\
-        <svg id = "svg-ArrowDown-' + header + '" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-square" viewBox="0 0 16 16">\
+        <svg id = "svg-ArrowDown-' + header + '" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-down-square" viewBox="0 0 16 16">\
         <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0\
          0 1-2 2H2a2 2 0 0 1-2-2V2zm8.5 2.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"/>\
       </svg></a>'
@@ -280,7 +280,7 @@ class clsCSVLayout {
         let tmp = []
         let idx = this.headers.indexOf(header)
         for (let row of this.data) {
-            if (row[idx][0] === "[" && row[idx][0] === "]") {
+            if (row[idx][0] === "[" && row[idx][row[idx].length-1] === "]") {
                 let tags = RetStringBetween(row[idx], "[", "]")
                 tags = tags.replace(new RegExp(delim + ' ', "g") , delim)
                 let tmptmp = tags.split(delim)
