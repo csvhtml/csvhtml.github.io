@@ -7,6 +7,7 @@ function test() {
     test_clsData_1x1_ColAsList()
     test_clsData_1x1_Subset()
     test_clsData_1x1__byVal()
+    test_Click()
     console.log(lastlog_count + " x " + lastlog)
     
     if (testfailed_count == 0) {
@@ -24,6 +25,7 @@ var testfailed_count = 0
 var assertions_count = 0
 var lastlog = ""
 var lastlog_count = 0
+
 // ################################################################
 // test basis functions                                           #
 // ################################################################

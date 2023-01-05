@@ -36,6 +36,7 @@ class clsCSVLayout {
     }
 
     ApplyHighlightToSite () {
+        let hclass = "table-info"
         for (let row of this.row_highlight) {
             if (row == ID_DIVOUT) {
                 row = ""}
@@ -43,9 +44,9 @@ class clsCSVLayout {
         //Highlithing Cells
         for (let cell of this.cellIDs_highlight) {
             if (cell[0] == "" && cell[1] != "") {
-                document.getElementById(cell[1]).classList.remove("table-info")}
+                document.getElementById(cell[1]).classList.remove(hclass)}
             if (cell[0] != "" && cell[1] == "") {
-                document.getElementById(cell[0]).classList.add("table-info")}
+                document.getElementById(cell[0]).classList.add(hclass)}
             cell[1] = cell[0]
         }
 
@@ -53,9 +54,9 @@ class clsCSVLayout {
         //Highlithing Rows
         if (this.row_highlight[0] == "") {
             if (this.row_highlight[1] != "") {
-                document.getElementById(this.row_highlight[1]).classList.remove("table-info")}
+                document.getElementById(this.row_highlight[1]).classList.remove(hclass)}
         } else {
-            document.getElementById(this.row_highlight[0]).classList.add("table-info")}
+            document.getElementById(this.row_highlight[0]).classList.add(hclass)}
         this.row_highlight[1] = this.row_highlight[0]
 
         //Highlithing Cols
@@ -63,11 +64,11 @@ class clsCSVLayout {
             if (this.col_highlight[1] != "") {
                 var colcells = document.getElementsByClassName("ecsvcell " + this.col_highlight[1]);
                 for (let colcell of colcells) {
-                    colcell.classList.remove("table-info")}}
+                    colcell.classList.remove(hclass)}}
         } else {
             var colcells = document.getElementsByClassName(this.col_highlight[0]);
             for (let colcell of colcells) {
-                colcell.classList.add("table-info")}
+                colcell.classList.add(hclass)}
         this.col_highlight[1] = this.col_highlight[0]
         }
 
