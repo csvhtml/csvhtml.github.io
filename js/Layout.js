@@ -181,15 +181,16 @@ class clsCSVLayout {
     }
 
     HighlightRow(divID) {
-        if (divID.includes("row:") || divID.includes("R:")) {
-            this.row_highlight[0] = this.GetRowID(divID)
-        }
+        assert(divID.includes("R:") || "row:")
+        this.Unhighlight_All()
+        this.row_highlight[0] = this.GetRowID(divID)
     }
 
-    HighlightCol(colClass) {
-        if (colClass.includes("col-")) {
-            this.col_highlight[0] = colClass
-        }
+
+    HighlightCol(divID) {
+        assert(divID.includes("header-"))
+        this.Unhighlight_All()
+        this.col_highlight[0] = "col-" + RetStringBetween(divID,"header-","")
     }
 
     HighlightCell(divID) {
@@ -204,8 +205,16 @@ class clsCSVLayout {
         return "row:" + RetStringBetween(divID, "R:", "C:") + "!"
     }
 
-    _IDIsInsideTable(divID) {
-        if (this.IDIncludes(divID, ["R:", "header-", "tag-", "type-", "-input", "svg-", "save-edit", "save-NAME", "reftoNAME-"]))
+    DivIsInsideNavbar(divID) {
+        let element = document.getElementById(divID)
+        if (DivIsDescendantOf(element,"navbar"))
+            {return true}
+        return false
+    }
+    
+    DivIsInsideECSV(divID) {
+        let element = document.getElementById(divID)
+        if (DivIsDescendantOf(element,"ecsvDivOut"))
             {return true}
         return false
     }

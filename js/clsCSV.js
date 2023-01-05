@@ -189,82 +189,36 @@ class clsCSV {
     }
 
     Click(div) {
-        let divID = ""
-        if (div.id == "") {
-            divID = ReturnParentIfTag(div).id
-        } else {
-            divID = div.id}
+        let divID = ReturnParentUntilID(div).id
         
         let logs = LOG.Length()
         let onclickDivs = ReturnAllElemementsWithOnClickFunctions("id")
-        for (let id of onclickDivs) {
-            assert(id != "")}
 
         if (this.layout.IDIncludes(divID, onclickDivs)){
-            LOG.Add("Click onClick Link")}
+            console.log("Click at div with onClick function")}
 
-        if (this.layout.IDIncludes(divID, ["navbar","navLeft","navRight", "mySearch", "File"])){
-            LOG.Add("Click Nav")}
+        // if (this.layout.IDIncludes(divID, ["navbar", "navLeft", "navRight", "mySearch", "File"])){
+        //     LOG.Add("Click at Navbar")}
+        if (this.layout.DivIsInsideNavbar(divID)){
+            LOG.Add("Click inside Navbar")}
 
-
-        if (this.layout._IDIsOutsideTable(divID)) {
-            // LOG.Add("Click outside table")
-            if (this.layout._IDIsButton(divID)) {
-                LOG.Add("Click Button")
-                return
-            } else if (this.layout._IDIsNavMenu(divID)) {
-                // LOG.Add("Click Nav")
-            } 
-            else {
-                LOG.Add("Click Unkown")
-                this.layout.Unhighlight_All()
-                this.Print()
-                return
-            }
-        }
-        if (this.layout.IDIncludes(divID, ["svg", "-input"]))  {
-            return}
-
-
-        if (divID.includes("tag-")) {
-            let tag = RetStringBetween(divID,"tag-","")
-            this.filterValueIncludes["Tags"].toggle(tag)
-            this.layout.filterDD["Tags"].toggle(tag)
-            Layout_toggleClass(divID, "bg-info") // make color change immedeately visible
-            return
-        }
-
-        if (divID.includes("type-")) {
-            let type = RetStringBetween(divID,"type-","")
-            this.filterValueEquals["Type"].toggle(type)
-            this.layout.filterDD["Type"].toggle(type)
-            Layout_toggleClass(divID, "bg-info") // make color change immedeately visible
-            return
-        }
-
-        if (divID.includes("header-")) {
-            this.layout.Unhighlight_All()
-            let tag = RetStringBetween(divID,"header-","")
-            this.layout.col_highlight[0] = "col-" + tag
-            this.Print()
-            return
-        }
+        if (this.layout.DivIsInsideECSV(divID)){
+            LOG.Add("Click inside ECSV")
         
-        if (divID.includes("R:") && divID.includes("C:")) {
-            if (divID.includes("link")) {
-                return
-            }
-            // when row is already clicked then bring cell in edit mode
-            let rowID = this.layout.GetRowID(divID)
-            if (rowID == this.layout.row_highlight[0]) {
-                this.Edit(divID) // no Print here, as Print would result in a read only representattion of the current data
-            } else {
-                // else highlight (new) row
-                this.layout.Unhighlight_All()
-                this.layout.HighlightRow(divID)
+            if (divID.includes("header-")) {
+                this.layout.HighlightCol(divID)
                 this.Print()
-            }
-            return
+                return}
+
+            if (divID.includes("R:") && divID.includes("C:")) {
+                let rowID = this.layout.GetRowID(divID)
+                if (this.layout.GetRowID(divID) == this.layout.row_highlight[0]) {
+                    this.Edit(divID) 
+                } else {
+                    this.layout.HighlightRow(divID)
+                    this.Print()
+                }
+                return}       
         }
         
         assert(LOG.IsActive())

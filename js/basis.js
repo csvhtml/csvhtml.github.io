@@ -207,22 +207,41 @@ function ReturnAllElemementsWithOnClickFunctions (mode="") {
     for ( var i = 0; i<allElements.length; i++ ) {
         if ( typeof allElements[i].onclick === 'function' ) {
             if (mode = "") {ret.push(allElements[i])}
-            if (mode = "id") {ret.push(allElements[i].id)}
+            if (mode = "id") {
+                assert(allElements[i].id != "")
+                ret.push(allElements[i].id)}
             
         }
     }
     return ret
 }
 
-function ReturnParentIfTag (element, tag = "A", iterations = 3) {
-    let ret = ""
+
+function ReturnParentUntilID (element, targetID = "", iterations = 10) {
     let parent = element
     for (i = 0; i<iterations; i++) {
-        if (parent.tagName == tag) {
-            return parent
+        if (parent.tagName == "BODY") {
+            assert(false)}
+        if (parent.id == "") {
+            parent = parent.parentElement
+        } else {
+            return parent}
+    }
+    assert(false)
+}
+
+function DivIsDescendantOf (element, targetID, iterations = 10) {
+    let parent = element
+    for (i = 0; i<iterations; i++) {
+        if (parent.tagName == "BODY") {
+            return false
+        }
+        if (parent.id == targetID) {
+            return true
         } else {
             parent = parent.parentElement}
-        }
+    }
+    assert(false)
 }
 
 
