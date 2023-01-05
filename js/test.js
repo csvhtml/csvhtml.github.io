@@ -1,4 +1,6 @@
 function test() {
+    // console.group ('All tests');  
+    console.groupCollapsed('Test Results')
     test_clsData_1x1() 
     test_clsData_1x1_AddRow()
     test_clsData_1x1_RemoveRow()
@@ -7,6 +9,9 @@ function test() {
     test_clsData_1x1_ColAsList()
     test_clsData_1x1_Subset()
     test_clsData_1x1__byVal()
+    console.groupEnd ();
+    
+
     test_Click()
     console.log(lastlog_count + " x " + lastlog)
     

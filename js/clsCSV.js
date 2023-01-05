@@ -188,18 +188,41 @@ class clsCSV {
         document.getElementById(this.name + "-input").select();
     }
 
-    Click(divID) {
+    Click(div) {
+        let divID = ""
+        if (div.id == "") {
+            divID = ReturnParentIfTag(div).id
+        } else {
+            divID = div.id}
+        
+        let logs = LOG.Length()
+        let onclickDivs = ReturnAllElemementsWithOnClickFunctions("id")
+        for (let id of onclickDivs) {
+            assert(id != "")}
+
+        if (this.layout.IDIncludes(divID, onclickDivs)){
+            LOG.Add("Click onClick Link")}
+
+        if (this.layout.IDIncludes(divID, ["navbar","navLeft","navRight", "mySearch", "File"])){
+            LOG.Add("Click Nav")}
+
 
         if (this.layout._IDIsOutsideTable(divID)) {
-            if (this.layout._IDIsButton(divID) || this.layout._IDIsNavMenu(divID)) {
+            // LOG.Add("Click outside table")
+            if (this.layout._IDIsButton(divID)) {
+                LOG.Add("Click Button")
                 return
-            } else {
+            } else if (this.layout._IDIsNavMenu(divID)) {
+                // LOG.Add("Click Nav")
+            } 
+            else {
+                LOG.Add("Click Unkown")
                 this.layout.Unhighlight_All()
                 this.Print()
                 return
             }
         }
-        if (this.layout._IDIncludes(divID, ["svg", "-input"]))  {
+        if (this.layout.IDIncludes(divID, ["svg", "-input"]))  {
             return}
 
 
@@ -243,11 +266,13 @@ class clsCSV {
             }
             return
         }
-
-        assert(false)
-
         
+        assert(LOG.IsActive())
+        assert(LOG.Length() == logs+1)
+        LOG.Deactivate()
     }
+
+
 
     UnEdit(divID) {
         this.layout.cellIDs_highlight[0][0] = ""

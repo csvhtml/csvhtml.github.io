@@ -13,7 +13,7 @@ const MouseUp = (event) => {
     console.log(mouseupTime-mousedownTime, event.srcElement.id)
     // things that shall only happen at click events (quick mouseclick)
     if (mouseupTime-mousedownTime<300) {
-        ecsv.Click(event.srcElement.id)
+        ecsv.Click(event.srcElement)
         MEM.Click(event.srcElement.id, ecsv.mode)
     }
     //things that shall onlyhappen at long clickevents
@@ -44,6 +44,7 @@ const ecsv = new clsCSV({egoname : "ecsv"});
 const SS = new clsSiteSearch();
 const DD = new clsDropDown();
 const MEM = new clsMemory();
+const LOG = new clsLogger();
 
 
 (function () {

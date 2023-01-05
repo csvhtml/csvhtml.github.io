@@ -1,3 +1,37 @@
+class clsLogger {
+    constructor() {
+        this.LogEntries = []
+        this.active = false
+        this.PushToConsole = true
+    }
+
+    Add(Logentry) {
+        this.active = true
+        this.LogEntries.push(Logentry)
+        if (this.PushToConsole) {console.log("clsLOG: " + Logentry)}
+    }
+
+    Get(Idx = -1) {
+        if (Idx == -1) {
+            Idx = this.LogEntries.length-1
+        }
+        return this.LogEntries[Idx]
+    }
+
+    Length() {
+        return this.LogEntries.length
+    }
+
+    IsActive() {
+        return this.active
+    }
+
+    Deactivate() {
+        this.active = false
+    }
+}
+
+
 // ###############################################################################
 // Basis                                                                         #
 // ###############################################################################
@@ -161,6 +195,35 @@ Object.defineProperties(Array.prototype, {
             }
         }
 });
+
+// ################################################################
+// Usefull DOM functions                                          #
+// ################################################################
+
+function ReturnAllElemementsWithOnClickFunctions (mode="") {
+    // let allElements = document.getElementsByTagName('*');
+    let allElements = document.getElementsByTagName('a');
+    let ret = []
+    for ( var i = 0; i<allElements.length; i++ ) {
+        if ( typeof allElements[i].onclick === 'function' ) {
+            if (mode = "") {ret.push(allElements[i])}
+            if (mode = "id") {ret.push(allElements[i].id)}
+            
+        }
+    }
+    return ret
+}
+
+function ReturnParentIfTag (element, tag = "A", iterations = 3) {
+    let ret = ""
+    let parent = element
+    for (i = 0; i<iterations; i++) {
+        if (parent.tagName == tag) {
+            return parent
+        } else {
+            parent = parent.parentElement}
+        }
+}
 
 
 // ################################################################
