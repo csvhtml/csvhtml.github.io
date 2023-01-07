@@ -27,8 +27,9 @@ ONCLICKS = [
 ]
 
 function test_Click() {
-    // test_ClickCell()
+    
     test_ONCLICKS_Completeness()
+    test_ClickRowColCell()
     // test_ClickonClick()
 }
 
@@ -45,28 +46,10 @@ function assertContaintsClass(divID, classes, fname) {
     return test_passed(fname)  
 }
 
+
 // ################################################################
 // testfunctions                                                  #
 // ################################################################
-
-function test_ClickCell() {
-    let fname = arguments.callee.name;
-    let div = document.getElementById("R:0C:1H:Name")
-
-    ecsv.Click(div)
-    assertEqualList(ecsv.layout.row_highlight,["row:0!", "row:0!"], fname)
-    assertContaintsClass("row:0!", ["table-info"], fname)
-    
-    ecsv.Click(div)
-    assertEqualList(ecsv.layout.row_highlight,["", ""], fname)
-    assertEqualList(ecsv.layout.cellIDs_highlight[0],["R:0C:1H:Name", "R:0C:1H:Name"], fname)
-    assertContaintsClass("R:0C:1H:Name", ["table-info"], fname)
-    
-    div = document.getElementById("ecsvDivOut")
-    ecsv.Click(div)
-    assertEqualList(ecsv.layout.row_highlight,["", ""], fname)
-    assertEqualList(ecsv.layout.cellIDs_highlight[0],["", ""], fname)
-}
 
 function test_ONCLICKS_Completeness(){
     let fname = arguments.callee.name;
@@ -83,6 +66,35 @@ function test_ONCLICKS_Completeness(){
         ONCLICKFunctions.push(ele["funcName"])
     }
     assertEqualList(onclickDivFunctions, ONCLICKFunctions, fname)
+}
+
+function test_ClickRowColCell() {
+    let fname = arguments.callee.name;
+    let div = document.getElementById("R:0C:1H:Name")
+
+    ecsv.Click(div)
+    assertEqualList(ecsv.layout.row_highlight,["row:0!", "row:0!"], fname)
+    assertContaintsClass("row:0!", ["table-info"], fname)
+    
+    ecsv.Click(div)
+    assertEqualList(ecsv.layout.row_highlight,["", ""], fname)
+    assertEqualList(ecsv.layout.cellIDs_highlight[0],["R:0C:1H:Name", "R:0C:1H:Name"], fname)
+    assertContaintsClass("R:0C:1H:Name", ["table-info"], fname)
+    
+    div = document.getElementById("ecsvDivOut")
+    ecsv.Click(div)
+    assertEqualList(ecsv.layout.row_highlight,["", ""], fname)
+    assertEqualList(ecsv.layout.cellIDs_highlight[0],["", ""], fname)
+
+    div = document.getElementById("header-Name") 
+    ecsv.Click(div)
+    assertEqualList(ecsv.layout.col_highlight,["col-Name", "col-Name"], fname)
+    assertContaintsClass("header-Name", ["table-info"], fname)
+
+    div = document.getElementById("ecsvDivOut")
+    ecsv.Click(div)
+    assertEqualList(ecsv.layout.row_highlight,["", ""], fname)
+    assertEqualList(ecsv.layout.cellIDs_highlight[0],["", ""], fname)
 }
 
 function test_ClickonClick() {

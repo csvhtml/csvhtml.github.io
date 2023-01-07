@@ -96,7 +96,7 @@ class clsCSVLayout {
     _Print(headers, data) {   // or filtered
         // standard use case
         var cDivOut = document.getElementById(ID_DIVOUT);
-        let cols = ["No.", "name", "description", "url", "value", "Type", "Tags"]
+        let cols = ["No.", "Name", "Description", "url", "value", "Type", "Tags"]
         let widths = ["2", "15", "38", "15", "5", "5", "10"]
         for (let i = 0; i < len(widths); i++) {
             widths[i] = 'style="width:' + widths[i] + '%"'}

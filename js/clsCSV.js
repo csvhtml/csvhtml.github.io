@@ -30,8 +30,8 @@ class clsCSV {
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
         if (csvtext == "") {
-            this.data1x1.headers = ["No.", "Name", "Type", "Tags"];
-            this.data1x1.data = [["1", "..", "..", "[]"]];
+            this.data1x1.headers = ["No.", "Name", "Description", "url", "Type", "Tags"];
+            this.data1x1.data = [["1", "..", "..", "..", "..", "[]"]];
             this.data1x1.len = 1;
             this._DataSynch()
         } 
@@ -204,6 +204,11 @@ class clsCSV {
 
         if (this.layout.DivIsInsideECSV(divID)){
             LOG.Add("Click inside ECSV")
+            
+            if (divID.includes("ecsvDivOut")) { // Click inside div, but outside table
+                this.layout.Unhighlight_All()
+                this.Print()
+                return}
         
             if (divID.includes("header-")) {
                 this.layout.HighlightCol(divID)
@@ -219,6 +224,9 @@ class clsCSV {
                     this.Print()
                 }
                 return}       
+        } else {
+            this.layout.Unhighlight_All()
+            this.Print()
         }
         
         assert(LOG.IsActive())
