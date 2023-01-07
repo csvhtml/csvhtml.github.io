@@ -11,8 +11,8 @@ function test() {
     test_clsData_1x1__byVal()
     console.groupEnd ();
     
-
     test_Click()
+    
     console.log(lastlog_count + " x " + lastlog)
     
     if (testfailed_count == 0) {

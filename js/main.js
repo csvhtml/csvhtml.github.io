@@ -1,17 +1,23 @@
 // ################################################################
 // Events                                                         #
 // ################################################################
-var mousedownTime;
-var mouseupTime;
+var mousedownTime = new Date().getTime()
+var mouseupTime = new Date().getTime()
 
 const MouseDown = (event) => {
     mousedownTime = new Date().getTime();
 }
 
 const MouseUp = (event) => { 
-    mouseupTime = new Date().getTime();
+    let nextMouseupTime = new Date().getTime();
+    // if (nextMouseupTime-mouseupTime <300) { // doubleclick. Currently not used. when couble clicked then three click actions are done. 1) Click, 2) Double click, 3) click
+    //     console.log("Double Click", nextMouseupTime-mouseupTime , event.srcElement.id)
+    // }
+
+    mouseupTime = nextMouseupTime
     if (event.srcElement.id == "") {console.log(mouseupTime-mousedownTime, event.srcElement.id, "with parent: " + ReturnParentUntilID(event.srcElement).id)}
     else {console.log(mouseupTime-mousedownTime, event.srcElement.id)}
+
     // things that shall only happen at click events (quick mouseclick)
     if (mouseupTime-mousedownTime<300) {
         ecsv.Click(event.srcElement)
@@ -19,10 +25,8 @@ const MouseUp = (event) => {
     }
     //things that shall onlyhappen at long clickevents
     else {
-
+        // this is reserved for clicks that shall not trigger anything
     }
-
-    //things that shall alwayshappen, independenthow long the click lasts
 
 }
 
@@ -57,8 +61,9 @@ const LOG = new clsLogger();
 
     // Add features via button in nav bar
     DD.AddDropDownToDiv(document.getElementById("nav-Edit"), "edit", "nav-", ["Add Row", "Del Row","Add Col", "Del Col"],
-            ["DDEdit('AddRow')", "DDEdit('DelRow')", "DDEdit('AddCol')", "DDEdit('DelCol')"])
+            ["DDEdit('AddRow')", "DDEdit('DelRow')", "DDEdit('AddCol')", "DDEdit('DelCol')"])           // 'DDEdit("AddRow")' will lead to   DDEdit(" addRow")    and not work
     DD.AddDropDownToDiv(document.getElementById("nav-Mode"), "mode", "nav-", GetModes(), GetModesOnClick())
+    DD.AddDropDownToDiv(document.getElementById("nav-Features"), "feature", "nav-", ["(Un-)Link", "Sum"], ["DDFeatures('toggle link')", "DDFeatures('sum')"])
     DD.AddDropDownToDiv(document.getElementById("nav-Variants"), "variants", "nav-", ["memory"], ['SiteFeature_Memory()'])
 })();
 
@@ -123,6 +128,11 @@ function DDEdit(mode) {
 function DDMode(mode) {
     ecsv.SetMode(mode)
     ecsv.Print()
+}
+
+function DDFeatures(mode) {
+    if (mode == "toggle link") {ecsv.ToggleLink()} 
+    if (mode == "sum") {ecsv.Feature_Sum()}
 }
 
 function SiteFeature_Memory() {

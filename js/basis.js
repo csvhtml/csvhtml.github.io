@@ -202,15 +202,17 @@ Object.defineProperties(Array.prototype, {
 
 function ReturnAllElemementsWithOnClickFunctions (mode="") {
     // let allElements = document.getElementsByTagName('*');
-    let allElements = document.getElementsByTagName('a');
+    let allElements = document.getElementsByTagName('*');
     let ret = []
     for ( var i = 0; i<allElements.length; i++ ) {
         if ( typeof allElements[i].onclick === 'function' ) {
-            if (mode = "") {ret.push(allElements[i])}
-            if (mode = "id") {
+            if (mode == "") {
+                ret.push(allElements[i])}
+            if (mode == "id") {
                 assert(allElements[i].id != "")
                 ret.push(allElements[i].id)}
-            
+            if (mode == "function") {
+                ret.push(allElements[i].attributes['onclick'].value)}
         }
     }
     return ret
