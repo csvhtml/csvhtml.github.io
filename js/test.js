@@ -1,18 +1,10 @@
 function test() {
+    let assertions_in_files = 0
     // console.group ('All tests');  
     console.groupCollapsed('Test Results')
-    test_clsData_1x1() 
-    test_clsData_1x1_AddRow()
-    test_clsData_1x1_RemoveRow()
-    test_clsData_1x1_AddCol()
-    test_clsData_1x1_RemoveCol()
-    test_clsData_1x1_ColAsList()
-    test_clsData_1x1_Subset()
-    test_clsData_1x1__byVal()
+    assertions_in_files += test_clsData_1x1() 
+    assertions_in_files += test_Click()
     console.groupEnd ();
-    
-    test_Click()
-    
     console.log(lastlog_count + " x " + lastlog)
     
     if (testfailed_count == 0) {
@@ -21,7 +13,7 @@ function test() {
     console.log(testpassed_count + testfailed_count + " tests excecuted. " + testpassed_count + " passed. " + testfailed_count +  " failed")
     }
 
-    console.log(assertions_count + " asssertions were successfully thrown (and catched during testing).")
+    console.log(assertions_count + " of " + assertions_in_files + " asssertions were successfully thrown (and catched during testing).")
 }
 
 ASSERT = false

@@ -148,9 +148,17 @@ class clsData_1x1 {
         return ret
     }
 
+    IsColsSubset(cols) {
+        for (let col of cols) {
+            if (!this.headers.includes(col)) {
+                return false}
+        }
+        return true
+    }
+
     ColAsList(colName) {
-        assert(typeof colName === 'string', "colName is not of type string")
-        assert(this.headers.indexOf(colName)>-1, "colName not in headers")
+        assert(typeof colName === 'string', colName + " is not of type string")
+        assert(this.headers.indexOf(colName)>-1, colName + " not in headers")
         let ret = []
         let idx = this.headers.indexOf(colName)
         for (let i = 0; i<this.len;i++) {
@@ -165,9 +173,21 @@ class clsData_1x1 {
 // ################################################################
 // test                                                           #
 // ################################################################
-
-
 function test_clsData_1x1() {
+    test_clsData_1x1_Init()
+    test_clsData_1x1_AddRow()
+    test_clsData_1x1_RemoveRow()
+    test_clsData_1x1_AddCol()
+    test_clsData_1x1_RemoveCol()
+    test_clsData_1x1_ColAsList()
+    test_clsData_1x1_Subset()
+    test_clsData_1x1__byVal()
+
+    return 25 // 25 assertions in this file (and should all be catched)
+}
+
+
+function test_clsData_1x1_Init() {
     let fname = arguments.callee.name;
     datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
 
@@ -349,5 +369,15 @@ function test_clsData_1x1_ColAsList() {
     let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     let values = datta.ColAsList("A")
     assertEqualList(values, ["Hallo", "Super", "Munich"], fname)
+    assertEqual(datta.IsColsSubset(["B", "C"]), true, fname)
+    assertEqual(datta.IsColsSubset(["B", "D"]), false, fname)
+
+    // test assertions
+        assertCalls = [
+            {"a": 1, "ermg": "1 is not of type string"},
+            {"a": "D", "ermg": "D not in headers"},
+        ]
+        var foo = function (a,b) {datta.ColAsList(a)}
+        assertAssertions(foo, assertCalls)
 }
 

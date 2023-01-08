@@ -18,7 +18,7 @@ class clsCSVLayout {
 
     }
 
-    FullCSVData(headers, data) {
+    ReadFullCSVData(headers, data) {
         // read only
         this.headers = headers
         this.data = data

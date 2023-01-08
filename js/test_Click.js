@@ -10,6 +10,7 @@ ONCLICKS = [
     {divID : "nav-dd-standard", funcName : "DDMode('standard')"},
     {divID : "nav-dd-list", funcName : "DDMode('list')"},
     {divID : "nav-dd-issues", funcName : "DDMode('issues')"},
+    {divID : "nav-dd-memory", funcName : "DDMode('memory')"},
 
     {divID : "nav-Features", funcName : "ddToggle('nav-ddm-feature')"},
     {divID : "nav-dd-(Un-)Link", funcName : "DDFeatures('toggle link')"},
@@ -27,10 +28,11 @@ ONCLICKS = [
 ]
 
 function test_Click() {
-    
+    test_Click_ecsv()
     test_ONCLICKS_Completeness()
-    test_ClickRowColCell()
-    // test_ClickonClick()
+    test_onClicks()
+
+    return 0 // 0 assertions in this file
 }
 
 // ################################################################
@@ -68,7 +70,7 @@ function test_ONCLICKS_Completeness(){
     assertEqualList(onclickDivFunctions, ONCLICKFunctions, fname)
 }
 
-function test_ClickRowColCell() {
+function test_Click_ecsv() {
     let fname = arguments.callee.name;
     let div = document.getElementById("R:0C:1H:Name")
 
@@ -97,30 +99,23 @@ function test_ClickRowColCell() {
     assertEqualList(ecsv.layout.cellIDs_highlight[0],["", ""], fname)
 }
 
-function test_ClickonClick() {
+function test_onClicks() {
     let fname = arguments.callee.name;
     let onclickDivs = ReturnAllElemementsWithOnClickFunctions()
-    let onclickDivIDs = ReturnAllElemementsWithOnClickFunctions("id")
-    let onclickFunctions = ReturnAllElemementsWithOnClickFunctions("function")
-    let div = ""
+    let flag = []
 
     for (div of onclickDivs) {
-        let divID = div.id
-        let funcName = div.attributes['onclick'].value
-        assert (ReturnONCLICKFunctionName(divID) == funcName)
+        if (div.id == "download") {continue}
         let a = Function(div.attributes['onclick'].value)
-        a()
+        try { a()
+        } catch {
+            flag.push(" " + div.id + ": " + div.attributes['onclick'].value)}
     }
+
+    if (flag.length == 0) {
+        assertEqual(1,1,fname)
+    } else {
+        assertEqual(1,0,fname + flag)
+    }    
 }
-
-function ReturnONCLICKFunctionName(divID) {
-    let IDs = []; let fNs = []
-    for (let ele of ONCLICKS) {
-        IDs.push(ele["divID"]);fNs.push(ele["fName"])
-    }
-    assert(IDs.includes(divID))
-
-    return fNs[IDs.indexOf(divID)]
-}
-
 

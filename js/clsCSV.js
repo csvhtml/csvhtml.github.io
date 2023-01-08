@@ -23,15 +23,17 @@ class clsUserInput {
 
 class clsCSV {
     constructor({csvtext = "", delimiter = ";", egoname = ''}) {
-        this.mode = "standard"
+        this.mode = new clsModes()
+        this.fileLoaded = false
         this.name = egoname
         this.layout = new clsCSVLayout()
         this.userinput = new clsUserInput()
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
         if (csvtext == "") {
-            this.data1x1.headers = ["No.", "Name", "Description", "url", "Type", "Tags"];
-            this.data1x1.data = [["1", "..", "..", "..", "..", "[]"]];
+            this.data1x1.headers = this.mode.GetCols()
+            // this.data1x1.data = [["1", "..", "..", "..", "..", "[]"]];
+            this.data1x1.data = this.mode.DefaultData()
             this.data1x1.len = 1;
             this._DataSynch()
         } 
@@ -47,13 +49,13 @@ class clsCSV {
         this.filterValueIncludes = {"Tags":[]}
         this.filterCols = []
 
-        this.filterTags = []
-        this.filterTypes = []
+        // this.filterTags = []
+        // this.filterTypes = []
         this.Print()
     }
 
     _DataSynch() {
-        this.layout.FullCSVData(this.data1x1.headers, this.data1x1.data)
+        this.layout.ReadFullCSVData(this.data1x1.headers, this.data1x1.data)
         this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
         this.headers = this.dataSubSet.headers
         this.data = this.dataSubSet.data
@@ -72,7 +74,7 @@ class clsCSV {
         str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     // '"' used to make csv xls readable. Not used here
         str = str.replace(new RegExp(delimiter + '"', "g") , delimiter)     // '"' used to make csv xls readable. Not used here
         this.data1x1.headers = str.slice(0, str.indexOf("\n")).split(delimiter);
-        if (!this.data1x1.headers.includes("No.") && this.mode == "standard") {
+        if (!this.data1x1.headers.includes("No.") && this.mode.activeMode == "standard") {
             this.VirtualCol_No = true
             this.data1x1.headers.splice(0,0,"No.")
         } else {
@@ -93,9 +95,40 @@ class clsCSV {
     }
 
     SetMode(mode) {
-        this.mode = mode
-        this.filterValueEquals = MODES[this.mode]["valueEquals"]
-        this.filterCols = MODES[this.mode]["cols"]
+        let MODE = this.mode.modes[mode]
+        if (this.fileLoaded) {
+            if (this.data1x1.IsColsSubset(MODE["cols"])) {
+                this.mode.SetMode(mode)
+                this.filterValueEquals = MODE["valueEquals"]
+                this.filterValueIncludes = MODE["valueIncludes"]
+                this.filterCols = MODE["cols"]
+                return 0
+            } else {
+                console.log(MODE["cols"] + " are not in headers")
+                return -1
+            }
+        } else {
+            if (mode == "standard") {
+                this.mode.SetMode(mode)
+                this.data1x1.headers = this.mode.GetCols()
+                this.data1x1.data = this.mode.DefaultData()
+                this.data1x1.len = 1
+            }
+            if (mode == "list") {
+                this.mode.SetMode(mode)
+                this.data1x1.headers = MODE["cols"]
+                this.data1x1.data = this.mode.DefaultData()
+                this.data1x1.len = 1
+            }
+            if (mode == "memory") {
+                this.mode.SetMode(mode)
+                this.data1x1.headers = MODE["cols"]
+                // this.data1x1.data = this.mode.DefaultData()
+                this.data1x1.len = 1
+            }
+        }
+
+
     }
 
     AddCol() {
@@ -113,7 +146,7 @@ class clsCSV {
     AddRow() {
         let atPosition = this.ActiveRowIndex()
         if (atPosition == -1) {atPosition = this.len}
-        let newRow = this.NewRowDefault(atPosition, GetModeValueEquals(this.mode));
+        let newRow = this.NewRowDefault(atPosition, this.mode.GetModeValueEquals());
         this.data1x1.AddRow(atPosition, newRow)
         // Update Numbering
         for (let i = atPosition;i< this.data1x1.len-1;i++) {
@@ -191,49 +224,29 @@ class clsCSV {
     Click(div) {
         let divID = ReturnParentUntilID(div).id
         
-        let logs = LOG.Length()
         let onclickDivs = ReturnAllElemementsWithOnClickFunctions("id")
-
         if (this.layout.IDIncludes(divID, onclickDivs)){
-            console.log("Click at div with onClick function")}
-
-        // if (this.layout.IDIncludes(divID, ["navbar", "navLeft", "navRight", "mySearch", "File"])){
-        //     LOG.Add("Click at Navbar")}
-        if (this.layout.DivIsInsideNavbar(divID)){
-            LOG.Add("Click inside Navbar")}
-
-        if (this.layout.DivIsInsideECSV(divID)){
-            LOG.Add("Click inside ECSV")
-            
-            if (divID.includes("ecsvDivOut")) { // Click inside div, but outside table
-                this.layout.Unhighlight_All()
-                this.Print()
-                return}
+            return}
         
-            if (divID.includes("header-")) {
-                this.layout.HighlightCol(divID)
-                this.Print()
-                return}
-
-            if (divID.includes("R:") && divID.includes("C:")) {
-                let rowID = this.layout.GetRowID(divID)
-                if (this.layout.GetRowID(divID) == this.layout.row_highlight[0]) {
-                    this.Edit(divID) 
-                } else {
-                    this.layout.HighlightRow(divID)
-                    this.Print()
-                }
-                return}       
-        } else {
+        if (!this.layout.DivIsInsideECSV(divID) || this.layout.DivIsInsideECSV(divID) && divID.includes("ecsvDivOut")){
             this.layout.Unhighlight_All()
             this.Print()
-        }
-        
-        assert(LOG.IsActive())
-        assert(LOG.Length() == logs+1)
-        LOG.Deactivate()
-    }
+            return}
 
+        if (this.layout.DivIsInsideECSV(divID) && divID.includes("header-")){
+            this.layout.HighlightCol(divID)
+            this.Print()
+            return}
+
+        if (this.layout.DivIsInsideECSV(divID) && divID.includes("R:") && divID.includes("C:")) {
+            if (this.layout.GetRowID(divID) == this.layout.row_highlight[0]) {
+                this.Edit(divID) 
+            } else {
+                this.layout.HighlightRow(divID)
+                this.Print()
+            }
+            return}
+    }
 
 
     UnEdit(divID) {

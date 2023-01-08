@@ -49,7 +49,7 @@ const ecsv = new clsCSV({egoname : "ecsv"});
 const SS = new clsSiteSearch();
 const DD = new clsDropDown();
 const MEM = new clsMemory();
-const LOG = new clsLogger();
+const MODE = new clsModes();
 
 
 (function () {
@@ -62,7 +62,7 @@ const LOG = new clsLogger();
     // Add features via button in nav bar
     DD.AddDropDownToDiv(document.getElementById("nav-Edit"), "edit", "nav-", ["Add Row", "Del Row","Add Col", "Del Col"],
             ["DDEdit('AddRow')", "DDEdit('DelRow')", "DDEdit('AddCol')", "DDEdit('DelCol')"])           // 'DDEdit("AddRow")' will lead to   DDEdit(" addRow")    and not work
-    DD.AddDropDownToDiv(document.getElementById("nav-Mode"), "mode", "nav-", GetModes(), GetModesOnClick())
+    DD.AddDropDownToDiv(document.getElementById("nav-Mode"), "mode", "nav-", MODE.GetModes(), MODE.GetModesOnClick())
     DD.AddDropDownToDiv(document.getElementById("nav-Features"), "feature", "nav-", ["(Un-)Link", "Sum"], ["DDFeatures('toggle link')", "DDFeatures('sum')"])
     DD.AddDropDownToDiv(document.getElementById("nav-Variants"), "variants", "nav-", ["memory"], ['SiteFeature_Memory()'])
 })();
@@ -82,6 +82,7 @@ function ReadFile () {
   }
 function _ResultToCSV() {
     ecsv.ReadCSV(cReader.result);
+    ecsv.fileLoaded = true
     ecsv.Print();
     ecsv.ToggleLink();
   }
@@ -137,8 +138,10 @@ function DDFeatures(mode) {
 
 function SiteFeature_Memory() {
     MEM.Init(["Haus","Hase","Hund","Himmel","Hummel","Hand","Hose"])
-    ecsv.mode = "memory"
-    // MEM.state = "on"s
-    ecsv.ReadCSV(MEM.AsCSVRepresentation());
-    ecsv.Print();
+    let res = ecsv.SetMode("memory")
+    if (res == 0) {
+        ecsv.ReadCSV(MEM.AsCSVRepresentation());
+        ecsv.Print();
+    }
+
 }
