@@ -16,8 +16,8 @@ ONCLICKS = [
     {divID : "nav-dd-(Un-)Link", funcName : "DDFeatures('toggle link')"},
     {divID : "nav-dd-Sum", funcName : "DDFeatures('sum')"},
 
-    {divID : "nav-Variants", funcName : "ddToggle('nav-ddm-variants')"},
-    {divID : "nav-dd-memory", funcName : "SiteFeature_Memory()"},
+    // {divID : "nav-Variants", funcName : "ddToggle('nav-ddm-variants')"},
+    // {divID : "nav-dd-memory", funcName : "SiteFeature_Memory()"},
 
     // created in index.html
     {divID : "download", funcName : "download_saveData()"},

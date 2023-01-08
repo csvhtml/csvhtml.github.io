@@ -18,6 +18,10 @@ class clsMemory {
         this.Cards = null // elements on table in order of their appearance
     }
 
+    DefautData() {
+        return [["Haus","Hase","Hund","Himmel","Hummel","Hand"]] // ,"Hose"
+    }
+
     ping() {
         console.log("clsMemory Ping")
     }

@@ -64,7 +64,7 @@ const MODE = new clsModes();
             ["DDEdit('AddRow')", "DDEdit('DelRow')", "DDEdit('AddCol')", "DDEdit('DelCol')"])           // 'DDEdit("AddRow")' will lead to   DDEdit(" addRow")    and not work
     DD.AddDropDownToDiv(document.getElementById("nav-Mode"), "mode", "nav-", MODE.GetModes(), MODE.GetModesOnClick())
     DD.AddDropDownToDiv(document.getElementById("nav-Features"), "feature", "nav-", ["(Un-)Link", "Sum"], ["DDFeatures('toggle link')", "DDFeatures('sum')"])
-    DD.AddDropDownToDiv(document.getElementById("nav-Variants"), "variants", "nav-", ["memory"], ['SiteFeature_Memory()'])
+    // DD.AddDropDownToDiv(document.getElementById("nav-Variants"), "variants", "nav-", ["memory"], ['SiteFeature_Memory()'])
 })();
 
 
@@ -136,12 +136,12 @@ function DDFeatures(mode) {
     if (mode == "sum") {ecsv.Feature_Sum()}
 }
 
-function SiteFeature_Memory() {
-    MEM.Init(["Haus","Hase","Hund","Himmel","Hummel","Hand","Hose"])
-    let res = ecsv.SetMode("memory")
-    if (res == 0) {
-        ecsv.ReadCSV(MEM.AsCSVRepresentation());
-        ecsv.Print();
-    }
+// function SiteFeature_Memory() {
+//     MEM.Init(["Haus","Hase","Hund","Himmel","Hummel","Hand","Hose"])
+//     let res = ecsv.SetMode("memory")
+//     if (res == 0) {
+//         ecsv.ReadCSV(MEM.AsCSVRepresentation());
+//         ecsv.Print();
+//     }
 
-}
+// }

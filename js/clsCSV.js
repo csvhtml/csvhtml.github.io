@@ -32,7 +32,6 @@ class clsCSV {
         this.dataSubSet = new clsData_1x1()
         if (csvtext == "") {
             this.data1x1.headers = this.mode.GetCols()
-            // this.data1x1.data = [["1", "..", "..", "..", "..", "[]"]];
             this.data1x1.data = this.mode.DefaultData()
             this.data1x1.len = 1;
             this._DataSynch()
@@ -108,24 +107,12 @@ class clsCSV {
                 return -1
             }
         } else {
-            if (mode == "standard") {
-                this.mode.SetMode(mode)
-                this.data1x1.headers = this.mode.GetCols()
-                this.data1x1.data = this.mode.DefaultData()
-                this.data1x1.len = 1
-            }
-            if (mode == "list") {
-                this.mode.SetMode(mode)
-                this.data1x1.headers = MODE["cols"]
-                this.data1x1.data = this.mode.DefaultData()
-                this.data1x1.len = 1
-            }
-            if (mode == "memory") {
-                this.mode.SetMode(mode)
-                this.data1x1.headers = MODE["cols"]
-                // this.data1x1.data = this.mode.DefaultData()
-                this.data1x1.len = 1
-            }
+            this.mode.SetMode(mode)
+            this.data1x1.headers = this.mode.GetCols()
+            this.data1x1.data = this.mode.DefaultData()
+            this.data1x1.len = this.data1x1.data.length
+            this.filterValueEquals  = this.mode.GetModeValueEquals()
+            this.filterValueIncludes = this.mode.GetModeValueIncludes()
         }
 
 
