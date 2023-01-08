@@ -200,7 +200,7 @@ Object.defineProperties(Array.prototype, {
 // Usefull DOM functions                                          #
 // ################################################################
 
-function ReturnAllElemementsWithOnClickFunctions (mode="") {
+function ElemementsWithOnClickFunctions (mode="") {
     // let allElements = document.getElementsByTagName('*');
     let allElements = document.getElementsByTagName('*');
     let ret = []
@@ -213,6 +213,22 @@ function ReturnAllElemementsWithOnClickFunctions (mode="") {
                 ret.push(allElements[i].id)}
             if (mode == "function") {
                 ret.push(allElements[i].attributes['onclick'].value)}
+        }
+    }
+    return ret
+}
+
+function ElemementsWithSubStringInID (fix = "", mode="") {
+    // let allElements = document.getElementsByTagName('*');
+    let allElements = document.getElementsByTagName('*');
+    let ret = []
+    for ( var i = 0; i<allElements.length; i++ ) {
+        if ( allElements[i].id.includes(fix)) {
+            if (mode == "") {
+                ret.push(allElements[i])}
+            if (mode == "id") {
+                assert(allElements[i].id != "")
+                ret.push(allElements[i].id)}
         }
     }
     return ret

@@ -142,11 +142,14 @@ class clsCSVLayout {
                 ret += '<tr id="row:' + rowidx + '!">';
                 for (let cell of row) {
                     i += 1;
+                    let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
                     if (String(cell).includes("\r")) {
                         cell = cell.replace(new RegExp('\r', "g") , '<br>')  // use \r for in cell new line
                     }
                     cell = this._Replace_NAME(cell)
-                    ret += '<td id="R:' + rowidx + 'C:' + i + 'H:' + cols[i] + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
+                    cell = this._Replace_Link(cell, id)
+                    // ret += '<td id="R:' + rowidx + 'C:' + i + 'H:' + cols[i] + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
+                    ret += '<td id="' + id + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
                 }
               ret += '</tr>'
         }
@@ -316,6 +319,21 @@ class clsCSVLayout {
         }
         return value
     }
+
+    _Replace_Link(value, idStr) {
+        for (let i = 0; i< 100;i++) {
+            if( typeof value === 'string') {
+                if (value.indexOf("[file:")!=-1) {
+                    let link = RetStringBetween(value,"[", "]")
+                    let id = 'id = "' + idStr + '-link"' 
+                    let text = link.replace(new RegExp("%20", "g") , " ") 
+                    let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + text + '</a>'
+                    value = value.replace(value, rpl)}
+            }
+        }
+        return value
+    }
+        
 
     _RetURL(name) {
         let iName = this.headers.indexOf("Name")

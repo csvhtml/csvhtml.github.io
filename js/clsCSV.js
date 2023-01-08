@@ -44,8 +44,8 @@ class clsCSV {
         // Styles
         
         // this.printMode = 'full'
-        this.filterValueEquals = {"Type":[]}
-        this.filterValueIncludes = {"Tags":[]}
+        this.filterValueEquals = {}  //"Type":[]
+        this.filterValueIncludes = {} //"Tags":[]
         this.filterCols = []
 
         // this.filterTags = []
@@ -211,8 +211,9 @@ class clsCSV {
     Click(div) {
         let divID = ReturnParentUntilID(div).id
         
-        let onclickDivs = ReturnAllElemementsWithOnClickFunctions("id")
-        if (this.layout.IDIncludes(divID, onclickDivs)){
+        let onclickDivs = ElemementsWithOnClickFunctions("id")
+        let directlinkDivs = ElemementsWithSubStringInID("-link", "id")
+        if (this.layout.IDIncludes(divID, onclickDivs.concat(directlinkDivs))){
             return}
         
         if (!this.layout.DivIsInsideECSV(divID) || this.layout.DivIsInsideECSV(divID) && divID.includes("ecsvDivOut")){
@@ -409,44 +410,7 @@ class clsCSV {
         return ret;
     }
 
-    _Table_ConfigDispalay() {
-      let ret = 'Show/Hide: ';
-      for (let header of this.headers) {
-        let strr = "ecsv1._Table_ToggleCol('col-" + header + "')"
-        ret += '<a id="configheader-' + header + '" href="#" onclick="' + strr + '">' + header + '</a>' + ' . '}
-      return ret + "<br/>";
-    }
-
-    _Table_ConfigLink() {
-      let ret = 'Link: ';
-      for (let header of this.headers) {
-        let strr = "ecsv1._Table_ToggleLink('col-" + header + "')"
-        ret += '<a id="configlink-' + header + '" href="#" onclick="' + strr + '">' + header + '</a>' + ' . '}
-      return ret + "<br/>";
-    }
-
-    _Table_ConfigImg() {
-      let ret = 'Image: ';
-      for (let header of this.headers) {
-        let strr = "ecsv1._Table_ToggleImg('col-" + header + "')"
-        ret += '<a id="configimg-' + header + '" href="#" onclick="' + strr + '">' + header + '</a>' + ' . '}
-      return ret + "<br/>";
-    }
-
-    _Table_ToggleCol(colname) {
-        var cells = document.getElementsByClassName(colname);
-        let idx = this.headers.indexOf(RetStringBetween(colname, "col-"))
-        for (let cell of cells) {
-            if (cell.style.display === "table-cell") {
-                this.config[idx] = "ecsvConfig:d-none"
-                cell.style.display = "none";
-            } else {
-                this.config[idx] = "ecsvConfig:d-tablecell"
-                cell.style.display = "table-cell";
-            }
-        }
-    }
-
+    // obsolete. in future repalce by layout. _Replace_Link
     ToggleLink(colname = "url") {
         var cells = document.getElementsByClassName("ecsvcell col-" + colname);
         for (let cell of cells) {
