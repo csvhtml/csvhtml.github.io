@@ -169,10 +169,15 @@ class clsCSV {
     }
 
     ActiveCellValue() {
-        let raw = this.layout.cellIDs_highlight[0][0]
-        let row = parseInt(RetStringBetween(raw,"R:", "C:"))
-        let col = parseInt(RetStringBetween(raw,"C:", "H:"))
-        return this.data1x1.data[row][col]
+        let rawID = this.layout.cellIDs_highlight[0][0]
+        if (rawID.includes("R:") && rawID.includes("C:")) {
+            let row = parseInt(RetStringBetween(rawID,"R:", "C:"))
+            let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
+            return this.data1x1.data[row][col]}
+        if (rawID.includes("header-")) {
+            return RetStringBetween(rawID,"header-", "")
+        }
+
     }
 
     NewRowDefault(atPosition, SetCols = {}) {
@@ -197,12 +202,21 @@ class clsCSV {
     }
 
     Edit(divID) {
-        // this._HighlightCell(divID);
         this.layout.HighlightCell(divID)
         this.Print()
         this._CreateInputField(divID)
         this._svgAppend_Save(divID)
         this._CreateName(divID)
+        
+        document.getElementById(this.name + "-input").focus();
+        document.getElementById(this.name + "-input").select();
+    }
+
+    Edit_Header(divID) {
+        this.layout.HighlightCell(divID)
+        this.Print()
+        this._CreateInputField(divID)
+        this._svgAppend_Save(divID)
         
         document.getElementById(this.name + "-input").focus();
         document.getElementById(this.name + "-input").select();
@@ -222,8 +236,13 @@ class clsCSV {
             return}
 
         if (this.layout.DivIsInsideECSV(divID) && divID.includes("header-")){
-            this.layout.HighlightCol(divID)
-            this.Print()
+            if (this.layout.col_highlight[0] == divID.replace("header", "col")) {
+                this.Edit_Header(divID) 
+            } else {
+                this.layout.HighlightCol(divID)
+                this.Print()
+            }
+
             return}
 
         if (this.layout.DivIsInsideECSV(divID) && divID.includes("R:") && divID.includes("C:")) {
@@ -314,16 +333,23 @@ class clsCSV {
     }
 
     _SaveCellValueToData(){
-        let raw = this.layout.cellIDs_highlight[0][0]
-        let row = parseInt(RetStringBetween(raw,"R:", "C:"))
-        let col = parseInt(RetStringBetween(raw,"C:", "H:"))
         let value = document.getElementById(this.name + "-input").value;
-
-        if (value.includes("\n")) {
-            value = value.replace(new RegExp("\n", "g") , "\r")
-        }
-
-        this.data1x1.data[row][col] = value;
+        let rawID = this.layout.cellIDs_highlight[0][0]
+        if (rawID.includes("R:") && rawID.includes("C:")) {
+            let row = parseInt(RetStringBetween(rawID,"R:", "C:"))
+            let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
+            if (value.includes("\n")) {
+                value = value.replace(new RegExp("\n", "g") , "\r")
+            }
+            this.data1x1.data[row][col] = value;}
+        if (rawID.includes("header-")) {
+                let idx = this.headers.indexOf(RetStringBetween(rawID,"header-", ""))
+                let headerOld = this.data1x1.headers[idx]
+                this.data1x1.headers[idx] = value
+                for (let cell of this.layout.cellIDs_highlight) {
+                    cell[0] = cell[0].replace(headerOld, value)
+                    cell[1] = cell[1].replace(headerOld, value)
+                }}
     }
 
     _RetURL(name) {

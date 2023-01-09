@@ -145,7 +145,7 @@ function assert(condition, message) {
 }
 
 // ################################################################
-// List / Array functions                                         #
+// Prototype extentions                                           #
 // ################################################################
 
 // from https://stackoverflow.com/questions/6120931/how-to-count-certain-elements-in-array
@@ -192,6 +192,24 @@ Object.defineProperties(Array.prototype, {
         value: function(element) {
             if (!this.includes(element)) {
                 this.push(element)}
+            }
+        }
+});
+
+Object.defineProperties(DOMTokenList.prototype, {
+    addX: {
+        value: function(element) {
+            if (!this.contains(element)) {
+                this.add(element)}
+            }
+        }
+});
+
+Object.defineProperties(DOMTokenList.prototype, {
+    removeX: {
+        value: function(element) {
+            if (this.contains(element)) {
+                this.remove(element)}
             }
         }
 });

@@ -42,11 +42,19 @@ class clsCSVLayout {
                 row = ""}
         }
         //Highlithing Cells
+        // for (let cell of this.cellIDs_highlight) {
+        //     if (cell[0] == "" && cell[1] != "") {
+        //         document.getElementById(cell[1]).classList.remove(hclass)}
+        //     if (cell[0] != "" && cell[1] == "") {
+        //         document.getElementById(cell[0]).classList.add(hclass)}
+        //     cell[1] = cell[0]
+        // }
+
         for (let cell of this.cellIDs_highlight) {
             if (cell[0] == "" && cell[1] != "") {
-                document.getElementById(cell[1]).classList.remove(hclass)}
-            if (cell[0] != "" && cell[1] == "") {
-                document.getElementById(cell[0]).classList.add(hclass)}
+                document.getElementById(cell[1]).classList.removeX(hclass)}
+            if (cell[0] != "") {
+                document.getElementById(cell[0]).classList.addX(hclass)}
             cell[1] = cell[0]
         }
 
@@ -197,10 +205,14 @@ class clsCSVLayout {
     }
 
     HighlightCell(divID) {
-        assert(this.row_highlight[0] != "")
+        assert(this.row_highlight[0] + this.col_highlight[0] != "")
         if (divID.includes("R:") && divID.includes("C:")) {
             this.cellIDs_highlight[0][0] = divID;
             this.row_highlight[0] = "";
+        }
+        if (divID.includes("header-")) {
+            this.cellIDs_highlight[0][0] = divID;
+            this.col_highlight[0] = "";
         }
     }
 

@@ -166,6 +166,12 @@ class clsData_1x1 {
         }
         return ret
     }
+
+    RenameCol(old, neww) {
+        assert(this.headers.includes(old), old + " is not in headers")
+
+        this.headers[this.headers.indexOf(old)] = neww
+    }
 }
 
 
@@ -182,6 +188,7 @@ function test_clsData_1x1() {
     test_clsData_1x1_ColAsList()
     test_clsData_1x1_Subset()
     test_clsData_1x1__byVal()
+    test_clsData_1x1_RenameCol()
 
     return 25 // 25 assertions in this file (and should all be catched)
 }
@@ -378,6 +385,20 @@ function test_clsData_1x1_ColAsList() {
             {"a": "D", "ermg": "D not in headers"},
         ]
         var foo = function (a,b) {datta.ColAsList(a)}
+        assertAssertions(foo, assertCalls)
+}
+
+function test_clsData_1x1_RenameCol() {
+    let fname = arguments.callee.name;
+    let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
+    datta.RenameCol("A", "XYZ")
+    assertEqualList(datta.headers, ["XYZ", "B", "C"], fname)
+
+    // test assertions
+        assertCalls = [
+            {"a": "X", b: "A", "ermg": "X is not in headers"},
+        ]
+        var foo = function (a,b) {datta.RenameCol(a)}
         assertAssertions(foo, assertCalls)
 }
 

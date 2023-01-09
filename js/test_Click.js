@@ -55,14 +55,14 @@ function assertContaintsClass(divID, classes, fname) {
 
 function test_ONCLICKS_Completeness(){
     let fname = arguments.callee.name;
-    let onclickDivIDs = ReturnAllElemementsWithOnClickFunctions("id")
+    let onclickDivIDs = ElemementsWithOnClickFunctions("id")
     let ONCLICKIDs = []
     for (let ele of ONCLICKS) {
         ONCLICKIDs.push(ele["divID"])
     }
     assertEqualList(onclickDivIDs, ONCLICKIDs, fname)
 
-    let onclickDivFunctions = ReturnAllElemementsWithOnClickFunctions("function")
+    let onclickDivFunctions = ElemementsWithOnClickFunctions("function")
     let ONCLICKFunctions = []
     for (let ele of ONCLICKS) {
         ONCLICKFunctions.push(ele["funcName"])
@@ -101,7 +101,7 @@ function test_Click_ecsv() {
 
 function test_onClicks() {
     let fname = arguments.callee.name;
-    let onclickDivs = ReturnAllElemementsWithOnClickFunctions()
+    let onclickDivs = ElemementsWithOnClickFunctions()
     let flag = []
 
     for (div of onclickDivs) {
