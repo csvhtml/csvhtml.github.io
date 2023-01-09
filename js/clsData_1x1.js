@@ -25,15 +25,28 @@ class clsData_1x1 {
         this.headersConfig =  []
         this.headers =  []
         for (let header of headers) {
-            if (header.includes("[") && header.includes("]")) {
-                let headerName = RetStringBetween(header, "", "[", true)
-                let headerConfig = RetStringBetween(header, "[", "]")
-                this.headers.push(headerName)
-                this.headersConfig.push(headerConfig)
-            } else {
-                this.headers.push(header)
-                this.headersConfig.push("")
-            }
+            this._HeaderRawPush(header)
+            // if (this._HeaderHasConfig(header)) {
+            //     let headerName = RetStringBetween(header, "", "[", true)
+            //     let headerConfig = RetStringBetween(header, "[", "]")
+            //     this.headers.push(headerName)
+            //     this.headersConfig.push(headerConfig)
+            // } else {
+            //     this.headers.push(header)
+            //     this.headersConfig.push("")
+            // }
+        }
+    }
+
+    _HeaderRawPush(HeaderRaw) {
+        if (this._HeaderHasConfig(HeaderRaw)) {
+            let headerName = RetStringBetween(HeaderRaw, "", "[", true)
+            let headerConfig = RetStringBetween(HeaderRaw, "[", "]")
+            this.headers.push(headerName)
+            this.headersConfig.push(headerConfig)
+        } else {
+            this.headers.push(HeaderRaw)
+            this.headersConfig.push("")
         }
     }
 
@@ -81,7 +94,7 @@ class clsData_1x1 {
                 assert(values.length == this.len, "values length not equal to data length")}}
             
         if (atPosition == -1) {
-            this.headers.push(header)
+            this._HeaderRawPush(header)
             if (this.len == 0) {
                 for (let i = 0; i < values.length; i++) {
                     let row = [_byVal(values[i])]
@@ -110,6 +123,7 @@ class clsData_1x1 {
         }
 
         this.headers.splice(col, 1)
+        this.headersConfig.splice(col, 1)
 
         for (let i = 0; i < this.data.length; i++) {
             this.data[i].splice(col,1)
@@ -135,6 +149,8 @@ class clsData_1x1 {
         let ret = new clsData_1x1(); let flag = true
         for (let col of cols) {
             ret.AddCol(col, -1, this.ColAsList(col))
+            let idx = this.HeaderIndex(col)
+            ret.headersConfig[ret.headersConfig.length-1] = this.headersConfig[idx]
         }
         for (let key of Object.keys(valueEquals)) {
             let j = ret.headers.indexOf(key)
@@ -205,6 +221,13 @@ class clsData_1x1 {
     
         return ret
     }
+
+    _HeaderHasConfig(header) {
+        if (header.includes("[") && header.includes("]")) {
+            return true
+        }
+        return false
+    }
 }
 
 
@@ -259,7 +282,7 @@ function test_clsData_1x1_Init() {
 
 function test_clsData_1x1_AddCol() {
     let fname = arguments.callee.name;
-    datta = new clsData_1x1()
+    let datta = new clsData_1x1()
     datta.AddCol("B", -1, ["Meine", "da drausen"])
     assertEqualList(datta.headers,["B"], fname)
     assertEqualList(datta.headers,["B"], fname)
@@ -269,6 +292,13 @@ function test_clsData_1x1_AddCol() {
     datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
     datta.AddCol("B", -1, ["Meine", "da drausen"])
     assertEqualList(datta.headers,["A", "B"], fname)
+    assertEqualList(datta.data[0],["Hallo", "Meine"], fname)
+    assertEqualList(datta.data[1],["Welt", "da drausen"], fname)
+
+    datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
+    datta.AddCol("B [lol]", -1, ["Meine", "da drausen"])
+    assertEqualList(datta.headers,["A", "B"], fname)
+    assertEqualList(datta.headersConfig,["", "lol"], fname)
     assertEqualList(datta.data[0],["Hallo", "Meine"], fname)
     assertEqualList(datta.data[1],["Welt", "da drausen"], fname)
 
@@ -349,6 +379,12 @@ function test_clsData_1x1_RemoveCol() {
     assertEqualList(datta.headers, ["B", "C"], fname)
     assertEqualList(datta.data,[["Welt", "drausen"], ["Mario", "Land"], ["Oktoberfest", "Beer"]], fname)
 
+    datta = new clsData_1x1(["A [lol]", "B [lol]", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
+    datta.RemoveCol(-1, "A")
+    assertEqualList(datta.headers, ["B", "C"], fname)
+    assertEqualList(datta.headersConfig, ["lol", ""], fname)
+    assertEqualList(datta.data,[["Welt", "drausen"], ["Mario", "Land"], ["Oktoberfest", "Beer"]], fname)
+
     // test assertions
     assertCalls = [
         {"a": -2, "ermg": "col index below -1"},
@@ -365,6 +401,12 @@ function test_clsData_1x1_Subset() {
     let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     let datta2 = datta.Subset({cols:["A", "C"]})
     assertEqualList(datta2.headers, ["A", "C"], fname)
+    assertEqualList(datta2.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
+
+    datta = new clsData_1x1(["A [lol]", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
+    datta2 = datta.Subset({cols:["A", "C"]})
+    assertEqualList(datta2.headers, ["A", "C"], fname)
+    assertEqualList(datta2.headersConfig, ["lol", ""], fname)
     assertEqualList(datta2.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
 
     datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"], ["Bye", "Oktoberfest", "Beer"]])

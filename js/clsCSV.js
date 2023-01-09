@@ -57,6 +57,7 @@ class clsCSV {
         this.layout.ReadFullCSVData(this.data1x1.headers, this.data1x1.data, this.data1x1.headersConfig)
         this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
         this.headers = this.dataSubSet.headers
+        this.headersConfig = this.dataSubSet.headersConfig
         this.data = this.dataSubSet.data
         this.len = this.dataSubSet.len
 
@@ -65,7 +66,7 @@ class clsCSV {
 
     Print() {
         this._DataSynch()
-        this.layout._Print(this.headers, this.data)
+        this.layout._Print(this.headers, this.data, this.headersConfig)
     }
 
     ReadCSV(csvtext, delimiter = ";" ) {

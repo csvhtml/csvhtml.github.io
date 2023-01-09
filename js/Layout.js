@@ -127,7 +127,7 @@ class clsCSVLayout {
         // return ret
     }
 
-    _Print(headers, data) {   // or filtered
+    _Print(headers, data, headersConfig) {   // or filtered
         // standard use case
         var cDivOut = document.getElementById(ID_DIVOUT);
         let cols = ["No.", "Name", "Description", "url", "value", "Type", "Tags"]
@@ -136,7 +136,7 @@ class clsCSVLayout {
             widths[i] = 'style="width:' + widths[i] + '%"'}
         let colswidth = dicct(cols, widths)
 
-        cDivOut.innerHTML = this._AsHTMLTable(headers, colswidth, data)
+        cDivOut.innerHTML = this._AsHTMLTable(headers, headersConfig, colswidth, data)
         
         if (this.mode == "memory") {
             let TDs = document.getElementsByTagName("td")
@@ -153,12 +153,12 @@ class clsCSVLayout {
     }
 
     
-    _AsHTMLTable(cols, colswidth, rows) {
+    _AsHTMLTable(cols, headersConfig, colswidth, rows) {
         let ret = '<table class="table"><thead><tr>';
         // table header
         for (let i = 0; i < cols.length; i++) {
-            let header = this.headers[i]
-            let config = this.headersConfig[i]
+            let header = cols[i]
+            let config = headersConfig[i]
             ret += '<th id = "header-' + header + '" class="ecsvtable col-' + header + '" '+ colswidth[header] +'>' + header
             if (config == "dropdown") {
                 ret += " " + this._svgText_ArrowDown(header)

@@ -12,7 +12,7 @@ class clsModes {
     }
 
     GetModes() {
-        ret = []
+        let ret = []
         for (let key of Object.keys(this.modes)) {
             ret.push(key)
         }
@@ -34,7 +34,7 @@ class clsModes {
     }
     
     GetModesOnClick() {
-        ret = []
+        let ret = []
         for (let key of Object.keys(this.modes)) {
             ret.push("DDMode('" + key + "')")
         }

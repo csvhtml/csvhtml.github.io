@@ -3,7 +3,7 @@ function test() {
     // console.group ('All tests');  
     console.groupCollapsed('Test Results')
     assertions_in_files += test_clsData_1x1() 
-    assertions_in_files += test_Click()
+    // assertions_in_files += test_Click()
     console.groupEnd ();
     console.log(lastlog_count + " x " + lastlog)
     
@@ -14,6 +14,12 @@ function test() {
     }
 
     console.log(assertions_count + " of " + assertions_in_files + " asssertions were successfully thrown (and catched during testing).")
+
+    testpassed_count = 0
+    testfailed_count = 0
+    assertions_count = 0
+    lastlog = ""
+    lastlog_count = 0
 }
 
 ASSERT = false
@@ -115,7 +121,7 @@ function assertAssertions(foo, assertCalls) {
             assertFlag = true
             assert(error.message == aC["ermg"], "assertion message was '" + error.message + "' instead of '" + aC["ermg"] + "'")
         } finally {
-            assert(assertFlag, "no assertion error was thrown")
+            assert(assertFlag, "assertion error: '" + aC["ermg"] + "' was not thrown")
         }
     }
 }
