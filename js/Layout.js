@@ -333,7 +333,7 @@ class clsCSVLayout {
     }
 
     _Replace_Link(value, idStr) {
-        for (let i = 0; i< 100;i++) {
+        // for (let i = 0; i< 100;i++) {
             if( typeof value === 'string') {
                 if (value.indexOf("[file:")!=-1) {
                     let link = RetStringBetween(value,"[", "]")
@@ -341,8 +341,15 @@ class clsCSVLayout {
                     let text = link.replace(new RegExp("%20", "g") , " ") 
                     let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + text + '</a>'
                     value = value.replace(value, rpl)}
-            }
-        }
+                if (value.indexOf("[http:")!=-1 || value.indexOf("[https:")!=-1) {
+                    let link = RetStringBetween(value,"[", "]")
+                    let linkB = "[" + link + "]"
+                    let id = 'id = "' + idStr + '-link"' 
+                    let text = link.replace(new RegExp("%20", "g") , " ") 
+                    let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + text + '</a>'
+                    value = value.replace(linkB, rpl)}
+                }
+            // }
         return value
     }
         
