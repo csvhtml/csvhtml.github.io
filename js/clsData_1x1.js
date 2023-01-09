@@ -7,10 +7,9 @@ class clsData_1x1 {
         for (let datum of data) {
             assert(Array.isArray(datum), "at least on data row is not of type array/list")
         }
+        this.headersConfig =  []
         this.headers =  []
-        for (let header of headers) {
-            this.headers.push(header)
-        }
+        this.Init_Headers(headers)
         this.data =  []
         for (let row of data) {
             let nextrow = []
@@ -20,6 +19,22 @@ class clsData_1x1 {
             this.data.push(nextrow)
         }
         this.len = this.data.length
+    }
+
+    Init_Headers(headers) {
+        this.headersConfig =  []
+        this.headers =  []
+        for (let header of headers) {
+            if (header.includes("[") && header.includes("]")) {
+                let headerName = RetStringBetween(header, "", "[", true)
+                let headerConfig = RetStringBetween(header, "[", "]")
+                this.headers.push(headerName)
+                this.headersConfig.push(headerConfig)
+            } else {
+                this.headers.push(header)
+                this.headersConfig.push("")
+            }
+        }
     }
 
     AddRow(atPosition = -1, newRow = []) {
@@ -172,6 +187,24 @@ class clsData_1x1 {
 
         this.headers[this.headers.indexOf(old)] = neww
     }
+
+    HeaderIndex(headerName) { // test
+        assert(this.headers.includes(headerName), headerName + " is not in headers")
+
+        return this.headers.indexOf(headerName)
+    }
+
+    HeaderValue(headerName) { // test
+        assert(this.headers.includes(headerName), headerName + " is not in headers")
+        let idx = this.HeaderIndex(headerName)
+        let ret = ""
+        if (this.headersConfig[idx] == "") {
+            ret = this.headers[idx]
+        } else {
+            ret = this.headers[idx] + ' [' + this.headersConfig[idx] + ']'} 
+    
+        return ret
+    }
 }
 
 
@@ -208,6 +241,10 @@ function test_clsData_1x1_Init() {
     assertEqualList(datta2.headers,["A"], fname)
     assertEqualList(datta2.data[0],["Hallo"], fname)
     assertEqualList(datta2.data[1],["Welt"], fname)
+
+    datta3 = new clsData_1x1(["A", "B [config]"], [["Hallo", "Welt"], ["Super", "Mario"]])
+    assertEqualList(datta3.headers,["A", "B"], fname)
+    assertEqualList(datta3.headersConfig,["", "config"], fname)
 
     // test assertions
     assertCalls = [

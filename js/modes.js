@@ -1,13 +1,13 @@
 class clsModes {
     constructor() {
         var clsMMY = new clsMemory()
-        this.defaultCols = ["No.", "Name", "Description", "url", "Type", "Tags"]
+        this.defaultCols = ["No.", "Name", "Description", "url", "Type [dropdown]", "Tags [dropdown]"]
         this.activeMode = "standard"
         this.modes = {
-            "standard": {cols:[], valueEquals:{}},
-            "list": {cols:["No.", "Name", "url", "Type", "Tags"], valueEquals:{"Type":["document"]}},
-            "issues": {cols:["No.", "Name", "Description", "Type", "Tags"], valueEquals:{"Type":["item"]}},
-            "memory": {cols:["A", "B", "C", "D", "E", "F"], valueEquals:{}, valueIncludes:{}, cls: clsMMY}
+            "standard": {cols:[], valueIncludes:{}},
+            "list": {cols:["No.", "Name", "url", "Type", "Tags"], valueIncludes:{"Type":["document"]}},
+            "issues": {cols:["No.", "Name", "Description", "Type", "Tags"], valueIncludes:{"Type":["item"]}},
+            "memory": {cols:["A", "B", "C", "D", "E", "F"], valueIncludes:{}, cls: clsMMY}
         }
     }
 

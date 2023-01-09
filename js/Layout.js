@@ -8,30 +8,53 @@ class clsCSVLayout {
         this.row_highlight = ["", ""]                   //Row that is currently selected. First is targeted value, second is currently displayed value and can only be changed by Print()
         this.col_highlight = ["", ""] 
         this.div_input = null                           // current text area for user input
-        this.filterDD = {
-            "Tags": [],
-            "Type": []
+        
+        this.filter_dropdown = {
+            // "Tags": [],
+            // "Type": []
         }
         
         this.headers = []
         this.data = [[]]
-
+        this.headers_dropdown = [] //(obsolete)
+        this.headersConfig = []
     }
 
-    ReadFullCSVData(headers, data) {
-        // read only
+    ReadFullCSVData(headers, data, headersConfig) {
+        // data
         this.headers = headers
         this.data = data
+        // config
+        this.headersConfig = headersConfig
+        for (let i =0; i<this.headersConfig.length;i++) {
+            if (this.headersConfig[i] == "dropdown") {
+                if(!this.filter_dropdown.hasOwnProperty(this.headers[i])) {
+                    this.filter_dropdown[this.headers[i]] = []
+                }
+            }
+        }
+    }
+
+    _GetDropDownHeaders() {
+        let ret = []
+        for (let header of this.headers) {
+            if (header.includes("[dropdown]")) {
+                let head = header.replace(" [dropdown]", "")
+                head = head.replace("[dropdown]", "")
+                ret.push(head)
+            }
+        }
+        return ret
     }
 
     Toggle_Filter(tag = "", type = "") {
         if (tag == "" && type == "") {
             return}
         if (tag != "") {
-            this.filterDD["Tags"].toggle(tag)
+            this.filter_dropdown["Tags"].toggle(tag)
             }
         if (type != "") {
-            this.filterDD["Type"].toggle(type)
+            this.filter_dropdown["Type"].toggle(type)
         }
     }
 
@@ -41,14 +64,6 @@ class clsCSVLayout {
             if (row == ID_DIVOUT) {
                 row = ""}
         }
-        //Highlithing Cells
-        // for (let cell of this.cellIDs_highlight) {
-        //     if (cell[0] == "" && cell[1] != "") {
-        //         document.getElementById(cell[1]).classList.remove(hclass)}
-        //     if (cell[0] != "" && cell[1] == "") {
-        //         document.getElementById(cell[0]).classList.add(hclass)}
-        //     cell[1] = cell[0]
-        // }
 
         for (let cell of this.cellIDs_highlight) {
             if (cell[0] == "" && cell[1] != "") {
@@ -83,15 +98,11 @@ class clsCSVLayout {
         // Highlight Tags/Types
     }
 
-    AddDropDownMenuFromValues(header, values, filter){
-        var tags = []; var prefix = "";
-        if (header == "Type") {
-            prefix = "type-"}
-        if (header == "Tags") {
-            prefix = "tag-"}
+    AddDropDownMenuFromValues(header){
+        var prefix = header + "-"
         let ret = '<div class="dropdown-menu ' + header + '">'
-
-        for (let tag of values) {
+        let filter =  this.filter_dropdown[header]
+        for (let tag of this._GetColValues(header)) {
             if (filter.includes(tag)) {
                 ret += '<a id="' + prefix + tag + '" class="dropdown-item bg-info" href="#">' + tag + '</a>'} 
             else {
@@ -99,6 +110,21 @@ class clsCSVLayout {
         }
 
         return ret
+        // var tags = []; var prefix = "";
+        // if (header == "Type") {
+        //     prefix = "type-"}
+        // if (header == "Tags") {
+        //     prefix = "tag-"}
+        // let ret = '<div class="dropdown-menu ' + header + '">'
+
+        // for (let tag of values) {
+        //     if (filter.includes(tag)) {
+        //         ret += '<a id="' + prefix + tag + '" class="dropdown-item bg-info" href="#">' + tag + '</a>'} 
+        //     else {
+        //         ret += '<a id="' + prefix + tag + '" class="dropdown-item" href="#">' + tag + '</a>'}  
+        // }
+
+        // return ret
     }
 
     _Print(headers, data) {   // or filtered
@@ -130,13 +156,24 @@ class clsCSVLayout {
     _AsHTMLTable(cols, colswidth, rows) {
         let ret = '<table class="table"><thead><tr>';
         // table header
-        for (let header of cols) {
+        for (let i = 0; i < cols.length; i++) {
+            let header = this.headers[i]
+            let config = this.headersConfig[i]
             ret += '<th id = "header-' + header + '" class="ecsvtable col-' + header + '" '+ colswidth[header] +'>' + header
-            if (["Type", "Tags"].includes(header) ) {
+            if (config == "dropdown") {
                 ret += " " + this._svgText_ArrowDown(header)
-                ret += this.AddDropDownMenuFromValues(header, this._GetColValues(header), this.filterDD[header])}
-            ret += '</th>'}
+                ret += this.AddDropDownMenuFromValues(header)}
+            ret += '</th>'
+        }
         ret += '</tr></thead>'
+
+        // for (let header of cols) {
+        //     ret += '<th id = "header-' + header + '" class="ecsvtable col-' + header + '" '+ colswidth[header] +'>' + header
+        //     if (this.headers_dropdown.includes(header) ) {
+        //         ret += " " + this._svgText_ArrowDown(header)
+        //         ret += this.AddDropDownMenuFromValues(header)}
+        //     ret += '</th>'}
+        // ret += '</tr></thead>'
         
         //row body
         ret += '<tbody>'

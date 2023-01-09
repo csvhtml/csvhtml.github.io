@@ -31,7 +31,7 @@ class clsCSV {
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
         if (csvtext == "") {
-            this.data1x1.headers = this.mode.GetCols()
+            this.data1x1.Init_Headers(this.mode.GetCols())
             this.data1x1.data = this.mode.DefaultData()
             this.data1x1.len = 1;
             this._DataSynch()
@@ -44,7 +44,7 @@ class clsCSV {
         // Styles
         
         // this.printMode = 'full'
-        this.filterValueEquals = {}  //"Type":[]
+        this.filterValueEquals = {}  //"Type":[] (obsolete in future)
         this.filterValueIncludes = {} //"Tags":[]
         this.filterCols = []
 
@@ -54,7 +54,7 @@ class clsCSV {
     }
 
     _DataSynch() {
-        this.layout.ReadFullCSVData(this.data1x1.headers, this.data1x1.data)
+        this.layout.ReadFullCSVData(this.data1x1.headers, this.data1x1.data, this.data1x1.headersConfig)
         this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
         this.headers = this.dataSubSet.headers
         this.data = this.dataSubSet.data
@@ -72,7 +72,8 @@ class clsCSV {
         var str = csvtext.replace(new RegExp('\r\n', "g") , '\n')           // '\r\n' is the standard for new line in windows. for clsCSV plain \n is used as new line
         str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     // '"' used to make csv xls readable. Not used here
         str = str.replace(new RegExp(delimiter + '"', "g") , delimiter)     // '"' used to make csv xls readable. Not used here
-        this.data1x1.headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+        // this.data1x1.headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+        this.data1x1.Init_Headers(str.slice(0, str.indexOf("\n")).split(delimiter))
         if (!this.data1x1.headers.includes("No.") && this.mode.activeMode == "standard") {
             this.VirtualCol_No = true
             this.data1x1.headers.splice(0,0,"No.")
@@ -175,7 +176,8 @@ class clsCSV {
             let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
             return this.data1x1.data[row][col]}
         if (rawID.includes("header-")) {
-            return RetStringBetween(rawID,"header-", "")
+            let header = RetStringBetween(rawID,"header-", "")
+            return this.data1x1.HeaderValue(header)
         }
 
     }
@@ -253,6 +255,8 @@ class clsCSV {
                 this.Print()
             }
             return}
+        
+        
     }
 
 
@@ -408,7 +412,8 @@ class clsCSV {
         let ret = '';
         // headers
         for (let header of this.data1x1.headers) {
-            ret += header + ';'}
+            ret += this.data1x1.HeaderValue(header) + ';'}
+
         ret = ret.slice(0, -1)
         ret += "\n"
         //rows

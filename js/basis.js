@@ -37,7 +37,7 @@ class clsLogger {
 // ###############################################################################
 
 
-function RetStringBetween(text, fromStr, toStr = "") {
+function RetStringBetween(text, fromStr, toStr = "", ignoreBlankAtBorders = false) {
     /**
      * Returns the String between two  strings.
      * "" / empty strings are interpreted as open end / take rest of string
@@ -51,7 +51,7 @@ function RetStringBetween(text, fromStr, toStr = "") {
     // if (idx2 == -1) {toStr=""}
     // var idx2 = text.indexOf(toStr, fromIndex = idx1);
 
-    var [idx1, idx2, len1, len2] = _RetIdxFromTextInString(text, fromStr, toStr)
+    var [idx1, idx2, len1, len2] = _RetIdxFromTextInString(text, fromStr, toStr, ignoreBlankAtBorders)
 
     if (idx2 > idx1) {
         return text.substring(idx1+len1, idx2);}
@@ -80,17 +80,20 @@ function RetStringOutside(text, fromStr, toStr) {
         return text.substring(0, idx1)}
 }
 
-function _RetIdxFromTextInString(text, strA, strB){
+function _RetIdxFromTextInString(text, strA, strB, ignoreBlankAtBorders){
     /**
      * Returns the indexes and length of the search string given
      * if a string was not found, returns (idx=0 and len=0) => identical behaviour as if search string was str = ""
      * if a string was found at start returns (idx = 0, len = <3>)
      * 
      */
-
     var idx1 = text.indexOf(strA);
     if (idx1 == -1) {strA=""; tmp1 = -1}   // if u dont find the string, act if it was an empty string
     idx1 = text.indexOf(strA);
+    
+    if (ignoreBlankAtBorders && text.indexOf(" " + strB)>-1) {
+        strB = " " + strB
+    }
     var idx2 = text.indexOf(strB, fromIndex = idx1);
     if (idx2 == -1) {strB=""; tmp2 = -1} // if u dont find the string, act if it was an empty string
     idx2 = text.indexOf(strB, fromIndex = idx1);
