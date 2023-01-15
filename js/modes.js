@@ -5,8 +5,8 @@ class clsModes {
         this.activeMode = "standard"
         this.modes = {
             "standard": {cols:[], valueIncludes:{}},
-            "list": {cols:["No.", "Name", "url", "Type", "Tags"], valueIncludes:{"Type":["document"]}},
-            "issues": {cols:["No.", "Name", "Description", "Type", "Tags"], valueIncludes:{"Type":["item"]}},
+            "list": {cols:["No.", "Name", "url", "Type", "Tags  [dropdown]"], valueIncludes:{"Type":["document"]}},
+            "issues": {cols:["No.", "Name", "Description", "Type", "Tags  [dropdown]"], valueIncludes:{"Type":["item"]}},
             "memory": {cols:["A", "B", "C", "D", "E", "F"], valueIncludes:{}, cls: clsMMY}
         }
     }

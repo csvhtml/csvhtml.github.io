@@ -110,7 +110,7 @@ class clsCSV {
             }
         } else {
             this.mode.SetMode(mode)
-            this.data1x1.headers = this.mode.GetCols()
+            this.data1x1.Init_Headers(this.mode.GetCols())
             this.data1x1.data = this.mode.DefaultData()
             this.data1x1.len = this.data1x1.data.length
             this.filterValueEquals  = this.mode.GetModeValueEquals()
