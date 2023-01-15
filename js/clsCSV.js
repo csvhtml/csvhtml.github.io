@@ -178,7 +178,7 @@ class clsCSV {
             return this.data1x1.data[row][col]}
         if (rawID.includes("header-")) {
             let header = RetStringBetween(rawID,"header-", "")
-            return this.data1x1.HeaderValue(header)
+            return this.data1x1.HeadersRaw(header)
         }
 
     }
@@ -413,7 +413,7 @@ class clsCSV {
         let ret = '';
         // headers
         for (let header of this.data1x1.headers) {
-            ret += this.data1x1.HeaderValue(header) + ';'}
+            ret += this.data1x1.HeadersRaw(header) + ';'}
 
         ret = ret.slice(0, -1)
         ret += "\n"

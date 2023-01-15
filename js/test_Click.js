@@ -60,14 +60,14 @@ function test_ONCLICKS_Completeness(){
     for (let ele of ONCLICKS) {
         ONCLICKIDs.push(ele["divID"])
     }
-    assertEqualList(onclickDivIDs, ONCLICKIDs, fname)
+    testEqualList(onclickDivIDs, ONCLICKIDs, fname)
 
     let onclickDivFunctions = ElemementsWithOnClickFunctions("function")
     let ONCLICKFunctions = []
     for (let ele of ONCLICKS) {
         ONCLICKFunctions.push(ele["funcName"])
     }
-    assertEqualList(onclickDivFunctions, ONCLICKFunctions, fname)
+    testEqualList(onclickDivFunctions, ONCLICKFunctions, fname)
 }
 
 function test_Click_ecsv() {
@@ -75,28 +75,28 @@ function test_Click_ecsv() {
     let div = document.getElementById("R:0C:1H:Name")
 
     ecsv.Click(div)
-    assertEqualList(ecsv.layout.row_highlight,["row:0!", "row:0!"], fname)
+    testEqualList(ecsv.layout.row_highlight,["row:0!", "row:0!"], fname)
     assertContaintsClass("row:0!", ["table-info"], fname)
     
     ecsv.Click(div)
-    assertEqualList(ecsv.layout.row_highlight,["", ""], fname)
-    assertEqualList(ecsv.layout.cellIDs_highlight[0],["R:0C:1H:Name", "R:0C:1H:Name"], fname)
+    testEqualList(ecsv.layout.row_highlight,["", ""], fname)
+    testEqualList(ecsv.layout.cellIDs_highlight[0],["R:0C:1H:Name", "R:0C:1H:Name"], fname)
     assertContaintsClass("R:0C:1H:Name", ["table-info"], fname)
     
     div = document.getElementById("ecsvDivOut")
     ecsv.Click(div)
-    assertEqualList(ecsv.layout.row_highlight,["", ""], fname)
-    assertEqualList(ecsv.layout.cellIDs_highlight[0],["", ""], fname)
+    testEqualList(ecsv.layout.row_highlight,["", ""], fname)
+    testEqualList(ecsv.layout.cellIDs_highlight[0],["", ""], fname)
 
     div = document.getElementById("header-Name") 
     ecsv.Click(div)
-    assertEqualList(ecsv.layout.col_highlight,["col-Name", "col-Name"], fname)
+    testEqualList(ecsv.layout.col_highlight,["col-Name", "col-Name"], fname)
     assertContaintsClass("header-Name", ["table-info"], fname)
 
     div = document.getElementById("ecsvDivOut")
     ecsv.Click(div)
-    assertEqualList(ecsv.layout.row_highlight,["", ""], fname)
-    assertEqualList(ecsv.layout.cellIDs_highlight[0],["", ""], fname)
+    testEqualList(ecsv.layout.row_highlight,["", ""], fname)
+    testEqualList(ecsv.layout.cellIDs_highlight[0],["", ""], fname)
 }
 
 function test_onClicks() {
@@ -113,9 +113,9 @@ function test_onClicks() {
     }
 
     if (flag.length == 0) {
-        assertEqual(1,1,fname)
+        testEqual(1,1,fname)
     } else {
-        assertEqual(1,0,fname + flag)
+        testEqual(1,0,fname + flag)
     }    
 }
 

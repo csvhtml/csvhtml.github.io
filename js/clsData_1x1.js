@@ -26,15 +26,6 @@ class clsData_1x1 {
         this.headers =  []
         for (let header of headers) {
             this._HeaderRawPush(header)
-            // if (this._HeaderHasConfig(header)) {
-            //     let headerName = RetStringBetween(header, "", "[", true)
-            //     let headerConfig = RetStringBetween(header, "[", "]")
-            //     this.headers.push(headerName)
-            //     this.headersConfig.push(headerConfig)
-            // } else {
-            //     this.headers.push(header)
-            //     this.headersConfig.push("")
-            // }
         }
     }
 
@@ -132,7 +123,8 @@ class clsData_1x1 {
     }
 
     Subset({cols = [], valueEquals = {}, valueIncludes = {}}) {
-        assert(Array.isArray(cols), "headers is not of type list")
+        // Assertions
+        assertIsList(cols, "cols")
         assert(typeof valueEquals === 'object', "valueEquals is not of type object")
         for (let key of Object.keys(valueEquals)) {
             assert(this.headers.indexOf(key) >-1, "valueEquals element " + key + " not in headers")
@@ -144,14 +136,29 @@ class clsData_1x1 {
             assert(Array.isArray(valueIncludes[key]), "valueIncludes element " + key + " is not of type list")
         }
 
-        if (cols.length == 0) {cols = this.headers}
+        // Build subset. 1) Subset of Cols 2) ubset of equals 3) Subset of includes
+        let ret = this._Subset_Cols(cols); 
 
-        let ret = new clsData_1x1(); let flag = true
+        ret = this._Subset_Equals(ret, valueEquals)
+
+        return this._Subset_Includes(ret, valueIncludes)
+
+    }
+
+    _Subset_Cols(cols) {
+        let ret = new clsData_1x1();
+        if (cols.length == 0) {
+            cols = this.headers}
         for (let col of cols) {
             ret.AddCol(col, -1, this.ColAsList(col))
             let idx = this.HeaderIndex(col)
             ret.headersConfig[ret.headersConfig.length-1] = this.headersConfig[idx]
         }
+        return ret
+    }
+
+    _Subset_Equals(ret, valueEquals) {
+        let flag = true
         for (let key of Object.keys(valueEquals)) {
             let j = ret.headers.indexOf(key)
             for (let i = ret.len-1; i > -1; i-- ) {
@@ -165,6 +172,10 @@ class clsData_1x1 {
                 if (flag && valueEquals[key].length >0) {ret.RemoveRow(i)}
             }   
         }
+        return ret
+    }
+
+    _Subset_Includes(ret, valueIncludes) {
         for (let key of Object.keys(valueIncludes)) {
             let j = ret.headers.indexOf(key)
             for (let i = ret.len-1; i > -1; i-- ) {
@@ -180,6 +191,7 @@ class clsData_1x1 {
     }
 
     IsColsSubset(cols) {
+        assert(Array.isArray(cols), "headers is not of type list")
         for (let col of cols) {
             if (!this.headers.includes(col)) {
                 return false}
@@ -204,16 +216,32 @@ class clsData_1x1 {
         this.headers[this.headers.indexOf(old)] = neww
     }
 
-    HeaderIndex(headerName) { // test
-        assert(this.headers.includes(headerName), headerName + " is not in headers")
-
-        return this.headers.indexOf(headerName)
+    HeaderIndex(headerName) {
+        assert(typeof headerName === 'string', headerName + " is not of type string")
+        let headerNamePure = this._headerNamePure(headerName)
+        if (!this.headers.includes(headerNamePure)) {
+            return -1
+        }
+        return this.headers.indexOf(headerNamePure)
     }
 
-    HeaderValue(headerName) { // test
+    HeadersRaw(headerName = null) {
+        let ret = ""
+        if (headerName == null) {
+            ret = [] 
+            for (let i = 0; i<this.headers.length; i++)
+            if(this.headersConfig[i] === "") {
+                ret.push(this.headers[i])
+            } else {
+                ret.push(this.headers[i] + " [" + this.headersConfig[i] + "]")
+            }
+                
+            return ret}
+
+        assert(typeof headerName === 'string', headerName + " is not of type string")
         assert(this.headers.includes(headerName), headerName + " is not in headers")
         let idx = this.HeaderIndex(headerName)
-        let ret = ""
+        ret = ""
         if (this.headersConfig[idx] == "") {
             ret = this.headers[idx]
         } else {
@@ -222,8 +250,30 @@ class clsData_1x1 {
         return ret
     }
 
+    HeadersConfig(headerName = null) {
+        if (headerName == null) {
+            return this.headersConfig}
+
+        assert(typeof headerName === 'string', headerName + " is not of type string")
+        assert(this.headers.includes(headerName), headerName + " is not in headers")
+        
+        let idx = this.HeaderIndex(headerName)
+        return this.headersConfig[idx]
+    }
+
+    _headerNamePure(headerName) {
+        assert(typeof headerName === 'string', headerName + " is not of type string")
+
+        if (this._HeaderHasConfig(headerName)) {
+            return headerName.substring(0,headerName.indexOf(" ["))
+        } else {
+            return headerName
+        }
+
+    }
+
     _HeaderHasConfig(header) {
-        if (header.includes("[") && header.includes("]")) {
+        if (header.indexOf("[")>-1 && header.charAt(header.length - 1) === "]") {
             return true
         }
         return false
@@ -241,12 +291,15 @@ function test_clsData_1x1() {
     test_clsData_1x1_RemoveRow()
     test_clsData_1x1_AddCol()
     test_clsData_1x1_RemoveCol()
+    test_clsData_1x1_IsColsSubset()
     test_clsData_1x1_ColAsList()
     test_clsData_1x1_Subset()
-    test_clsData_1x1__byVal()
     test_clsData_1x1_RenameCol()
+    test_clsData_1x1_HeaderIndex() 
+    test_clsData_1x1__headerNamePure()
+    test_clsData_1x1_HeadersRaw_HeadersConfig()
 
-    return 25 // 25 assertions in this file (and should all be catched)
+    return 32 // 32 assertions in this file (and should all be catched)
 }
 
 
@@ -254,20 +307,20 @@ function test_clsData_1x1_Init() {
     let fname = arguments.callee.name;
     datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
 
-    assertEqualList(datta.headers,["A"], fname)
-    assertEqualList(datta.data[0],["Hallo"], fname)
-    assertEqualList(datta.data[1],["Welt"], fname)
+    testEqualList(datta.headers,["A"], fname)
+    testEqualList(datta.data[0],["Hallo"], fname)
+    testEqualList(datta.data[1],["Welt"], fname)
 
     datta2 = new clsData_1x1(datta.headers, datta.data)
     datta.headers[0] = "Z"          // This should have no effect.
     datta.data[0] = ["Mario"]       // Datta2 is a complete new data set. No reference
-    assertEqualList(datta2.headers,["A"], fname)
-    assertEqualList(datta2.data[0],["Hallo"], fname)
-    assertEqualList(datta2.data[1],["Welt"], fname)
+    testEqualList(datta2.headers,["A"], fname)
+    testEqualList(datta2.data[0],["Hallo"], fname)
+    testEqualList(datta2.data[1],["Welt"], fname)
 
     datta3 = new clsData_1x1(["A", "B [config]"], [["Hallo", "Welt"], ["Super", "Mario"]])
-    assertEqualList(datta3.headers,["A", "B"], fname)
-    assertEqualList(datta3.headersConfig,["", "config"], fname)
+    testEqualList(datta3.headers,["A", "B"], fname)
+    testEqualList(datta3.headersConfig,["", "config"], fname)
 
     // test assertions
     assertCalls = [
@@ -277,30 +330,30 @@ function test_clsData_1x1_Init() {
         
     ]
     var foo = function (a,b,c,d) {new clsData_1x1(a,b,c,d)}
-    assertAssertions(foo, assertCalls)
+    testAssertions(foo, assertCalls)
 }
 
 function test_clsData_1x1_AddCol() {
     let fname = arguments.callee.name;
     let datta = new clsData_1x1()
     datta.AddCol("B", -1, ["Meine", "da drausen"])
-    assertEqualList(datta.headers,["B"], fname)
-    assertEqualList(datta.headers,["B"], fname)
-    assertEqualList(datta.data[0],["Meine"], fname)
-    assertEqualList(datta.data[1],["da drausen"], fname)
+    testEqualList(datta.headers,["B"], fname)
+    testEqualList(datta.headers,["B"], fname)
+    testEqualList(datta.data[0],["Meine"], fname)
+    testEqualList(datta.data[1],["da drausen"], fname)
 
     datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
     datta.AddCol("B", -1, ["Meine", "da drausen"])
-    assertEqualList(datta.headers,["A", "B"], fname)
-    assertEqualList(datta.data[0],["Hallo", "Meine"], fname)
-    assertEqualList(datta.data[1],["Welt", "da drausen"], fname)
+    testEqualList(datta.headers,["A", "B"], fname)
+    testEqualList(datta.data[0],["Hallo", "Meine"], fname)
+    testEqualList(datta.data[1],["Welt", "da drausen"], fname)
 
     datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
     datta.AddCol("B [lol]", -1, ["Meine", "da drausen"])
-    assertEqualList(datta.headers,["A", "B"], fname)
-    assertEqualList(datta.headersConfig,["", "lol"], fname)
-    assertEqualList(datta.data[0],["Hallo", "Meine"], fname)
-    assertEqualList(datta.data[1],["Welt", "da drausen"], fname)
+    testEqualList(datta.headers,["A", "B"], fname)
+    testEqualList(datta.headersConfig,["", "lol"], fname)
+    testEqualList(datta.data[0],["Hallo", "Meine"], fname)
+    testEqualList(datta.data[1],["Welt", "da drausen"], fname)
 
     // test assertions
     assertCalls = [
@@ -311,25 +364,25 @@ function test_clsData_1x1_AddCol() {
         
     ]
     var foo = function (a,b,c) {datta.AddCol(a,b,c)}
-    assertAssertions(foo, assertCalls)
+    testAssertions(foo, assertCalls)
 }
 
 function test_clsData_1x1_AddRow() {
     let fname = arguments.callee.name;
     datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
     datta.AddRow()
-    assertEqual(datta.len, 3, fname)
-    assertEqualList(datta.data,[["Hallo"], ["Welt"], [".."]], fname)
+    testEqual(datta.len, 3, fname)
+    testEqualList(datta.data,[["Hallo"], ["Welt"], [".."]], fname)
     datta = new clsData_1x1(["A", "B"], [["Hallo", "Welt"], ["Super", "Mario"]])
     datta.AddRow()
-    assertEqual(datta.len, 3, fname)
-    assertEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"], ["..", ".."]], fname)
+    testEqual(datta.len, 3, fname)
+    testEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"], ["..", ".."]], fname)
     datta.AddRow(1)
-    assertEqual(datta.len, 4, fname)
-    assertEqualList(datta.data,[["Hallo", "Welt"], ["..", ".."], ["Super", "Mario"], ["..", ".."]], fname)
+    testEqual(datta.len, 4, fname)
+    testEqualList(datta.data,[["Hallo", "Welt"], ["..", ".."], ["Super", "Mario"], ["..", ".."]], fname)
     datta.AddRow(4, ["Munich", "Oktoberfest"])
-    assertEqual(datta.len, 5, fname)
-    assertEqualList(datta.data,[["Hallo", "Welt"], ["..", ".."], ["Super", "Mario"], ["..", ".."], ["Munich", "Oktoberfest"]], fname)
+    testEqual(datta.len, 5, fname)
+    testEqualList(datta.data,[["Hallo", "Welt"], ["..", ".."], ["Super", "Mario"], ["..", ".."], ["Munich", "Oktoberfest"]], fname)
 
     // test assertions
     assertCalls = [
@@ -338,20 +391,20 @@ function test_clsData_1x1_AddRow() {
         {"a": 6, "b":  ["Super", "Mario"], "ermg": "atPosition above data length"},
     ]
     var foo = function (a,b) {datta.AddRow(a,b)}
-    assertAssertions(foo, assertCalls)
+    testAssertions(foo, assertCalls)
 }
 
 function test_clsData_1x1_RemoveRow() {
     let fname = arguments.callee.name;
     datta = new clsData_1x1(["A", "B"], [["Hallo", "Welt"], ["Super", "Mario"], ["Munich", "Oktoberfest"]])
     datta.RemoveRow()
-    assertEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"]], fname)
-    assertEqual(datta.len, 2, fname)
+    testEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"]], fname)
+    testEqual(datta.len, 2, fname)
 
     datta = new clsData_1x1(["A", "B"], [["Hallo", "Welt"], ["Super", "Mario"], ["Munich", "Oktoberfest"]])
     datta.RemoveRow(0)
-    assertEqualList(datta.data,[["Super", "Mario"], ["Munich", "Oktoberfest"]], fname)
-    assertEqual(datta.len, 2, fname)
+    testEqualList(datta.data,[["Super", "Mario"], ["Munich", "Oktoberfest"]], fname)
+    testEqual(datta.len, 2, fname)
 
     // test assertions
     assertCalls = [
@@ -359,31 +412,31 @@ function test_clsData_1x1_RemoveRow() {
         {"a": 5,  "ermg": "row above data length"}
     ]
     var foo = function (a,b) {datta.RemoveRow(a,b)}
-    assertAssertions(foo, assertCalls)
+    testAssertions(foo, assertCalls)
 }
 
 function test_clsData_1x1_RemoveCol() {
     let fname = arguments.callee.name;
     datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     datta.RemoveCol()
-    assertEqualList(datta.headers, ["A", "B"], fname)
-    assertEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"], ["Munich", "Oktoberfest"]], fname)
+    testEqualList(datta.headers, ["A", "B"], fname)
+    testEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"], ["Munich", "Oktoberfest"]], fname)
 
     datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     datta.RemoveCol(1)
-    assertEqualList(datta.headers, ["A", "C"], fname)
-    assertEqualList(datta.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
+    testEqualList(datta.headers, ["A", "C"], fname)
+    testEqualList(datta.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
 
     datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     datta.RemoveCol(-1, "A")
-    assertEqualList(datta.headers, ["B", "C"], fname)
-    assertEqualList(datta.data,[["Welt", "drausen"], ["Mario", "Land"], ["Oktoberfest", "Beer"]], fname)
+    testEqualList(datta.headers, ["B", "C"], fname)
+    testEqualList(datta.data,[["Welt", "drausen"], ["Mario", "Land"], ["Oktoberfest", "Beer"]], fname)
 
     datta = new clsData_1x1(["A [lol]", "B [lol]", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     datta.RemoveCol(-1, "A")
-    assertEqualList(datta.headers, ["B", "C"], fname)
-    assertEqualList(datta.headersConfig, ["lol", ""], fname)
-    assertEqualList(datta.data,[["Welt", "drausen"], ["Mario", "Land"], ["Oktoberfest", "Beer"]], fname)
+    testEqualList(datta.headers, ["B", "C"], fname)
+    testEqualList(datta.headersConfig, ["lol", ""], fname)
+    testEqualList(datta.data,[["Welt", "drausen"], ["Mario", "Land"], ["Oktoberfest", "Beer"]], fname)
 
     // test assertions
     assertCalls = [
@@ -393,51 +446,75 @@ function test_clsData_1x1_RemoveCol() {
         {"a": 1, "b": "B", "ermg": "col and colName are both defined. Define only one"},
     ]
     var foo = function (a,b) {datta.RemoveCol(a,b)}
-    assertAssertions(foo, assertCalls)
+    testAssertions(foo, assertCalls)
 }
 
-function test_clsData_1x1_Subset() {
+function test_clsData_1x1_Subset_Cols() {
     let fname = arguments.callee.name;
     let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     let datta2 = datta.Subset({cols:["A", "C"]})
-    assertEqualList(datta2.headers, ["A", "C"], fname)
-    assertEqualList(datta2.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
+    testEqualList(datta2.headers, ["A", "C"], fname)
+    testEqualList(datta2.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
 
     datta = new clsData_1x1(["A [lol]", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     datta2 = datta.Subset({cols:["A", "C"]})
-    assertEqualList(datta2.headers, ["A", "C"], fname)
-    assertEqualList(datta2.headersConfig, ["lol", ""], fname)
-    assertEqualList(datta2.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
+    testEqualList(datta2.headers, ["A", "C"], fname)
+    testEqualList(datta2.headersConfig, ["lol", ""], fname)
+    testEqualList(datta2.data,[["Hallo", "drausen"], ["Super", "Land"], ["Munich", "Beer"]], fname)
+}
 
+function test_clsData_1x1_Subset_Equals() {
+    let fname = arguments.callee.name;
     datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"], ["Bye", "Oktoberfest", "Beer"]])
     let valEq = {"A": ["Hallo"]} 
     datta2 = datta.Subset({valueEquals: valEq})
-    assertEqualList(datta2.headers, ["A", "B", "C"], fname)
-    assertEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Hallo", "Oktoberfest", "Beer"]], fname)
-    assertEqual(datta2.len, 2, fname)
+    testEqualList(datta2.headers, ["A", "B", "C"], fname)
+    testEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Hallo", "Oktoberfest", "Beer"]], fname)
+    testEqual(datta2.len, 2, fname)
 
     valEq = {"A": ["Hallo", "Super"]} 
     datta2 = datta.Subset({valueEquals: valEq})
-    assertEqualList(datta2.headers, ["A", "B", "C"], fname)
-    assertEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"]], fname)
-    assertEqual(datta2.len, 3, fname)
+    testEqualList(datta2.headers, ["A", "B", "C"], fname)
+    testEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"]], fname)
+    testEqual(datta2.len, 3, fname)
+}
 
+function test_clsData_1x1_Subset_Includes() {
+    let fname = arguments.callee.name;
     datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"]])
     let valIn = {"B": ["12"]} 
     datta2 = datta.Subset({valueIncludes: valIn})
-    assertEqualList(datta2.headers, ["A", "B", "C"], fname)
-    assertEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"]], fname)
-    assertEqual(datta2.len, 2, fname)
+    testEqualList(datta2.headers, ["A", "B", "C"], fname)
+    testEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"]], fname)
+    testEqual(datta2.len, 2, fname)
+}
 
-    valEq = {"A": ["Hallo"]};valIn = {"B": ["12"]} 
+function test_clsData_1x1_Subset() {
+    test_clsData_1x1_Subset_Cols()
+    test_clsData_1x1_Subset_Equals()
+    test_clsData_1x1_Subset_Includes()
+    let fname = arguments.callee.name;
+    datta = new clsData_1x1(["A", "B [some config]", "C"], [["Hallo", "Welt 12 Y", "drausen"], ["Super", "Mario 12 X", "Land"], ["Hallo", "Oktoberfest", "Beer"]])
+    
+    let valEq = {"A": ["Hallo"]}
+    let valIn = {"B": ["12"]} 
     datta2 = datta.Subset({valueEquals: valEq, valueIncludes: valIn})
-    assertEqualList(datta2.headers, ["A", "B", "C"], fname)
-    assertEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"]], fname)
-    assertEqual(datta2.len, 1, fname)
+    testEqualList(datta2.headers, ["A", "B", "C"], fname)
+    testEqualList(datta2.headersConfig, ["", "some config", ""], fname)
+    testEqualList(datta2.data,[["Hallo", "Welt 12 Y", "drausen"]], fname)
+    testEqual(datta2.len, 1, fname)
+
+    let cols = ["A", "B"]
+    datta3 = datta.Subset({cols: cols, valueEquals: valEq, valueIncludes: valIn})
+    testEqualList(datta3.headers, ["A", "B"], fname)
+    testEqualList(datta3.headersConfig, ["", "some config"], fname) // x
+    testEqualList(datta3.data,[["Hallo", "Welt 12 Y"]], fname)
+    testEqual(datta3.len, 1, fname)
+    
 
     // test assertions
     assertCalls = [
-        {"a": {cols: 1}, "ermg": "headers is not of type list"},
+        {"a": {cols: 1}, "ermg": "cols is not of type list"},
         {"a": {valueEquals: 1}, "ermg": "valueEquals is not of type object"},
         {"a": {valueEquals: {"Z": 1}}, "ermg": "valueEquals element Z not in headers"},
         {"a": {valueEquals: {"B": 1}}, "ermg": "valueEquals element B is not of type list"},
@@ -446,17 +523,35 @@ function test_clsData_1x1_Subset() {
         {"a": {valueIncludes: {"B": 1}}, "ermg": "valueIncludes element B is not of type list"},
     ]
     var foo = function (a,b) {datta.Subset(a)}
-    assertAssertions(foo, assertCalls)
+    testAssertions(foo, assertCalls)
 
 }
+
+function test_clsData_1x1_IsColsSubset() {
+    let fname = arguments.callee.name;
+    let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
+
+    testEqual(datta.IsColsSubset(["A"]), true, fname)
+    testEqual(datta.IsColsSubset(["A", "B"]), true, fname)
+    testEqual(datta.IsColsSubset(["B", "C"]), true, fname)
+    testEqual(datta.IsColsSubset(["B", "D"]), false, fname)
+
+    // test assertions
+        assertCalls = [
+            {"a": 1, "ermg": "1 is not of type string"},
+        ]
+        var foo = function (a,b) {datta.ColAsList(a)}
+        testAssertions(foo, assertCalls)
+}
+
 
 function test_clsData_1x1_ColAsList() {
     let fname = arguments.callee.name;
     let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     let values = datta.ColAsList("A")
-    assertEqualList(values, ["Hallo", "Super", "Munich"], fname)
-    assertEqual(datta.IsColsSubset(["B", "C"]), true, fname)
-    assertEqual(datta.IsColsSubset(["B", "D"]), false, fname)
+    testEqualList(values, ["Hallo", "Super", "Munich"], fname)
+    testEqual(datta.IsColsSubset(["B", "C"]), true, fname)
+    testEqual(datta.IsColsSubset(["B", "D"]), false, fname)
 
     // test assertions
         assertCalls = [
@@ -464,20 +559,70 @@ function test_clsData_1x1_ColAsList() {
             {"a": "D", "ermg": "D not in headers"},
         ]
         var foo = function (a,b) {datta.ColAsList(a)}
-        assertAssertions(foo, assertCalls)
+        testAssertions(foo, assertCalls)
 }
 
 function test_clsData_1x1_RenameCol() {
     let fname = arguments.callee.name;
     let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
     datta.RenameCol("A", "XYZ")
-    assertEqualList(datta.headers, ["XYZ", "B", "C"], fname)
+    testEqualList(datta.headers, ["XYZ", "B", "C"], fname)
 
     // test assertions
         assertCalls = [
             {"a": "X", b: "A", "ermg": "X is not in headers"},
         ]
         var foo = function (a,b) {datta.RenameCol(a)}
-        assertAssertions(foo, assertCalls)
+        testAssertions(foo, assertCalls)
 }
 
+function test_clsData_1x1_HeaderIndex() {
+    let fname = arguments.callee.name;
+    let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
+
+    testEqual(datta.HeaderIndex("A"), 0, fname)
+    testEqual(datta.HeaderIndex("C"), 2, fname)
+    testEqual(datta.HeaderIndex("A [dont care]"), 0, fname)
+
+    // test assertions
+        assertCalls = [
+            {"a": 1, "ermg": "1 is not of type string"},
+        ]
+        var foo = function (a,b) {datta.HeaderIndex(a)}
+        testAssertions(foo, assertCalls)
+}
+
+function test_clsData_1x1_HeadersRaw_HeadersConfig() {
+    let fname = arguments.callee.name;
+    let datta = new clsData_1x1(["A", "B", "C [some config]"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
+
+    testEqualList(datta.headers, ["A", "B", "C"], fname)
+    testEqualList(datta.headersConfig, ["", "", "some config"], fname)
+    testEqualList(datta.HeadersRaw(), ["A", "B", "C [some config]"], fname)
+    testEqual(datta.HeadersRaw("A"), "A", fname)
+    testEqual(datta.HeadersRaw("C"), "C [some config]", fname)
+    testEqualList(datta.HeadersConfig(), ["", "", "some config"], fname)
+    testEqual(datta.HeadersConfig("A"), "", fname)
+    testEqual(datta.HeadersConfig("C"), "some config", fname)
+
+    // test assertions
+        assertCalls = [
+            {"a": 1, "ermg": "1 is not of type string"},
+            {"a": "D", "ermg": "D is not in headers"},
+        ]
+        var foo = function (a,b) {datta.HeadersRaw(a)}
+        testAssertions(foo, assertCalls)
+        var foo = function (a,b) {datta.HeadersConfig(a)}
+        testAssertions(foo, assertCalls)
+}
+
+function test_clsData_1x1__headerNamePure() {
+    let fname = arguments.callee.name;
+    let datta = new clsData_1x1(["A", "B", "C"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
+
+    let a = "test A"
+    let b = "test B [dont care]"
+
+    testEqual("test A", datta._headerNamePure(a), fname)
+    testEqual("test B", datta._headerNamePure(b), fname)
+}

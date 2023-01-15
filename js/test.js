@@ -3,6 +3,7 @@ function test() {
     // console.group ('All tests');  
     console.groupCollapsed('Test Results')
     assertions_in_files += test_clsData_1x1() 
+    assertions_in_files += test_byVal()
     // assertions_in_files += test_Click()
     console.groupEnd ();
     console.log(lastlog_count + " x " + lastlog)
@@ -61,14 +62,16 @@ function test_failed(fname) {
     return -1
 }
 
-function assertEqual(a,b,fname) {
+function testEqual(a,b,fname) {
+    if ((Array.isArray(a) || Array.isArray(b))) {
+        return test_failed(fname)}
     if (a == b) {
         return test_passed(fname)} 
     else {
         return test_failed(fname)}
 }
 
-function assertEqualList(a,b,fname) {
+function testEqualList(a,b,fname) {
     if (!(Array.isArray(a) && Array.isArray(a))) {
         return test_failed(fname)}
     if (!(a.length == b.length)) {
@@ -86,32 +89,8 @@ function assertEqualList(a,b,fname) {
     return test_passed(fname)
 }
 
-function assertIncludesArray(FullText,includesArray,fname) {
-    let flag = true;
-    for (let i = 0; i< includesArray.length; i++){  
-        if (!FullText.includes(includesArray[i])) {
-            flag = false;}
-        }
-    if (flag) {           
-        test_passed(fname)} 
-    else {
-        test_failed(fname)}
-}
 
-function NassertIncludesArray(FullText,includesArray,fname) {
-    let flag = true;
-    for (let i = 0; i< includesArray.length; i++){  
-        if (FullText.includes(includesArray[i])) {
-            flag = false;}
-        }
-    if (flag) {           
-        test_passed(fname)} 
-    else {
-        test_failed(fname)}
-}
-
-
-function assertAssertions(foo, assertCalls) {
+function testAssertions(foo, assertCalls) {
     for (let aC of assertCalls) {
         assertFlag = false
         try {

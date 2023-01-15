@@ -44,12 +44,6 @@ function RetStringBetween(text, fromStr, toStr = "", ignoreBlankAtBorders = fals
      * strings not found in text are interpreted as "" / empty strings
      * 
      */
-    // var idx1 = text.indexOf(fromStr);
-    // if (idx1 == -1) {fromStr=""}
-    // idx1 = text.indexOf(fromStr);
-    // var idx2 = text.indexOf(toStr, fromIndex = idx1);
-    // if (idx2 == -1) {toStr=""}
-    // var idx2 = text.indexOf(toStr, fromIndex = idx1);
 
     var [idx1, idx2, len1, len2] = _RetIdxFromTextInString(text, fromStr, toStr, ignoreBlankAtBorders)
 
@@ -122,7 +116,6 @@ function dicct(keys, vals) {
         ret[keys[i]] = vals[i]
     }
     return ret
-
 }
 
 function _byVal(data) {
@@ -146,6 +139,19 @@ function assert(condition, message) {
         throw new Error(message || "Assertion failed");
     }
 }
+
+function assertIsList(elements, elementsName = "") {
+    let message = ""
+    if (elementsName == "") {
+        message = "not of type list"
+     } else {
+        message = elementsName + " is not of type list"
+    }
+    if (!Array.isArray(elements)) {
+        throw new Error(message);
+    }
+}
+
 
 // ################################################################
 // Prototype extentions                                           #
@@ -288,15 +294,15 @@ function DivIsDescendantOf (element, targetID, iterations = 10) {
 // test                                                           #
 // ################################################################
 
-function test_clsData_1x1__byVal() {
+function test_byVal() {
     let fname = arguments.callee.name;
     liste = ["Super", "Mario", "Land"]
     listeA = _byVal(liste)
     listeB = liste
 
     liste[1] = "Sonic"
-    assertEqualList(listeA, ["Super", "Mario", "Land"], fname)
-    assertEqualList(listeB, ["Super", "Sonic", "Land"], fname)
+    testEqualList(listeA, ["Super", "Mario", "Land"], fname)
+    testEqualList(listeB, ["Super", "Sonic", "Land"], fname)
 
     liste = ["Super", "Mario", "Land"]
     liste = [liste, liste, liste]
@@ -304,6 +310,8 @@ function test_clsData_1x1__byVal() {
     listeB = liste
 
     liste[1][1] = "Sonic"
-    assertEqualList(listeA, [["Super", "Mario", "Land"], ["Super", "Mario", "Land"], ["Super", "Mario", "Land"]], fname)
-    assertEqualList(listeB, [["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"]], fname)
+    testEqualList(listeA, [["Super", "Mario", "Land"], ["Super", "Mario", "Land"], ["Super", "Mario", "Land"]], fname)
+    testEqualList(listeB, [["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"]], fname)
+
+    return 0
 }
