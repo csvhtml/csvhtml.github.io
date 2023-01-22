@@ -134,8 +134,8 @@ class clsCSV {
 
     AddRow() {
         let atPosition = this.ActiveRowIndex()
-        if (atPosition == -1) {atPosition = this.len}
         let newRow = this.NewRowDefault(atPosition, this.mode.GetModeValueEquals());
+        if (atPosition == -1) {atPosition = this.len}
         this.data1x1.AddRow(atPosition, newRow)
         // Update Numbering after atPosition
         for (let i = atPosition;i< this.data1x1.len-1;i++) {
@@ -200,21 +200,24 @@ class clsCSV {
     NewRowDefault(atPosition, SetCols = {}) {
         let newRow = []
         if (atPosition == -1) {
-            newRow.push(this.len+1)
-        } else {
-            newRow.push(atPosition+1)}
-        
-        for (let i = 1; i < this.data1x1.headers.length; i++) {
-            let flag = true
-            for (let col of Object.keys(SetCols)) {
-                if (this.data1x1.headers[i] == col) {
-                    newRow.push(String(SetCols[col]))
-                    flag = false
-                    break}}
-            if (flag) {
-                newRow.push('..')
+            newRow.push(String(this.len+1))
+            for (let i = 1; i < this.data1x1.headers.length; i++) {
+                let flag = true
+                for (let col of Object.keys(SetCols)) {
+                    if (this.data1x1.headers[i] == col) {
+                        newRow.push(String(SetCols[col]))
+                        flag = false
+                        break}}
+                if (flag) {
+                    newRow.push('..')
+                }
             }
+        } else {
+            newRow.push(String(atPosition+1))
+            for (let i = 1; i < this.data1x1.headers.length; i++) {
+                newRow.push(String(this.data1x1.data[atPosition-1][i]))}
         }
+
         return newRow
     }
 
