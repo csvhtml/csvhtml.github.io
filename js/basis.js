@@ -245,17 +245,19 @@ function ElemementsWithOnClickFunctions (mode="") {
     return ret
 }
 
-function ElemementsWithSubStringInID (fix = "", mode="") {
+function ElemementsWithSubStringInID (fixx =  [], mode="") {
     // let allElements = document.getElementsByTagName('*');
     let allElements = document.getElementsByTagName('*');
     let ret = []
     for ( var i = 0; i<allElements.length; i++ ) {
-        if ( allElements[i].id.includes(fix)) {
-            if (mode == "") {
-                ret.push(allElements[i])}
-            if (mode == "id") {
-                assert(allElements[i].id != "")
-                ret.push(allElements[i].id)}
+        for (fix of fixx) {
+            if (allElements[i].id.includes(fix)) {
+                if (mode == "") {
+                    ret.push(allElements[i])}
+                if (mode == "id") {
+                    assert(allElements[i].id != "")
+                    ret.push(allElements[i].id)}
+            }
         }
     }
     return ret

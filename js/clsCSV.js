@@ -137,7 +137,21 @@ class clsCSV {
         if (atPosition == -1) {atPosition = this.len}
         let newRow = this.NewRowDefault(atPosition, this.mode.GetModeValueEquals());
         this.data1x1.AddRow(atPosition, newRow)
-        // Update Numbering
+        // Update Numbering after atPosition
+        for (let i = atPosition;i< this.data1x1.len-1;i++) {
+            this.data1x1.data[i+1][0] = i + 2}
+        this.Print();
+    }
+
+    AddRowDict(dict = {}) {
+        let atPosition = this.ActiveRowIndex()
+        if (atPosition == -1) {
+            atPosition = this.len
+            if (this.data1x1.headers.includes("No.")) {
+                dict["No."] = atPosition+1}
+            }
+        this.data1x1.AddRowDict(atPosition, dict)
+        // Update Numbering after atPosition
         for (let i = atPosition;i< this.data1x1.len-1;i++) {
             this.data1x1.data[i+1][0] = i + 2}
         this.Print();
@@ -229,7 +243,7 @@ class clsCSV {
         let divID = ReturnParentUntilID(div).id
         
         let onclickDivs = ElemementsWithOnClickFunctions("id")
-        let directlinkDivs = ElemementsWithSubStringInID("-link", "id")
+        let directlinkDivs = ElemementsWithSubStringInID(["-link", "File-"], "id")
         if (this.layout.IDIncludes(divID, onclickDivs.concat(directlinkDivs))){
             return}
         
@@ -509,6 +523,13 @@ class clsCSV {
         return tmp
     }
 
+    CellValue(rowIndex, colName) {
+        let j = this.data1x1.headers.indexOf(colName)
+        if (j > -1) {
+            return this.data1x1.data[rowIndex][j]
+        }
+        return null
+    }
 
     Row_Down() {
         let row = parseInt(RetStringBetween(this.layout.row_highlight[0], "row:", "!"))
