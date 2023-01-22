@@ -1,12 +1,18 @@
+var cCurrentLoadendDivID = ""
+var cCurrentLoadendFileName = ""
+var cFunctionToCallAfterLoadend = undefined
+
 // ################################################################
 // DropDown                                                       #
 // ################################################################
 
 class clsDropDown {
     constructor() {
-
     }
-    
+
+// ################################################################
+// Drop Down                                                      #
+// ################################################################
     AddDropDownToDiv(targetDiv, ddName, ddPrefix, ddElements, ddFunctions){
         assert(ddElements.length == ddFunctions.length)
         
@@ -18,7 +24,22 @@ class clsDropDown {
             ret += '<a id="' + ddPrefix + 'dd-' + ddElements[i] + '" class="dropdown-item" href="#" onclick="' + ddFunctions[i] + '">' + ddElements[i] + '</a>'}
         targetDiv.innerHTML += ret
     }
+
+    AddInputFileAfterDiv({FormdivID = "", EgoID = "", FunctionToCall, type = "file", className = "form-control", accept = ".pdf"}) {
+        let input = document.createElement("input")
+        input.id = EgoID
+        input.type = type
+        input.className = className
+        input.accept = accept
+        document.getElementById(FormdivID).append(input)
+        cFunctionToCallAfterLoadend = function (a) {FunctionToCall(a)}
+        document.getElementById(EgoID).addEventListener('change', ReadFile)
+    }
 }
+
+// ################################################################
+// Drop Down                                                      #
+// ################################################################
 
 function ddToggle(divID) {
     var x = document.getElementById(divID);
@@ -29,6 +50,22 @@ function ddToggle(divID) {
     }
   }
 
+// ################################################################
+// Input File                                                     #
+// ################################################################
+
+const ReadFile = (event)  => {
+    cCurrentLoadendDivID = event.srcElement.id
+
+    let divFile = document.getElementById(event.srcElement.id);
+    cReader.readAsText(divFile.files[0]);
+    cCurrentLoadendFileName = divFile.value.split("\\").slice(-1)[0]
+    cReader.addEventListener("loadend", ReaderResults);
+  }
+
+const ReaderResults = (event)  => {
+    cFunctionToCallAfterLoadend(cCurrentLoadendDivID)
+  }
 
 
 // ################################################################

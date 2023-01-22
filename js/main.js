@@ -44,7 +44,7 @@ const KeyUp = (event) => {
 // ################################################################
 // Init                                                           #
 // ################################################################
-
+const cReader = new FileReader();
 const ecsv = new clsCSV({egoname : "ecsv"});
 const SS = new clsSiteSearch();
 const DD = new clsDropDown();
@@ -65,6 +65,8 @@ const MODE = new clsModes();
     DD.AddDropDownToDiv(document.getElementById("nav-Mode"), "mode", "nav-", MODE.GetModes(), MODE.GetModesOnClick())
     DD.AddDropDownToDiv(document.getElementById("nav-Features"), "feature", "nav-", ["(Un-)Link", "Sum"], ["DDFeatures('toggle link')", "DDFeatures('sum')"])
     // DD.AddDropDownToDiv(document.getElementById("nav-Variants"), "variants", "nav-", ["memory"], ['SiteFeature_Memory()'])
+    DD.AddInputFileAfterDiv({"FormdivID": "form-csv", "EgoID": "File-csv", "accept":".csv", "FunctionToCall": function (a) {DDFileInput(a)}}) 
+    DD.AddInputFileAfterDiv({"FormdivID": "form-pdf", "EgoID": "File-pdf", "accept":".pdf", "FunctionToCall": function (a) {DDFileInput(a)}})     // alternavite to directly insert on index.
 })();
 
 
@@ -72,14 +74,16 @@ const MODE = new clsModes();
 // File Reader to load CSV file                                   #
 // ################################################################
 
-const cReader = new FileReader();
-const divFile = document.getElementById("File");
-divFile.addEventListener('change', ReadFile)
+// const cReader = new FileReader();
+// const divFile = document.getElementById("File");
+// divFile.addEventListener('change', ReadFile)
 
-function ReadFile () {
-    cReader.readAsText(divFile.files[0]);
-    cReader.addEventListener("loadend", _ResultToCSV);
-  }
+// function ReadFile () {
+//     let divFile = document.getElementById("File");
+//     cReader.readAsText(divFile.files[0]);
+//     cReader.addEventListener("loadend", _ResultToCSV);
+//   }
+
 function _ResultToCSV() {
     ecsv.ReadCSV(cReader.result);
     ecsv.fileLoaded = true
@@ -106,9 +110,11 @@ function download_saveAll() {
 }
 
 function download_saveData() {
-    let filename = divFile.value.split("\\").slice(-1)[0]
-    let text = ecsv._AsCSV()
-    _download(filename, text)
+    // let filename = divFile.value.split("\\").slice(-1)[0]
+    // let filename = cCurrentLoadendFileName
+    // let text = ecsv._AsCSV()
+    // _download(filename, text)
+    _download(cCurrentLoadendFileName, ecsv._AsCSV())
 }
 
 function download_saveConfig() {
@@ -134,6 +140,11 @@ function DDMode(mode) {
 function DDFeatures(mode) {
     if (mode == "toggle link") {ecsv.ToggleLink()} 
     if (mode == "sum") {ecsv.Feature_Sum()}
+}
+
+function DDFileInput(divID) {
+    if (divID == "File-csv") {_ResultToCSV()} 
+    if (divID == "File-pdf") {console.log("FileReader loaded")} 
 }
 
 // function SiteFeature_Memory() {

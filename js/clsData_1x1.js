@@ -59,6 +59,33 @@ class clsData_1x1 {
         this.len += 1
     }
 
+    AddRowDict(atPosition = -1, newRowDict = {}) {
+        assert(atPosition > -2, "atPosition index below -1")
+        assert(atPosition < this.len+1, "atPosition above data length")
+
+        let newRow = []
+        if (Object.keys(newRowDict).length === 0) {
+            for (let header of this.headers) {
+                newRow.push(ETY)}
+        } else {
+            let Keys = Object.keys(newRowDict)
+            for (let header of this.headers) {
+                if (Keys.includes(header)) {
+                    newRow.push(newRowDict[header])}
+                else {
+                    newRow.push(ETY)}
+                }
+            }
+        assert(newRow.length == this.headers.length, "values length not equal to data length")
+
+        if (atPosition == -1) {
+            this.data.push(newRow)
+        } else {
+            this.data.splice(atPosition, 0, newRow)
+        }
+        this.len += 1
+    }
+
     RemoveRow(row = -1) {
         assert(row > -2, "row index below -1")
         assert(row < this.len+1, "row above data length")
@@ -150,8 +177,9 @@ class clsData_1x1 {
         if (cols.length == 0) {
             cols = this.headers}
         for (let col of cols) {
-            ret.AddCol(col, -1, this.ColAsList(col))
-            let idx = this.HeaderIndex(col)
+            let headerNamePure = this._headerNamePure(col)
+            ret.AddCol(headerNamePure, -1, this.ColAsList(headerNamePure))
+            let idx = this.HeaderIndex(headerNamePure)
             ret.headersConfig[ret.headersConfig.length-1] = this.headersConfig[idx]
         }
         return ret
@@ -193,7 +221,8 @@ class clsData_1x1 {
     IsColsSubset(cols) {
         assert(Array.isArray(cols), "headers is not of type list")
         for (let col of cols) {
-            if (!this.headers.includes(col)) {
+            let headerNamePure = this._headerNamePure(col)
+            if (!this.headers.includes(headerNamePure)) {
                 return false}
         }
         return true
@@ -288,6 +317,7 @@ class clsData_1x1 {
 function test_clsData_1x1() {
     test_clsData_1x1_Init()
     test_clsData_1x1_AddRow()
+    test_clsData_1x1_AddRowDict()
     test_clsData_1x1_RemoveRow()
     test_clsData_1x1_AddCol()
     test_clsData_1x1_RemoveCol()
@@ -298,6 +328,7 @@ function test_clsData_1x1() {
     test_clsData_1x1_HeaderIndex() 
     test_clsData_1x1__headerNamePure()
     test_clsData_1x1_HeadersRaw_HeadersConfig()
+    test_clsData_1x1_IsColsSubset()
 
     return 32 // 32 assertions in this file (and should all be catched)
 }
@@ -383,6 +414,26 @@ function test_clsData_1x1_AddRow() {
     datta.AddRow(4, ["Munich", "Oktoberfest"])
     testEqual(datta.len, 5, fname)
     testEqualList(datta.data,[["Hallo", "Welt"], ["..", ".."], ["Super", "Mario"], ["..", ".."], ["Munich", "Oktoberfest"]], fname)
+
+    // test assertions
+    assertCalls = [
+        {"a": -1, "b":  ["Super", "Mario", "Land"], "ermg": "values length not equal to data length"},
+        {"a": -2, "b":  ["Super", "Mario"], "ermg": "atPosition index below -1"},
+        {"a": 6, "b":  ["Super", "Mario"], "ermg": "atPosition above data length"},
+    ]
+    var foo = function (a,b) {datta.AddRow(a,b)}
+    testAssertions(foo, assertCalls)
+}
+
+function test_clsData_1x1_AddRowDict() {
+    let fname = arguments.callee.name;
+    datta = new clsData_1x1(["A", "B"], [["Hallo", "Welt"], ["Super", "Mario"]])
+    datta.AddRowDict()
+    testEqual(datta.len, 3, fname)
+    testEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"], ["..", ".."]], fname)
+    datta.AddRowDict(-1, {"A": "new A value"})
+    testEqual(datta.len, 4, fname)
+    testEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"], ["..", ".."], ["new A value", ".."]], fname)
 
     // test assertions
     assertCalls = [
@@ -625,4 +676,17 @@ function test_clsData_1x1__headerNamePure() {
 
     testEqual("test A", datta._headerNamePure(a), fname)
     testEqual("test B", datta._headerNamePure(b), fname)
+}
+
+function test_clsData_1x1_IsColsSubset() {
+    let fname = arguments.callee.name;
+    let datta = new clsData_1x1(["A", "B", "C [some config]"], [["Hallo", "Welt", "drausen"], ["Super", "Mario", "Land"], ["Munich", "Oktoberfest", "Beer"]])
+
+    let a = ["A", "C [some config]"]
+    let b = ["A", "C"]
+    let c = ["A", "D"]
+
+    testEqual(datta.IsColsSubset(a), true, fname)
+    testEqual(datta.IsColsSubset(b), true, fname)
+    testEqual(datta.IsColsSubset(c), false, fname)
 }
