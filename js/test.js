@@ -4,6 +4,7 @@ function test() {
     console.groupCollapsed('Test Results')
     assertions_in_files += test_clsData_1x1() 
     assertions_in_files += test_byVal()
+    assertions_in_files += test_clsCSV_ReadWrite()
     // assertions_in_files += test_Click()
     console.groupEnd ();
     console.log(lastlog_count + " x " + lastlog)
@@ -78,7 +79,9 @@ function testEqualList(a,b,fname) {
         return test_failed(fname)}
     for (let i = 0; i< a.length; i++) {
         if (Array.isArray(a[i]) && Array.isArray(b[i])) {
-            for (let j = 0; j< a.length; j++) {
+            if (!(a[i].length == b[i].length)) {
+                return test_failed(fname)}
+            for (let j = 0; j< a[i].length; j++) {
                 if (a[i][j] != b[i][j]) {
                     return test_failed(fname)}}
         } else {
