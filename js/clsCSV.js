@@ -26,6 +26,7 @@ class clsCSV {
         this.mode = new clsModes()
         this.fileLoaded = false
         this.name = egoname
+        this.ReadWrite = new clsCSV_ReadWrite()
         this.layout = new clsCSVLayout()
         this.userinput = new clsUserInput()
         this.data1x1 = new clsData_1x1()
@@ -427,26 +428,7 @@ class clsCSV {
 
 
     _AsCSV(sep = ";") {
-        let ret = '';
-        // headers
-        for (let header of this.data1x1.headers) {
-            ret += this.data1x1.HeadersRaw(header) + ';'}
-
-        ret = ret.slice(0, -1)
-        ret += "\n"
-        //rows
-        for (let row of this.data1x1.data) {
-            for (let cell of row) {
-                if (String(cell).includes("\r")) {
-                    // make mult-line readable for xls
-                    cell = '"' + cell + '"'
-                    cell = cell.replace(new RegExp('\n', "g") , '\r')  // use \r for in cell new line
-                }
-                ret += cell + ';'}
-            ret = ret.slice(0, -1) // remove last seperator. open: length of seperator
-            ret += "\n"
-        }
-        return ret;
+        return this.ReadWrite.WriteToText(this.data1x1.headers,this.data1x1.data,sep)
   }
 
     _ConfigAsCSVRow(sep = ";") {

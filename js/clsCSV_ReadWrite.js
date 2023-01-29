@@ -1,5 +1,5 @@
 class clsCSV_ReadWrite {
-    constructor (csvtext, delimiter = ";") {
+    constructor (csvtext = "", delimiter = ";") {
         this.fulltextraw = ""
         this.headerraw = ""
         this.dataraw = ""
@@ -10,10 +10,13 @@ class clsCSV_ReadWrite {
         this.datalist2D = []
 
         this.DataFine = ""
-        this.Read(csvtext,delimiter)
+        if (csvtext != "") {
+            this.ReadfromText(csvtext,delimiter)
+        }
+
     }
 
-    Read(csvtext, delimiter = ";") {
+    ReadfromText(csvtext, delimiter = ";") {
         this.fulltextraw = csvtext
         this.fulltextfine = this._ReturnFormatText(csvtext, delimiter)
         let str = this.fulltextfine
@@ -28,6 +31,31 @@ class clsCSV_ReadWrite {
         }
     }
 
+    WriteToText(headersList, DataList2D, delimiter = ";") {
+        let ret = '';
+        // headers
+        for (let header of headersList) {
+            ret += header + ';'}
+        // ret = ret.slice(0, -1)
+        // ret += "\n"
+        ret = this._Chr10AtEnd(ret)
+
+        //rows
+        for (let row of DataList2D) {
+            for (let cell of row) {
+                if (String(cell).includes("\r")) {
+                    // make mult-line readable for xls
+                    cell = '"' + cell + '"'
+                    cell = cell.replace(new RegExp('\n', "g") , '\r')  // use \r for in cell new line
+                }
+                ret += cell + ';'}
+            ret = this._Chr10AtEnd(ret)
+            // ret = ret.slice(0, -1) // remove last seperator. open: length of seperator
+            // ret += "\n"
+        }
+        return ret;
+    }
+
     _ReturnFormatText(text, delimiter)  {
         let ret = text
         ret = this._ReturnFormatText_Chr10Chr13(ret, delimiter)
@@ -39,6 +67,13 @@ class clsCSV_ReadWrite {
         str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     // '"' used to make csv xls readable. Not used here
         str = str.replace(new RegExp(delimiter + '"', "g") , delimiter)     // '"' used to make csv xls readable. Not used here
         return str
+    }
+
+    _Chr10AtEnd(text) {
+        let ret = text
+        ret = ret.slice(0, -1) // remove last seperator. open: length of seperator
+        ret = ret + "\n"
+        return ret
     }
 
     Header_Raw() {
