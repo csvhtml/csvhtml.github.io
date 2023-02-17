@@ -45,11 +45,12 @@ const KeyUp = (event) => {
 // Init                                                           #
 // ################################################################
 const cReader = new FileReader();
-const ecsv = new clsCSV({egoname : "ecsv"});
+const ecsv = new clsCSV({egoname : "ecsv", TargetDivID : "MyCSV"});
+// const Sidecsv = new clsCSV({egoname : "side", TargetDivID : "MySidebar"});
 const SS = new clsSiteSearch();
 const DD = new clsDropDown();
-const MEM = new clsMemory();
-const MODE = new clsModes();
+// const MEM = new clsMemory();
+const MODE = new clsModes(); // only needed for dropdown list consistency
 
 
 (function () {
@@ -74,10 +75,13 @@ const MODE = new clsModes();
 // ################################################################
 
 function _ResultToCSV() {
-    ecsv.ReadCSV(cReader.result);
-    ecsv.fileLoaded = true
-    ecsv.Print();
-    ecsv.ToggleLink();
+    for (ele of [ecsv]) {
+        ele.ReadCSV(cReader.result);
+        ele.fileLoaded = true
+        ele.Print();
+        ele.ToggleLink();
+    }
+
   }
 
 
@@ -95,16 +99,8 @@ function _download(filename, text) {
     document.body.removeChild(pom);
 }
 
-function download_saveAll() {
-    alert("funtion not yet implemented")
-}
-
 function download_saveData() {
     _download(cCurrentLoadendFileName, ecsv._AsCSV())
-}
-
-function download_saveConfig() {
-    alert("funtion not yet implemented")
 }
 
 // ###############################################################################
@@ -130,7 +126,6 @@ function DDFeatures(mode) {
 
 function DDFileInput(divID) {
     if (divID == "File-csv") {_ResultToCSV()} 
-    if (divID == "File-pdf") {_AddRowFromFileName()} 
 }
 
 // function SiteFeature_Memory() {

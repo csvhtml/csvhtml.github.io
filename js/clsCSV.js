@@ -1,6 +1,3 @@
-const ID_DIVOUT = "ecsvDivOut"
-// const cDivOut = document.getElementById("ecsvDivOut");
-
 // ################################################################
 // class UserInput                                                #
 // ################################################################
@@ -13,21 +10,18 @@ class clsUserInput {
     }
 }
 
-
 // ################################################################
 // class CSV                                                      #
 // ################################################################
 
-// <div id="ecsvDivOut" style="height: 90vh">       # output element where csv data is printed
-
-
 class clsCSV {
-    constructor({csvtext = "", delimiter = ";", egoname = ''}) {
-        this.mode = new clsModes()
+    constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
         this.fileLoaded = false
         this.name = egoname
+        this.TargetDivID = TargetDivID
+        this.mode = new clsModes()
         this.ReadWrite = new clsCSV_ReadWrite()
-        this.layout = new clsCSVLayout()
+        this.layout = new clsCSVLayout({"TargetDivID": TargetDivID})
         this.userinput = new clsUserInput()
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
@@ -251,7 +245,7 @@ class clsCSV {
         if (this.layout.IDIncludes(divID, onclickDivs.concat(directlinkDivs))){
             return}
         
-        if (!this.layout.DivIsInsideECSV(divID) || this.layout.DivIsInsideECSV(divID) && divID.includes("ecsvDivOut")){
+        if (!this.layout.DivIsInsideECSV(divID) || this.layout.DivIsInsideECSV(divID) && divID.includes(this.TargetDivID)){
             this.layout.Unhighlight_All()
             this.Print()
             return}

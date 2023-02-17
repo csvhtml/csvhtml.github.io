@@ -3,7 +3,8 @@
 // ################################################################
 
 class clsCSVLayout {
-    constructor() {
+    constructor({TargetDivID = ""}) {
+        this.LayoutTargetDivID = TargetDivID
         this.cellIDs_highlight = [["", ""], ["", ""]]   // cells that shall be highlighted. fist value is the internal value. Second value is representing the current state of the  site. The secondvalue will be changed by Print()
         this.row_highlight = ["", ""]                   //Row that is currently selected. First is targeted value, second is currently displayed value and can only be changed by Print()
         this.col_highlight = ["", ""] 
@@ -61,7 +62,7 @@ class clsCSVLayout {
     ApplyHighlightToSite () {
         let hclass = "table-info"
         for (let row of this.row_highlight) {
-            if (row == ID_DIVOUT) {
+            if (row == this.LayoutTargetDivID) {
                 row = ""}
         }
 
@@ -129,7 +130,7 @@ class clsCSVLayout {
 
     _Print(headers, data, headersConfig) {   // or filtered
         // standard use case
-        var cDivOut = document.getElementById(ID_DIVOUT);
+        var cDivOut = document.getElementById(this.LayoutTargetDivID);
         let cols = ["No.", "Name", "Description", "url", "value", "Type", "Tags"]
         let widths = ["2", "15", "38", "15", "5", "5", "10"]
         for (let i = 0; i < len(widths); i++) {
@@ -266,7 +267,7 @@ class clsCSVLayout {
     
     DivIsInsideECSV(divID) {
         let element = document.getElementById(divID)
-        if (DivIsDescendantOf(element,"ecsvDivOut"))
+        if (DivIsDescendantOf(element,this.LayoutTargetDivID))
             {return true}
         return false
     }

@@ -11,9 +11,9 @@ class clsCard {
 
 
 class clsMemory {
-    constructor() {
+    constructor({TargetDivID = "ecsvDivOut"}) {
         // this.state = "off"
-        this.layout = new clsCSVLayout()
+        this.layout = new clsCSVLayout({"TargetDivID": TargetDivID})
         this.NamesUnique = null // unique list of elemenets the memory is made of
         this.Cards = null // elements on table in order of their appearance
     }
