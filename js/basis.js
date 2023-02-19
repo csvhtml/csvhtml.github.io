@@ -119,6 +119,7 @@ function dicct(keys, vals) {
 }
 
 function _byVal(data) {
+    // Creates a hard copy of a list
     let ret = data
     if (Array.isArray(data)) {
         ret = []
@@ -127,6 +128,26 @@ function _byVal(data) {
         }
     }
     return ret
+}
+
+function IsEqualList(a,b) {
+    if (!(Array.isArray(a) && Array.isArray(a))) {
+        return false}
+    if (!(a.length == b.length)) {
+        return false}
+    for (let i = 0; i< a.length; i++) {
+        if (Array.isArray(a[i]) && Array.isArray(b[i])) {
+            if (!(a[i].length == b[i].length)) {
+                return false}
+            for (let j = 0; j< a[i].length; j++) {
+                if (a[i][j] != b[i][j]) {
+                    return false}}
+        } else {
+            if (a[i] != b[i]) {
+                return false}}
+        }
+
+    return true
 }
 
 // ################################################################

@@ -15,7 +15,8 @@ class clsUserInput {
 // ################################################################
 
 class clsCSV {
-    constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
+    // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
+    constructor({egoname = '', TargetDivID = ""}) {
         this.fileLoaded = false
         this.name = egoname
         this.TargetDivID = TargetDivID
@@ -25,18 +26,24 @@ class clsCSV {
         this.userinput = new clsUserInput()
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
-        if (csvtext == "") {
-            this.data1x1.Init_Headers(this.mode.GetCols())
-            this.data1x1.data = this.mode.DefaultData()
-            this.data1x1.len = 1;
-            this._DataSynch()
-        } 
-        else {
-            assert(false)
-            this.ReadCSV(csvtext)}
-        
+        this.data1x1.Init_Headers(this.mode.GetCols())
+        this.data1x1.data = this.mode.DefaultData()
+        this.data1x1.len = 1;
+        this._DataSynch()
         this.sum = -1;          // sum = -1 inactive, sum >=0 sum is active
-        // Styles
+
+        // if (csvtext == "") {
+        //     this.data1x1.Init_Headers(this.mode.GetCols())
+        //     this.data1x1.data = this.mode.DefaultData()
+        //     this.data1x1.len = 1;
+        //     this._DataSynch()
+        // } 
+        // else {
+        //     assert(false)
+        //     this.ReadCSV(csvtext)}
+        
+        
+        // // Styles
         
         // this.printMode = 'full'
         this.filterValueEquals = {}  //"Type":[] (obsolete in future)
@@ -60,8 +67,17 @@ class clsCSV {
 
 
     Print() {
-        this._DataSynch()
-        this.layout._Print(this.headers, this.data, this.headersConfig)
+        if (this.mode.activeMode == "standard") {
+            this._DataSynch()
+            this.layout._Print(this.headers, this.data, this.headersConfig)
+        } else if (this.mode.activeMode == "sidebar") {
+            this._DataSynch()
+            this.layout._Print(["name"], this.data, this.headersConfig)
+        } else {
+            this._DataSynch()
+            this.layout._Print(["name"], this.data, this.headersConfig)
+        }
+
     }
 
     ReadCSV(csvtext, delimiter = ";" ) {

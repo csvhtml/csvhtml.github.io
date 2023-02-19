@@ -131,11 +131,7 @@ class clsCSVLayout {
     _Print(headers, data, headersConfig) {   // or filtered
         // standard use case
         var cDivOut = document.getElementById(this.LayoutTargetDivID);
-        let cols = ["No.", "Name", "Description", "url", "value", "Type", "Tags"]
-        let widths = ["2", "15", "38", "15", "5", "5", "10"]
-        for (let i = 0; i < len(widths); i++) {
-            widths[i] = 'style="width:' + widths[i] + '%"'}
-        let colswidth = dicct(cols, widths)
+        let colswidth = this._GetColsWidthDictionary(headers)
 
         cDivOut.innerHTML = this._AsHTMLTable(headers, headersConfig, colswidth, data)
         
@@ -153,6 +149,19 @@ class clsCSVLayout {
         this.ApplyHighlightToSite()
     }
 
+    _GetColsWidthDictionary(headers) {
+        let cols = ["No.", "Name", "Description", "url", "value", "Type", "Tags"]
+        let ret = {}
+        if (IsEqualList(headers,cols)) {
+            let widths = ["2", "15", "38", "15", "5", "5", "10"]
+            for (let i = 0; i < len(widths); i++) {
+                widths[i] = 'style="width:' + widths[i] + '%"'}
+            ret = dicct(cols, widths)
+        }
+        return ret
+
+    }
+
     
     _AsHTMLTable(cols, headersConfig, colswidth, rows) {
         let ret = '<table class="table"><thead><tr>';
@@ -167,14 +176,6 @@ class clsCSVLayout {
             ret += '</th>'
         }
         ret += '</tr></thead>'
-
-        // for (let header of cols) {
-        //     ret += '<th id = "header-' + header + '" class="ecsvtable col-' + header + '" '+ colswidth[header] +'>' + header
-        //     if (this.headers_dropdown.includes(header) ) {
-        //         ret += " " + this._svgText_ArrowDown(header)
-        //         ret += this.AddDropDownMenuFromValues(header)}
-        //     ret += '</th>'}
-        // ret += '</tr></thead>'
         
         //row body
         ret += '<tbody>'

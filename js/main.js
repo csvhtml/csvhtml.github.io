@@ -1,5 +1,21 @@
 // ################################################################
-// Events                                                         #
+// URL parameters                                                 #
+// ################################################################
+INDEX_SIDEBEAR = true
+const queryString = window.location.search
+const urlParams = new URLSearchParams(queryString)
+
+if (urlParams.has("sidebar")) {
+    if (urlParams.get("sidebar") == "false") {
+        INDEX_SIDEBEAR = false
+        document.getElementById("MySidebar").remove()
+        document.getElementById("MyCSV").classList.remove("col-10")
+        document.getElementById("MyCSV").classList.add("col-12")
+    }
+}
+
+// ################################################################
+// Mouse and KeyBoard Events                                      #
 // ################################################################
 var mousedownTime = new Date().getTime()
 var mouseupTime = new Date().getTime()
@@ -21,7 +37,7 @@ const MouseUp = (event) => {
     // things that shall only happen at click events (quick mouseclick)
     if (mouseupTime-mousedownTime<300) {
         ecsv.Click(event.srcElement)
-        MEM.Click(event.srcElement.id, ecsv.mode)
+        // MEM.Click(event.srcElement.id, ecsv.mode)
     }
     //things that shall onlyhappen at long clickevents
     else {
@@ -42,11 +58,14 @@ const KeyUp = (event) => {
     }
 
 // ################################################################
-// Init                                                           #
+// classes                                                        #
 // ################################################################
 const cReader = new FileReader();
 const ecsv = new clsCSV({egoname : "ecsv", TargetDivID : "MyCSV"});
-// const Sidecsv = new clsCSV({egoname : "side", TargetDivID : "MySidebar"});
+if (INDEX_SIDEBEAR) {
+    const Sidecsv = new clsCSV({egoname : "side", TargetDivID : "MySidebar"});
+}
+
 const SS = new clsSiteSearch();
 const DD = new clsDropDown();
 // const MEM = new clsMemory();
@@ -75,7 +94,9 @@ const MODE = new clsModes(); // only needed for dropdown list consistency
 // ################################################################
 
 function _ResultToCSV() {
-    for (ele of [ecsv]) {
+    looper = [ecsv]
+    if (INDEX_SIDEBEAR) {looper.push(Sidecsv)}
+    for (ele of looper) {
         ele.ReadCSV(cReader.result);
         ele.fileLoaded = true
         ele.Print();
