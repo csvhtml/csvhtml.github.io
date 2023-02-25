@@ -16,11 +16,11 @@ class clsUserInput {
 
 class clsCSV {
     // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
-    constructor({egoname = '', TargetDivID = ""}) {
+    constructor({egoname = '', TargetDivID = "", Mode = "standard"}) {
         this.fileLoaded = false
         this.name = egoname
         this.TargetDivID = TargetDivID
-        this.mode = new clsModes()
+        this.mode = new clsModes(Mode)
         this.ReadWrite = new clsCSV_ReadWrite()
         this.layout = new clsCSVLayout({"TargetDivID": TargetDivID})
         this.userinput = new clsUserInput()
@@ -52,6 +52,13 @@ class clsCSV {
 
         // this.filterTags = []
         // this.filterTypes = []
+        this.SetMode()
+        this.Print()
+    }
+
+    SetTargetDiv(TargetDivID) {
+        this.TargetDivID = TargetDivID
+        this.layout.LayoutTargetDivID = TargetDivID
         this.Print()
     }
 
@@ -67,15 +74,17 @@ class clsCSV {
 
 
     Print() {
-        if (this.mode.activeMode == "standard") {
-            this._DataSynch()
-            this.layout._Print(this.headers, this.data, this.headersConfig)
-        } else if (this.mode.activeMode == "sidebar") {
-            this._DataSynch()
-            this.layout._Print(["name"], this.data, this.headersConfig)
-        } else {
-            this._DataSynch()
-            this.layout._Print(["name"], this.data, this.headersConfig)
+        if (this.TargetDivID != "") {
+            if (this.mode.activeMode == "standard") {
+                this._DataSynch()
+                this.layout._Print(this.headers, this.data, this.headersConfig)
+            } else if (this.mode.activeMode == "NamesList") {
+                this._DataSynch()
+                this.layout._Print(["Name"], this.data, this.headersConfig)
+            } else {
+                this._DataSynch()
+                this.layout._Print(["name"], this.data, this.headersConfig)
+            }
         }
 
     }
@@ -106,28 +115,16 @@ class clsCSV {
         }
     }
 
-    SetMode(mode) {
-        let MODE = this.mode.modes[mode]
-        if (this.fileLoaded) {
-            if (this.data1x1.IsColsSubset(MODE["cols"])) {
-                this.mode.SetMode(mode)
-                this.filterValueEquals = MODE["valueEquals"]
-                this.filterValueIncludes = MODE["valueIncludes"]
-                this.filterCols = MODE["cols"]
-                return 0
-            } else {
-                console.log(MODE["cols"] + " are not in headers")
-                return -1
-            }
+    SetMode(mode = "") {
+        if (mode == "") {
+            mode = this.mode.activeMode
         } else {
-            this.mode.SetMode(mode)
-            this.data1x1.Init_Headers(this.mode.GetCols())
-            this.data1x1.data = this.mode.DefaultData()
-            this.data1x1.len = this.data1x1.data.length
-            this.filterValueEquals  = this.mode.GetModeValueEquals()
-            this.filterValueIncludes = this.mode.GetModeValueIncludes()
+            this.mode.activeMode = mode
         }
-
+        let MODE = this.mode.modes[mode]
+        this.filterValueEquals = MODE["valueEquals"]
+        this.filterValueIncludes = MODE["valueIncludes"]
+        this.filterCols = MODE["cols"]
 
     }
 

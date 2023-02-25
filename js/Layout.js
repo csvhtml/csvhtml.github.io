@@ -150,16 +150,16 @@ class clsCSVLayout {
     }
 
     _GetColsWidthDictionary(headers) {
-        let cols = ["No.", "Name", "Description", "url", "value", "Type", "Tags"]
-        let ret = {}
-        if (IsEqualList(headers,cols)) {
-            let widths = ["2", "15", "38", "15", "5", "5", "10"]
-            for (let i = 0; i < len(widths); i++) {
-                widths[i] = 'style="width:' + widths[i] + '%"'}
-            ret = dicct(cols, widths)
+        let widths = []
+        for (let header of headers) {
+            let w = "15"
+            if (header == "No.") {w = "2"}
+            if (header == "Name") {w = "15"}
+            if (header == "Description") {w = "38"}
+            widths.push('style="width:' + w + '%"')
         }
+        ret = dicct(headers, widths)
         return ret
-
     }
 
     

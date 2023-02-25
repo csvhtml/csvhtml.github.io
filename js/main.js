@@ -1,7 +1,7 @@
 // ################################################################
 // URL parameters                                                 #
 // ################################################################
-INDEX_SIDEBEAR = true
+var INDEX_SIDEBEAR = true
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 
@@ -62,9 +62,9 @@ const KeyUp = (event) => {
 // ################################################################
 const cReader = new FileReader();
 const ecsv = new clsCSV({egoname : "ecsv", TargetDivID : "MyCSV"});
-if (INDEX_SIDEBEAR) {
-    const Sidecsv = new clsCSV({egoname : "side", TargetDivID : "MySidebar"});
-}
+// const Sidecsv = new clsCSV({egoname : "side", TargetDivID : "MySidebar"});
+const Sidecsv = new clsCSV({egoname : "side", Mode: "NamesList"});
+if (INDEX_SIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}
 
 const SS = new clsSiteSearch();
 const DD = new clsDropDown();
