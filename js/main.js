@@ -36,7 +36,8 @@ const MouseUp = (event) => {
 
     // things that shall only happen at click events (quick mouseclick)
     if (mouseupTime-mousedownTime<300) {
-        ecsv.Click(event.srcElement)
+        Click(event.srcElement)
+        // ecsv.Click(event.srcElement)
         // MEM.Click(event.srcElement.id, ecsv.mode)
     }
     //things that shall onlyhappen at long clickevents
@@ -56,6 +57,11 @@ const KeyUp = (event) => {
         ecsv.InputFiled_AutoHeight();
         ecsv.ButtonClick(event);
     }
+
+function Click (divElement) {
+    ecsv.Click(divElement)
+    Sidecsv.Click(divElement)
+}
 
 // ################################################################
 // classes                                                        #

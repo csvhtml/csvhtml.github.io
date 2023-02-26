@@ -180,13 +180,14 @@ class clsCSVLayout {
         //row body
         ret += '<tbody>'
         //rows
-        var rowidx = -1;
+        var rowidx = "";
         // build data table
         for (let row of rows) {
             // rowidx += 1
-            rowidx = parseInt(row[0])-1
+            // rowidx = parseInt(row[0])-1
+            rowidx = row[0]  // "No." col
             var i = -1;
-                ret += '<tr id="row:' + rowidx + '!">';
+                ret += '<tr id="' + this._RowDivID({rowidx:rowidx}) + '">';
                 for (let cell of row) {
                     i += 1;
                     let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
@@ -233,7 +234,8 @@ class clsCSVLayout {
     HighlightRow(divID) {
         assert(divID.includes("R:") || "row:")
         this.Unhighlight_All()
-        this.row_highlight[0] = this.GetRowID(divID)
+        // this.row_highlight[0] = this.GetRowID(divID)
+        this.row_highlight[0] = this._RowDivID({cellID:divID})
     }
 
 
@@ -255,9 +257,9 @@ class clsCSVLayout {
         }
     }
 
-    GetRowID(divID) {
-        return "row:" + RetStringBetween(divID, "R:", "C:") + "!"
-    }
+    // GetRowID(divID) {
+    //     return "row:" + RetStringBetween(divID, "R:", "C:") + "!"
+    // }
 
     DivIsInsideNavbar(divID) {
         let element = document.getElementById(divID)
@@ -405,6 +407,18 @@ class clsCSVLayout {
             }
         }
         return ""
+    }
+
+    // Return RowDivID based on rowIdex or CellID
+    _RowDivID({rowidx= "", cellID = ""}) {
+        assert(rowidx||cellID)
+        assert(rowidx == "" || cellID == "")
+            
+        if (cellID) {
+            rowidx = RetStringBetween(cellID, "R:", "C:")
+        }
+        return '[' + this.LayoutTargetDivID + '] row:' + rowidx + '!'
+        
     }
     
 }

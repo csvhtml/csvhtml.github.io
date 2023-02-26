@@ -75,16 +75,8 @@ class clsCSV {
 
     Print() {
         if (this.TargetDivID != "") {
-            if (this.mode.activeMode == "standard") {
-                this._DataSynch()
-                this.layout._Print(this.headers, this.data, this.headersConfig)
-            } else if (this.mode.activeMode == "NamesList") {
-                this._DataSynch()
-                this.layout._Print(["Name"], this.data, this.headersConfig)
-            } else {
-                this._DataSynch()
-                this.layout._Print(["name"], this.data, this.headersConfig)
-            }
+            this._DataSynch()
+            this.layout._Print(this.headers, this.data, this.headersConfig)
         }
 
     }
@@ -114,7 +106,8 @@ class clsCSV {
                 this.data1x1.len +=1}
         }
     }
-
+    //SetMode: Applies layout configuration from mode to csv
+    
     SetMode(mode = "") {
         if (mode == "") {
             mode = this.mode.activeMode
@@ -274,7 +267,7 @@ class clsCSV {
             return}
 
         if (this.layout.DivIsInsideECSV(divID) && divID.includes("R:") && divID.includes("C:")) {
-            if (this.layout.GetRowID(divID) == this.layout.row_highlight[0]) {
+            if (this.layout._RowDivID({cellID:divID}) == this.layout.row_highlight[0]) {
                 this.Edit(divID) 
             } else {
                 this.layout.HighlightRow(divID)
