@@ -5,6 +5,10 @@ textarea {
     max-height: 500px;
 }
 
+body {
+    overflow: hidden;
+}
+
 table { 
     table-layout: fixed;
 }
@@ -27,3 +31,8 @@ td {
     background-color: #fff;
     border: rgb(200, 200, 200) solid 1pt;
 }
+
+.col{
+    overflow: auto;
+    height:90vh;
+  }

@@ -658,3 +658,11 @@ class clsCSV {
         console.log("Mouse over " + event.srcElement.id)
     }
 }
+
+function scrollToRow(row) {
+    var element = document.getElementById("[MyCSV] row:" + row + "!");
+    if(element) {
+        element.scrollIntoView()
+    }
+  }
+
