@@ -251,7 +251,8 @@ class clsCSV {
         if (this.layout.IDIncludes(divID, onclickDivs.concat(directlinkDivs))){
             return}
         
-        if (!this.layout.DivIsInsideECSV(divID) || this.layout.DivIsInsideECSV(divID) && divID.includes(this.TargetDivID)){
+        if (!this.layout.DivIsInsideECSV(divID)){
+        // if (!this.layout.DivIsInsideECSV(divID) || this.layout.DivIsInsideECSV(divID) && divID.includes(this.TargetDivID)){
             this.layout.Unhighlight_All()
             this.Print()
             return}

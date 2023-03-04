@@ -190,7 +190,8 @@ class clsCSVLayout {
                 ret += '<tr id="' + this._RowDivID({rowidx:rowidx}) + '">';
                 for (let cell of row) {
                     i += 1;
-                    let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
+                    // let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
+                    let id = this._CellDivID({rowIdx: rowidx,colIdx:i.toString(), cols:cols})
                     if (String(cell).includes("\r")) {
                         cell = cell.replace(new RegExp('\r', "g") , '<br>')  // use \r for in cell new line
                     }
@@ -417,8 +418,27 @@ class clsCSVLayout {
         if (cellID) {
             rowidx = RetStringBetween(cellID, "R:", "C:")
         }
-        return '[' + this.LayoutTargetDivID + '] row:' + rowidx + '!'
+        let egoname = '[' + this.LayoutTargetDivID + '] '
+        return egoname + 'row:' + rowidx + '!'
+        // return '[' + this.LayoutTargetDivID + '] row:' + rowidx + '!'
         
+    }
+
+        // Return CellDivID based on rowIdex and col or colIdx
+    _CellDivID({rowIdx= "", colIdx = "", col = "", cols = []}) {
+        assert(rowIdx)
+        assert(colIdx||col)
+        assert(colIdx == "" || col == "")
+        assert(cols.length>0)
+        
+        let egoname = '[' + this.LayoutTargetDivID + '] '
+        if (colIdx) {
+            return egoname + "R:" + rowIdx + "C:" + colIdx + "H:" + cols[colIdx]}
+        if (col) {
+            colIdx = cols.indexOf(col)
+            assert(colIdx>-1)
+            return egoname + "R:" + rowIdx + "C:" + colIdx + "H:" + col}
+        assert(false)
     }
     
 }
