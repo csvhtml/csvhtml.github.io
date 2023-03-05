@@ -68,7 +68,8 @@ function Click (divElement) {
         if (antwort["action"] == "HighlightRow") {
             ecsv.layout.HighlightRow(antwort["divID"])
             ecsv.Print()
-        // Scroll to View}
+        // Scroll to View
+            }
         }
     if (ecsv.DivIsDescendant(divElement)) {
         antwort = ecsv.Click(divElement)
