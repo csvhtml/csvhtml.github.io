@@ -243,29 +243,34 @@ class clsCSV {
         document.getElementById(this.name + "-input").select();
     }
 
+    DivIsDescendant(divID) {
+        return DivIsDescendantOf(divID, this.TargetDivID)
+    }
+
+
     Click(div) {
         let divID = ReturnParentUntilID(div).id
         
         let onclickDivs = ElemementsWithOnClickFunctions("id")
         let directlinkDivs = ElemementsWithSubStringInID(["-link", "File-"], "id")
         if (this.layout.IDIncludes(divID, onclickDivs.concat(directlinkDivs))){
-            return}
+            return this._Click_Answer()}
         
         if (!this.layout.DivIsInsideECSV(divID)){
         // if (!this.layout.DivIsInsideECSV(divID) || this.layout.DivIsInsideECSV(divID) && divID.includes(this.TargetDivID)){
             this.layout.Unhighlight_All()
             this.Print()
-            return}
+            return this._Click_Answer()}
 
         if (this.layout.DivIsInsideECSV(divID) && divID.includes("header-")){
             if (this.layout.col_highlight[0] == divID.replace("header", "col")) {
                 this.Edit_Header(divID) 
             } else {
                 this.layout.HighlightCol(divID)
-                this.Print()
+                this.Print() 
             }
 
-            return}
+            return this._Click_Answer()}
 
         if (this.layout.DivIsInsideECSV(divID) && divID.includes("R:") && divID.includes("C:")) {
             if (this.layout._RowDivID({cellID:divID}) == this.layout.row_highlight[0]) {
@@ -273,12 +278,26 @@ class clsCSV {
             } else {
                 this.layout.HighlightRow(divID)
                 this.Print()
+                return this._Click_Answer("HighlightRow", divID)
             }
-            return}
+            return this._Click_Answer()}
+        
+            return this._Click_Answer()
         
         
     }
 
+    _Click_Answer(lastAction = "", divID = "") {
+        let antwort = {"action": "", "divID": ""}
+        if (lastAction == "HighlightRow") {
+            if (this.mode.activeMode = "sidebar") {
+                divID = divID.split('] ')[1]
+                return {"action": lastAction, "divID": divID}
+            }
+        }
+        return antwort
+
+    }
 
     UnEdit(divID) {
         this.layout.cellIDs_highlight[0][0] = ""

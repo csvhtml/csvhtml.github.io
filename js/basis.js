@@ -306,6 +306,8 @@ function DivIsDescendantOf (element, targetID, iterations = 10) {
         }
         if (parent.id == targetID) {
             return true
+        } else if (parent.parentElement == undefined) {
+            return false // if parents are not fully traced... you dont know
         } else {
             parent = parent.parentElement}
     }

@@ -234,6 +234,9 @@ class clsCSVLayout {
 
     HighlightRow(divID) {
         assert(divID.includes("R:") || "row:")
+        if (divID.indexOf("[") == -1 && divID.indexOf("[") == -1) {
+            divID = "[" + this.LayoutTargetDivID + "] " + divID
+        }
         this.Unhighlight_All()
         // this.row_highlight[0] = this.GetRowID(divID)
         this.row_highlight[0] = this._RowDivID({cellID:divID})

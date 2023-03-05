@@ -59,9 +59,24 @@ const KeyUp = (event) => {
     }
 
 function Click (divElement) {
-    ecsv.Click(divElement)
-    Sidecsv.Click(divElement)
-}
+    if (!INDEX_SIDEBEAR) {
+        ecsv.Click(divElement)
+        return}
+    let antwort = {"action":"", "divID": ""}
+    if (Sidecsv.DivIsDescendant(divElement)) {
+        antwort = Sidecsv.Click(divElement)
+        if (antwort["action"] == "HighlightRow") {
+            ecsv.layout.HighlightRow(antwort["divID"])
+            ecsv.Print()
+        // Scroll to View}
+        }
+    if (ecsv.DivIsDescendant(divElement)) {
+        antwort = ecsv.Click(divElement)
+        if (antwort["action"] == "Highlightow") {
+            a = 1}
+        }
+
+    }
 
 // ################################################################
 // classes                                                        #
