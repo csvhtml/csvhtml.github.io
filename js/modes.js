@@ -5,7 +5,7 @@ class clsModes {
         this.activeMode = activeMode
         this.modes = {
             "standard": {cols:[], valueIncludes:{}},
-            "NamesList": {cols: ["No.","Name"], valueIncludes:{}},
+            "SIDEBAR": {cols: ["No.","Name"], valueIncludes:{}},
             "list": {cols:["No.", "Name", "url", "Type", "Tags [dropdown]"], valueIncludes:{"Type":["document"]}},
             "issues": {cols:["No.", "Name", "Description", "Type", "Tags [dropdown]"], valueIncludes:{"Type":["item"]}},
             // "memory": {cols:["A", "B", "C", "D", "E", "F"], valueIncludes:{}, cls: clsMMY}
@@ -16,12 +16,15 @@ class clsModes {
     GetModes() {
         let ret = []
         for (let key of Object.keys(this.modes)) {
-            ret.push(key)
+            if (!this.IsCapitalMode(key)) {
+                ret.push(key)}
         }
         return ret
     }
 
     SetMode(mode) {
+        if (this.IsCapitalMode(this.activeMode)) {
+            return}
         this.activeMode = mode
     }
 
@@ -38,7 +41,8 @@ class clsModes {
     GetModesOnClick() {
         let ret = []
         for (let key of Object.keys(this.modes)) {
-            ret.push("DDMode('" + key + "')")
+            if (!this.IsCapitalMode(key)) {
+                ret.push("DDMode('" + key + "')")}
         }
         return ret
     }
@@ -61,7 +65,7 @@ class clsModes {
         if (mode == "standard") {
             return [["1", "..", "..", "..", "..", "[]"]]
         }
-        if (mode == "NamesList") {
+        if (mode == "SIDEBAR") {
             return [["1", ".."]]
         }
         if (mode == "list") {
@@ -73,6 +77,13 @@ class clsModes {
         if (mode == "memory") {
             return this.modes["memory"]["cls"].DefautData()
         }
+    }
+
+    IsCapitalMode(mode) {
+        if (mode == "SIDEBAR") {
+            return true
+        }
+        return false
     }
 }
 

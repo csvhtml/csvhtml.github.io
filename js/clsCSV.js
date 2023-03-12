@@ -112,12 +112,13 @@ class clsCSV {
         if (mode == "") {
             mode = this.mode.activeMode
         } else {
-            this.mode.activeMode = mode
+            this.mode.SetMode(mode)
         }
-        let MODE = this.mode.modes[mode]
-        this.filterValueEquals = MODE["valueEquals"]
-        this.filterValueIncludes = MODE["valueIncludes"]
-        this.filterCols = MODE["cols"]
+        let MODE_Filter = this.mode.modes[mode]
+        let MODE_Cols = this.mode.modes[this.mode.activeMode]
+        this.filterValueEquals = MODE_Filter["valueEquals"]
+        this.filterValueIncludes = MODE_Filter["valueIncludes"]
+        this.filterCols = MODE_Cols["cols"]
 
     }
 
@@ -185,8 +186,25 @@ class clsCSV {
         }
     }
 
+    ActiveCell() {
+        return this.layout.cellIDs_highlight[0][0]
+    }
+
     ActiveCellValue() {
-        let rawID = this.layout.cellIDs_highlight[0][0]
+        return this.CellValueID(this.ActiveCell())
+        // if (rawID.includes("R:") && rawID.includes("C:")) {
+        //     let row = parseInt(RetStringBetween(rawID,"R:", "C:"))
+        //     let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
+        //     return this.data1x1.data[row][col]}
+        // if (rawID.includes("header-")) {
+        //     let header = RetStringBetween(rawID,"header-", "")
+        //     return this.data1x1.HeadersRaw(header)
+        // }
+
+    }
+
+    CellValueID(divID) {
+        let rawID = divID
         if (rawID.includes("R:") && rawID.includes("C:")) {
             let row = parseInt(RetStringBetween(rawID,"R:", "C:"))
             let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
@@ -223,14 +241,17 @@ class clsCSV {
     }
 
     Edit(divID) {
-        this.layout.HighlightCell(divID)
-        this.Print()
-        this._CreateInputField(divID)
-        this._svgAppend_Save(divID)
-        this._CreateName(divID)
-        
-        document.getElementById(this.name + "-input").focus();
-        document.getElementById(this.name + "-input").select();
+        if (this.mode.activeMode != "SIDEBAR") {
+            this.layout.HighlightCell(divID)
+            this.Print()
+            this._CreateInputField(divID)
+            this._svgAppend_Save(divID)
+            this._CreateName(divID)
+            
+            document.getElementById(this.name + "-input").focus();
+            document.getElementById(this.name + "-input").select();
+            
+        }
     }
 
     Edit_Header(divID) {
@@ -274,25 +295,34 @@ class clsCSV {
 
         if (this.layout.DivIsInsideECSV(divID) && divID.includes("R:") && divID.includes("C:")) {
             if (this.layout._RowDivID({cellID:divID}) == this.layout.row_highlight[0]) {
+                // let val = this.CellValue(divID)
                 this.Edit(divID) 
+                // return this._Click_Answer("ChangedCell", divID, val)
             } else {
                 this.layout.HighlightRow(divID)
                 this.Print()
                 return this._Click_Answer("HighlightRow", divID)
-            }
-            return this._Click_Answer()}
+            }}
         
             return this._Click_Answer()
         
         
     }
 
-    _Click_Answer(lastAction = "", divID = "") {
+    _Click_Answer(lastAction = "", divID = "", val = "") {
         let antwort = {"action": "", "divID": ""}
         if (lastAction == "HighlightRow") {
-            if (this.mode.activeMode = "sidebar") {
+            divID = divID.split('] ')[1]
+            return {"action": lastAction, "divID": divID}
+            // if (this.mode.activeMode == "SIDEBAR") {
+            //     divID = divID.split('] ')[1]
+            //     return {"action": lastAction, "divID": divID}
+            // }
+        }
+        if (lastAction == "ChangedCell") {
+            if (this.mode.activeMode != "SIDEBAR") {
                 divID = divID.split('] ')[1]
-                return {"action": lastAction, "divID": divID}
+                return {"action": lastAction, "divID": divID, "val":val}
             }
         }
         return antwort
@@ -305,8 +335,12 @@ class clsCSV {
     }
 
     SaveEdit() {
-        this._SaveCellValueToData()
-        this.Print()
+        let antwort = {
+            "action": "ChangedCell",
+            "divID": this.ActiveCell(),
+            "val": document.getElementById(this.name + "-input").value
+        }
+        SaveData(antwort)
     }
 
     Feature_Sum() {

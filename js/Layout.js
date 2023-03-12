@@ -76,12 +76,7 @@ class clsCSVLayout {
 
          
         //Highlithing Rows
-        if (this.row_highlight[0] == "") {
-            if (this.row_highlight[1] != "") {
-                document.getElementById(this.row_highlight[1]).classList.remove(hclass)}
-        } else {
-            document.getElementById(this.row_highlight[0]).classList.add(hclass)}
-        this.row_highlight[1] = this.row_highlight[0]
+        this._ApplyHighlightToSite_Rows(hclass)
 
         //Highlithing Cols
         if (this.col_highlight[0] == "") {
@@ -97,6 +92,26 @@ class clsCSVLayout {
         }
 
         // Highlight Tags/Types
+    }
+
+    _ApplyHighlightToSite_Rows(hclass) {
+        if (this.row_highlight[0] == "") {
+            if (this.row_highlight[1] != "") {
+                let div = document.getElementById(this.row_highlight[1])
+                if (div) {
+                    div.classList.remove(hclass)}
+                else {
+                    console.log("_ApplyHighlightToSite_Rows: Error 1")}
+                }
+        } else {
+            let div = document.getElementById(this.row_highlight[0])
+            if (div) {
+                div.classList.add(hclass)}
+            else {
+                console.log("_ApplyHighlightToSite_Rows: Error 2")}
+        }
+
+        this.row_highlight[1] = this.row_highlight[0]
     }
 
     AddDropDownMenuFromValues(header){
@@ -185,7 +200,8 @@ class clsCSVLayout {
         for (let row of rows) {
             // rowidx += 1
             // rowidx = parseInt(row[0])-1
-            rowidx = row[0]  // "No." col
+            let rowidxx = Number(row[0]) -1 // "No. col
+            rowidx = rowidxx.toString()
             var i = -1;
                 ret += '<tr id="' + this._RowDivID({rowidx:rowidx}) + '">';
                 for (let cell of row) {
@@ -443,6 +459,15 @@ class clsCSVLayout {
             return egoname + "R:" + rowIdx + "C:" + colIdx + "H:" + col}
         assert(false)
     }
+
+    ScrollToHighlight() {
+        if (this.row_highlight[0] != "") {
+            var element = document.getElementById(this.row_highlight[0]);
+        }
+        if(element) {
+            element.scrollIntoView()
+        }
+      }
     
 }
 

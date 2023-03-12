@@ -205,10 +205,10 @@ class clsData_1x1 {
 
     _Subset_Includes(ret, valueIncludes) {
         for (let key of Object.keys(valueIncludes)) {
-            let j = ret.headers.indexOf(key)
-            for (let i = ret.len-1; i > -1; i-- ) {
+            let j = this.headers.indexOf(key)
+            for (let i = this.len-1; i > -1; i-- ) {
                 for (let val of valueIncludes[key]) {
-                    if (ret.data[i][j].indexOf(val) == -1) {
+                    if (this.data[i][j].indexOf(val) == -1) {
                         ret.RemoveRow(i)
                         break
                     }
@@ -216,6 +216,18 @@ class clsData_1x1 {
             }     
         }
         return ret
+        // for (let key of Object.keys(valueIncludes)) {
+        //     let j = ret.headers.indexOf(key)
+        //     for (let i = ret.len-1; i > -1; i-- ) {
+        //         for (let val of valueIncludes[key]) {
+        //             if (ret.data[i][j].indexOf(val) == -1) {
+        //                 ret.RemoveRow(i)
+        //                 break
+        //             }
+        //         }
+        //     }     
+        // }
+        // return ret
     }
 
     IsColsSubset(cols) {

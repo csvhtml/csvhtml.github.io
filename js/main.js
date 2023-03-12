@@ -68,12 +68,15 @@ function Click (divElement) {
         if (antwort["action"] == "HighlightRow") {
             ecsv.layout.HighlightRow(antwort["divID"])
             ecsv.Print()
+            ecsv.layout.ScrollToHighlight()
         // Scroll to View
             }
         }
     if (ecsv.DivIsDescendant(divElement)) {
         antwort = ecsv.Click(divElement)
-        if (antwort["action"] == "Highlightow") {
+        if (antwort["action"] == "HighlightRow") {
+            Sidecsv.layout.HighlightRow(antwort["divID"])
+            Sidecsv.Print()
             a = 1}
         }
 
@@ -85,7 +88,7 @@ function Click (divElement) {
 const cReader = new FileReader();
 const ecsv = new clsCSV({egoname : "ecsv", TargetDivID : "MyCSV"});
 // const Sidecsv = new clsCSV({egoname : "side", TargetDivID : "MySidebar"});
-const Sidecsv = new clsCSV({egoname : "side", Mode: "NamesList"});
+const Sidecsv = new clsCSV({egoname : "side", Mode: "SIDEBAR"});
 if (INDEX_SIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}
 
 const SS = new clsSiteSearch();
@@ -126,6 +129,18 @@ function _ResultToCSV() {
     }
 
   }
+// ###############################################################################
+// data Save (hidden)                                                             #
+// ###############################################################################
+
+function SaveData(antwort) {
+    if (antwort["action"] == "ChangedCell") {
+        // sidebar value
+
+        ecsv._SaveCellValueToData()
+        ecsv.Print()
+    }
+}
 
 
 // ###############################################################################
@@ -160,6 +175,8 @@ function DDEdit(mode) {
 function DDMode(mode) {
     ecsv.SetMode(mode)
     ecsv.Print()
+    Sidecsv.SetMode(mode)
+    Sidecsv.Print()
 }
 
 function DDFeatures(mode) {
