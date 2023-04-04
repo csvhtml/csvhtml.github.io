@@ -33,7 +33,7 @@ class clsLogger {
 
 
 // ###############################################################################
-// Basis                                                                         #
+// Basis   Text Functions                                                        #
 // ###############################################################################
 
 
@@ -95,6 +95,19 @@ function _RetIdxFromTextInString(text, strA, strB, ignoreBlankAtBorders){
     l2 = strB.length
     return [idx1, idx2, l1, l2]
 }
+
+function FileNameFromPath(path) {
+    let idxR1 = path.lastIndexOf("/")
+    let idxR2 = path.lastIndexOf("\\")
+    let idx = Math.max(idxR1, idxR2)
+
+    return path.slice(idx+1)
+}
+
+
+// ###############################################################################
+// Basis   Text Functions                                                        #
+// ###############################################################################
 
 function len(n) {
     return n.length
@@ -318,8 +331,15 @@ function DivIsDescendantOf (element, targetID, iterations = 10) {
 // ################################################################
 // test                                                           #
 // ################################################################
+function test_Basis() {
+    test_Basis_byVal()
+    test_Basis_RetStringBetween()   
+    test_Basis_FileNameFromPath()  
 
-function test_byVal() {
+    return 0 // 32 assertions in this file (and should all be catched)
+}
+
+function test_Basis_byVal() {
     let fname = arguments.callee.name;
     liste = ["Super", "Mario", "Land"]
     listeA = _byVal(liste)
@@ -339,4 +359,22 @@ function test_byVal() {
     testEqualList(listeB, [["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"]], fname)
 
     return 0
+}
+
+function test_Basis_RetStringBetween() {
+    let fname = arguments.callee.name;
+    text = "R:1029C:23H:header"
+
+    testEqual(RetStringBetween(text, "R:", "C:"), "1029", fname)
+    testEqual(RetStringBetween(text, "R:", ""), "1029C:23H:header", fname)
+    testEqual(RetStringBetween(text, "H:", ""), "header", fname)
+}
+
+function test_Basis_FileNameFromPath() {
+    let fname = arguments.callee.name;
+
+    text = "file:///C:/A/B/World/FileName.pdf"
+    testEqual(FileNameFromPath(text), "FileName.pdf", fname)
+    text = "file:///C:/A/B/World\\FileName.pdf"
+    testEqual(FileNameFromPath(text), "FileName.pdf", fname)
 }

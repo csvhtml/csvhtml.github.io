@@ -31,7 +31,7 @@ class clsCSV_ReadWrite {
         }
     }
 
-    WriteToText(headersList, DataList2D, delimiter = ";") {
+    WriteToText(headersList, DataList2D, delimiter = ";", csvRootPath) {
         let ret = '';
         // headers
         for (let header of headersList) {
@@ -48,11 +48,12 @@ class clsCSV_ReadWrite {
                     cell = '"' + cell + '"'
                     cell = cell.replace(new RegExp('\n', "g") , '\r')  // use \r for in cell new line
                 }
-                ret += cell + ';'}
+                ret += cell + delimiter}
             ret = this._Chr10AtEnd(ret)
             // ret = ret.slice(0, -1) // remove last seperator. open: length of seperator
             // ret += "\n"
-        }
+            }
+        ret += "X;CONFIG;PATH:" + csvRootPath + "!;" + '\r'
         return ret;
     }
 

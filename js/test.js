@@ -3,8 +3,9 @@ function test() {
     // console.group ('All tests');  
     console.groupCollapsed('Test Results')
     assertions_in_files += test_clsData_1x1() 
-    assertions_in_files += test_byVal()
+    assertions_in_files += test_Basis()
     assertions_in_files += test_clsCSV_ReadWrite()
+    assertions_in_files += test_Layout()
     // assertions_in_files += test_Click()
     console.groupEnd ();
     console.log(lastlog_count + " x " + lastlog)

@@ -4,6 +4,7 @@
 
 class clsCSVLayout {
     constructor({TargetDivID = ""}) {
+        this.csvRootPath = ""
         this.LayoutTargetDivID = TargetDivID
         this.cellIDs_highlight = [["", ""], ["", ""]]   // cells that shall be highlighted. fist value is the internal value. Second value is representing the current state of the  site. The secondvalue will be changed by Print()
         this.row_highlight = ["", ""]                   //Row that is currently selected. First is targeted value, second is currently displayed value and can only be changed by Print()
@@ -164,6 +165,26 @@ class clsCSVLayout {
         this.ApplyHighlightToSite()
     }
 
+    _PrintList(headers, data, headersConfig) {   // or filtered
+        // standard use case
+        var cDivOut = document.getElementById(this.LayoutTargetDivID);
+
+        cDivOut.innerHTML = this._AsHTMLList(data, "Name")
+        
+        if (this.mode == "memory") {
+            let TDs = document.getElementsByTagName("td")
+            for (let td of TDs) {
+                td.classList.add("memory-card", "memory-center")
+            }
+            let THs = document.getElementsByTagName("th")
+            for (let th of THs) {
+                th.classList.add("memory-center")
+            }
+        }
+            
+        this.ApplyHighlightToSite()
+    }
+
     _GetColsWidthDictionary(headers) {
         let widths = []
         for (let header of headers) {
@@ -171,13 +192,68 @@ class clsCSVLayout {
             if (header == "No.") {w = "2"}
             if (header == "Name") {w = "15"}
             if (header == "Description") {w = "38"}
+            if (header == "Type") {w = "5"}
+            if (header == "Tags") {w = "10"}
             widths.push('style="width:' + w + '%"')
         }
         ret = dicct(headers, widths)
         return ret
     }
 
-    
+    _AsHTMLList(rows) {
+        let link = ""
+        let text = ""
+        if (this.headers.indexOf("url") >-1) {
+            if (this.headers.indexOf("img") >-1) {
+                return this._AsHTMLList_BuildList_ImgLink(rows, "url", "img")
+            } else if (this.headers.indexOf("Name") >-1) {
+                return this._AsHTMLList_BuildList_NameLink(rows, "url")
+            } else {
+                console.log("Error Layout: csv does not include Name or img")
+            }
+        } else {
+            if (this.headers.indexOf("img") >-1) {
+                
+            } else if (this.headers.indexOf("Name") >-1) {
+
+            } else {
+                console.log("Error Layout: csv does not include Name or img")
+            }
+        }
+    }
+
+    _AsHTMLList_BuildList_NameLink(rows, ColLink) {
+        let ret = '<ul>';
+        let idxL = this.headers.indexOf(ColLink)
+        for (let row of rows) {
+            // ret += '<li><a href="' + this._Replace_Link(row[idxL]) + '"> ' + row[idxN] + ' </a></li>'
+            ret += '<li>' + this._Replace_Link(row[idxL]) + '</li>'
+            ret += ' | '
+        }
+        ret += '</ul>';
+        return ret
+    }
+
+    _AsHTMLList_BuildList_ImgLink(rows, ColLink, ColImg) {
+        let ret = '<ul>';
+        let idxImg = this.headers.indexOf(ColImg)
+        let idxL = this.headers.indexOf(ColLink)
+        let imgText = ""
+
+        for (let row of rows) {
+            // ret += '<li><a href="' + this._Replace_Link(row[idxL]) + '"> ' + row[idxN] + ' </a></li>'
+            if (row[idxImg].length > 5) {
+                imgText = row[idxImg]
+            } else {
+                imgText = ""}
+            
+            ret += '<li>' + this._Replace_Link(row[idxL], "", imgText) + '</li>'
+            ret += ' | '
+        }
+        ret += '</ul>';
+        return ret
+    }
+
     _AsHTMLTable(cols, headersConfig, colswidth, rows) {
         let ret = '<table class="table"><thead><tr>';
         // table header
@@ -203,19 +279,19 @@ class clsCSVLayout {
             let rowidxx = Number(row[0]) -1 // "No. col
             rowidx = rowidxx.toString()
             var i = -1;
-                ret += '<tr id="' + this._RowDivID({rowidx:rowidx}) + '">';
-                for (let cell of row) {
-                    i += 1;
-                    // let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
-                    let id = this._CellDivID({rowIdx: rowidx,colIdx:i.toString(), cols:cols})
-                    if (String(cell).includes("\r")) {
-                        cell = cell.replace(new RegExp('\r', "g") , '<br>')  // use \r for in cell new line
-                    }
-                    cell = this._Replace_NAME(cell)
-                    cell = this._Replace_Link(cell, id)
-                    // ret += '<td id="R:' + rowidx + 'C:' + i + 'H:' + cols[i] + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
-                    ret += '<td id="' + id + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
+            ret += '<tr id="' + this._RowDivID({rowidx:rowidx}) + '">';
+            for (let cell of row) {
+                i += 1;
+                // let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
+                let id = this._CellDivID({rowIdx: rowidx,colIdx:i.toString(), cols:cols})
+                if (String(cell).includes("\r")) {
+                    cell = cell.replace(new RegExp('\r', "g") , '<br>')  // use \r for in cell new line
                 }
+                // cell = this._Replace_NAME(cell)
+                cell = this._Replace_Link(cell, id)
+                // ret += '<td id="R:' + rowidx + 'C:' + i + 'H:' + cols[i] + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
+                ret += '<td id="' + id + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
+            }
               ret += '</tr>'
         }
 
@@ -379,54 +455,88 @@ class clsCSVLayout {
         return tmp
     }
 
-    _Replace_NAME(value) {
-        for (let i = 0; i< 100;i++) {
-            if( typeof value === 'string') {
+    // _Replace_NAME(value) {
+    //     for (let i = 0; i< 100;i++) {
+    //         if( typeof value === 'string') {
+    //             if (value.indexOf("[NAME:")!=-1) {
+    //                 let name = RetStringBetween(value,"[NAME:", "]")
+    //                 let url = this._LookUp("Name", name, "url")
+    //                 let nummer = this._LookUp("Name", name, "No.")
+
+    //                 let rpl = '<a id="reftoNAME-'+ name + '" href="' + url + '" target="_blank">(' + nummer + ') ' + name + '</a>'
+    //                 value = value.replace("[NAME:" + name + "]" , rpl)
+    //             }
+    //         } 
+    //     }
+    //     return value
+    // }
+
+    _Replace_Link(value, idStr, imgLink = "") {
+        // for (let i = 0; i< 100;i++) {
+        if(typeof value === 'string') {
+            let text = ""
+            for (let i = 0; i < 10; i++) {
                 if (value.indexOf("[NAME:")!=-1) {
                     let name = RetStringBetween(value,"[NAME:", "]")
-                    let url = this._RetURL(name)
-                    let rpl = '<a id="reftoNAME-'+ name + '" href="' + url + '" target="_blank">' + name + '</a>'
+                    let url = this._LookUp("Name", name, "url")
+                    if (url.indexOf("[/")!=-1) {
+                        url = RetStringBetween(url,"[/", "]")
+                        url = this.csvRootPath + "/" + url
+                    }
+                    let nummer = this._LookUp("Name", name, "No.")
+
+                    let rpl = '<a id="reftoNAME-'+ name + '" href="' + url + '" target="_blank">(' + nummer + ') ' + name + '</a>'
                     value = value.replace("[NAME:" + name + "]" , rpl)
                 }
+                if (value.indexOf("[file:")!=-1) {
+                    let link = RetStringBetween(value,"[file:", "]")
+                    let linkB = "[file:" + link + "]"
+                    let id = 'id = "' + idStr + '-link"' 
+                    text = link.replace(new RegExp("%20", "g") , " ") 
+                    let fileName = FileNameFromPath(text)
+                    let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + fileName + '</a>'
+                    value = value.replace(linkB, rpl)}
+                if (value.indexOf("[http:")!=-1 || value.indexOf("[https:")!=-1) {
+                    let link = RetStringBetween(value,"[http:", "]")
+                    let linkB = "[" + link + "]"
+                    let id = 'id = "' + idStr + '-link"' 
+                    text = link.replace(new RegExp("%20", "g") , " ") 
+                    let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + text + '</a>'
+                    value = value.replace(linkB, rpl)}
+                if (value.indexOf("[/")!=-1)  {
+                    let link = RetStringBetween(value,"[/", "]")
+                    text = link.replace(new RegExp("%20", "g") , " ") 
+                    let linkB = "[/" + link + "]"
+                    link = this.csvRootPath + "/" + link
+                    let id = 'id = "' + idStr + '-link"' 
+                    let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + text + '</a>'
+                    value = value.replace(linkB, rpl)}
+                }
+
+            if (imgLink) {
+                imgLink = RetStringBetween(imgLink,"[", "]")
+                let imgText = '<img height="30" src="' + imgLink + '">' 
+                // value = value.replace(text, imgText) bugfix in RetSringBetween
+                value = value.replace(text +"]", imgText)
             }
         }
-        return value
-    }
 
-    _Replace_Link(value, idStr) {
-        // for (let i = 0; i< 100;i++) {
-            if(typeof value === 'string') {
-                for (let i = 0; i < 10; i++) {
-                    if (value.indexOf("[file:")!=-1) {
-                        let link = RetStringBetween(value,"[", "]")
-                        let linkB = "[" + link + "]"
-                        let id = 'id = "' + idStr + '-link"' 
-                        let text = link.replace(new RegExp("%20", "g") , " ") 
-                        let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + text + '</a>'
-                        value = value.replace(linkB, rpl)}
-                    if (value.indexOf("[http:")!=-1 || value.indexOf("[https:")!=-1) {
-                        let link = RetStringBetween(value,"[", "]")
-                        let linkB = "[" + link + "]"
-                        let id = 'id = "' + idStr + '-link"' 
-                        let text = link.replace(new RegExp("%20", "g") , " ") 
-                        let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + text + '</a>'
-                        value = value.replace(linkB, rpl)}
-                    }
-                }
-            // }
+        // }
         return value
     }
         
-
-    _RetURL(name) {
-        let iName = this.headers.indexOf("Name")
-        let iURL = this.headers.indexOf("url")
-        for (let i = 0; i< this.data.length;i++) {
-            if (this.data[i][iName] == name) {
-                return this.data[i][iURL] 
+        
+    _LookUp(lookCol, lookValue, returnCol) {
+            let iLook = this.headers.indexOf(lookCol)
+            let iReturn = this.headers.indexOf(returnCol)
+            if (iLook > -1 && iReturn > -1) {
+                for (let i = 0; i< this.data.length;i++) {
+                    if (this.data[i][iLook] == lookValue) {
+                        return this.data[i][iReturn] 
+                    }
+                }
             }
-        }
-        return ""
+            return ""
     }
 
     // Return RowDivID based on rowIdex or CellID
@@ -493,3 +603,30 @@ function Layout_toggleClass(divID, className) {
         else {
             element.classList.add(className)}
     }
+
+
+
+// ################################################################
+// test                                                           #
+// ################################################################
+function test_Layout() {
+    test_Layout_LookUp()
+
+    return 0// 32 assertions in this file (and should all be catched)
+}
+
+function test_Layout_LookUp() {
+    let fname = arguments.callee.name;
+    layoutt = new clsCSVLayout("FakeTargetDivID")
+
+    let headers = ["A", "B", "C", "D"]
+    let data = [["A1", "B1", "C1", "D1"],["A2", "B2", "C2", "D2"],["A3", "B3", "C3", "D3"]]
+    let dataConfig = []
+    layoutt.ReadFullCSVData(headers, data, dataConfig)
+
+    for (val of ["1", "2", "3"]) {
+        testEqual(layoutt._LookUp("A", "A"+val, "B"), "B"+val, fname)
+    }
+    
+    
+}

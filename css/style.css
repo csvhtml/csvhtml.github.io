@@ -18,6 +18,24 @@ td {
     overflow-wrap: break-word;
 }
 
+li {
+    display: inline;
+    font-size: 16pt;
+    line-height: 30pt;
+}
+
+img.img-list {
+    height: 30 pt;
+}
+/* li {
+    display: inline-block;
+    font-size: 12pt;
+    line-height: 30pt; 
+    width: 125pt; 
+    height: 75pt;
+    border: 1px solid #000;   
+} */
+
 .csv-sum {
     font-weight: bold;
 }

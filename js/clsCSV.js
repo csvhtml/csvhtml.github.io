@@ -1,29 +1,17 @@
 // ################################################################
-// class UserInput                                                #
-// ################################################################
-
-class clsUserInput {
-    constructor() {
-        this.LeftDown = false
-        this.RightDown = false
-        this.n_down = false
-    }
-}
-
-// ################################################################
 // class CSV                                                      #
 // ################################################################
 
 class clsCSV {
     // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
     constructor({egoname = '', TargetDivID = "", Mode = "standard"}) {
+        this.filepath = ""
         this.fileLoaded = false
         this.name = egoname
         this.TargetDivID = TargetDivID
         this.mode = new clsModes(Mode)
         this.ReadWrite = new clsCSV_ReadWrite()
         this.layout = new clsCSVLayout({"TargetDivID": TargetDivID})
-        this.userinput = new clsUserInput()
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
         this.data1x1.Init_Headers(this.mode.GetCols())
@@ -31,18 +19,7 @@ class clsCSV {
         this.data1x1.len = 1;
         this._DataSynch()
         this.sum = -1;          // sum = -1 inactive, sum >=0 sum is active
-
-        // if (csvtext == "") {
-        //     this.data1x1.Init_Headers(this.mode.GetCols())
-        //     this.data1x1.data = this.mode.DefaultData()
-        //     this.data1x1.len = 1;
-        //     this._DataSynch()
-        // } 
-        // else {
-        //     assert(false)
-        //     this.ReadCSV(csvtext)}
-        
-        
+             
         // // Styles
         
         // this.printMode = 'full'
@@ -76,16 +53,26 @@ class clsCSV {
     Print() {
         if (this.TargetDivID != "") {
             this._DataSynch()
-            this.layout._Print(this.headers, this.data, this.headersConfig)
+            if (this.mode.activeMode == "ulist") {
+                this.layout._PrintList(this.headers, this.data, this.headersConfig)
+            } else {
+                this.layout._Print(this.headers, this.data, this.headersConfig)
+            }
+            
         }
 
     }
 
     ReadCSV(csvtext, delimiter = ";" ) {
         var str = csvtext.replace(new RegExp('\r\n', "g") , '\n')           // '\r\n' is the standard for new line in windows. for clsCSV plain \n is used as new line
-        str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     // '"' used to make csv xls readable. Not used here
-        str = str.replace(new RegExp(delimiter + '"', "g") , delimiter)     // '"' used to make csv xls readable. Not used here
-        // this.data1x1.headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+        // make csv xls readable. Not used here
+        str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     
+        str = str.replace(new RegExp(delimiter + '"', "g") , delimiter)     
+        // csv config
+        let configtext = str.slice(str.indexOf(";CONFIG;"))
+        this.filepath = RetStringBetween(configtext, "PATH:", "!"); this.layout.csvRootPath = this.filepath
+        str = str.slice(0,str.indexOf(";CONFIG;")); str = str.slice(0,str.lastIndexOf("\n"))
+        //read csv data
         this.data1x1.Init_Headers(str.slice(0, str.indexOf("\n")).split(delimiter))
         if (!this.data1x1.headers.includes("No.") && this.mode.activeMode == "standard") {
             this.VirtualCol_No = true
@@ -107,7 +94,7 @@ class clsCSV {
         }
     }
     //SetMode: Applies layout configuration from mode to csv
-    
+
     SetMode(mode = "") {
         if (mode == "") {
             mode = this.mode.activeMode
@@ -192,22 +179,15 @@ class clsCSV {
 
     ActiveCellValue() {
         return this.CellValueID(this.ActiveCell())
-        // if (rawID.includes("R:") && rawID.includes("C:")) {
-        //     let row = parseInt(RetStringBetween(rawID,"R:", "C:"))
-        //     let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
-        //     return this.data1x1.data[row][col]}
-        // if (rawID.includes("header-")) {
-        //     let header = RetStringBetween(rawID,"header-", "")
-        //     return this.data1x1.HeadersRaw(header)
-        // }
-
     }
 
     CellValueID(divID) {
         let rawID = divID
         if (rawID.includes("R:") && rawID.includes("C:")) {
             let row = parseInt(RetStringBetween(rawID,"R:", "C:"))
-            let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
+            // let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
+            let colName = RetStringBetween(rawID,"H:", "")
+            let col = this.data1x1.headers.indexOf(colName)
             return this.data1x1.data[row][col]}
         if (rawID.includes("header-")) {
             let header = RetStringBetween(rawID,"header-", "")
@@ -268,6 +248,10 @@ class clsCSV {
         return DivIsDescendantOf(divID, this.TargetDivID)
     }
 
+    DivIsPartOfMe(divID) {
+        return DivIsDescendantOf(divID, this.TargetDivID)
+    }
+
 
     Click(div) {
         let divID = ReturnParentUntilID(div).id
@@ -310,14 +294,12 @@ class clsCSV {
     }
 
     _Click_Answer(lastAction = "", divID = "", val = "") {
-        let antwort = {"action": "", "divID": ""}
+        let antwort = {"action": "", "divID": "", "requestedBy": this.TargetDivID}
         if (lastAction == "HighlightRow") {
             divID = divID.split('] ')[1]
-            return {"action": lastAction, "divID": divID}
-            // if (this.mode.activeMode == "SIDEBAR") {
-            //     divID = divID.split('] ')[1]
-            //     return {"action": lastAction, "divID": divID}
-            // }
+            antwort["action"] = lastAction
+            antwort["divID"] = divID
+            return antwort
         }
         if (lastAction == "ChangedCell") {
             if (this.mode.activeMode != "SIDEBAR") {
@@ -482,7 +464,7 @@ class clsCSV {
 
 
     _AsCSV(sep = ";") {
-        return this.ReadWrite.WriteToText(this.data1x1.headers,this.data1x1.data,sep)
+        return this.ReadWrite.WriteToText(this.data1x1.headers,this.data1x1.data,sep,this.filepath)
   }
 
     _ConfigAsCSVRow(sep = ";") {
@@ -691,11 +673,6 @@ class clsCSV {
             // // "c"
             // if (event.isComposing || event.keyCode === 67) {
             //     this.AddRowCopy();}
-        }
-        if (this.layout.InputIsActive()){
-            if (this.userinput.LeftDown) {
-                //
-            }
         }
         console.log(event.keyCode)
     }

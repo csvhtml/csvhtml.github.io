@@ -17,40 +17,6 @@ if (urlParams.has("sidebar")) {
 // ################################################################
 // Mouse and KeyBoard Events                                      #
 // ################################################################
-var mousedownTime = new Date().getTime()
-var mouseupTime = new Date().getTime()
-
-const MouseDown = (event) => {
-    mousedownTime = new Date().getTime();
-}
-
-const MouseUp = (event) => { 
-    let nextMouseupTime = new Date().getTime();
-    // if (nextMouseupTime-mouseupTime <300) { // doubleclick. Currently not used. when couble clicked then three click actions are done. 1) Click, 2) Double click, 3) click
-    //     console.log("Double Click", nextMouseupTime-mouseupTime , event.srcElement.id)
-    // }
-
-    mouseupTime = nextMouseupTime
-    if (event.srcElement.id == "") {console.log(mouseupTime-mousedownTime, event.srcElement.id, "with parent: " + ReturnParentUntilID(event.srcElement).id)}
-    else {console.log(mouseupTime-mousedownTime, event.srcElement.id)}
-
-    // things that shall only happen at click events (quick mouseclick)
-    if (mouseupTime-mousedownTime<300) {
-        Click(event.srcElement)
-        // ecsv.Click(event.srcElement)
-        // MEM.Click(event.srcElement.id, ecsv.mode)
-    }
-    //things that shall onlyhappen at long clickevents
-    else {
-        // this is reserved for clicks that shall not trigger anything
-    }
-
-}
-
-const MouseOver = (event) => {
-    ecsv.MouseOver(event)
-    }
-
 const KeyUp = (event) => {
         SS.mySearchfilter();
         ecsv._Sum_Refresh();
@@ -58,29 +24,6 @@ const KeyUp = (event) => {
         ecsv.ButtonClick(event);
     }
 
-function Click (divElement) {
-    if (!INDEX_SIDEBEAR) {
-        ecsv.Click(divElement)
-        return}
-    let antwort = {"action":"", "divID": ""}
-    if (Sidecsv.DivIsDescendant(divElement)) {
-        antwort = Sidecsv.Click(divElement)
-        if (antwort["action"] == "HighlightRow") {
-            ecsv.layout.HighlightRow(antwort["divID"])
-            ecsv.Print()
-            ecsv.layout.ScrollToHighlight()
-        // Scroll to View
-            }
-        }
-    if (ecsv.DivIsDescendant(divElement)) {
-        antwort = ecsv.Click(divElement)
-        if (antwort["action"] == "HighlightRow") {
-            Sidecsv.layout.HighlightRow(antwort["divID"])
-            Sidecsv.Print()
-            a = 1}
-        }
-
-    }
 
 // ################################################################
 // classes                                                        #
@@ -95,11 +38,12 @@ const SS = new clsSiteSearch();
 const DD = new clsDropDown();
 // const MEM = new clsMemory();
 const MODE = new clsModes(); // only needed for dropdown list consistency
+const UIN = new clsUserInput(Sidecsv, ecsv, SS);
 
 
 (function () {
-    window.addEventListener('mousedown', MouseDown)   // equivalent to click (with empty mouse down)
-    window.addEventListener('mouseup', MouseUp)
+    window.addEventListener('mousedown', UIN.MouseDown)
+    window.addEventListener('mouseup', UIN.MouseUp)
     window.addEventListener('keyup', KeyUp)
 
     SS.ignore = ["ecsv-sum","dropdown-item"]

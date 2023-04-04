@@ -1,12 +1,13 @@
 class clsModes {
     constructor(activeMode = "standard") {
         // var clsMMY = new clsMemory()
-        this.defaultCols = ["No.", "Name", "Description", "url", "Type [dropdown]", "Tags [dropdown]"]
+        this.defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
         this.activeMode = activeMode
         this.modes = {
             "standard": {cols:[], valueIncludes:{}},
             "SIDEBAR": {cols: ["No.","Name"], valueIncludes:{}},
-            "list": {cols:["No.", "Name", "url", "Type", "Tags [dropdown]"], valueIncludes:{"Type":["document"]}},
+            "standard": {cols:[], valueIncludes:{}},
+            "ulist": {cols:[], valueIncludes:{}},
             "issues": {cols:["No.", "Name", "Description", "Type", "Tags [dropdown]"], valueIncludes:{"Type":["item"]}},
             // "memory": {cols:["A", "B", "C", "D", "E", "F"], valueIncludes:{}, cls: clsMMY}
             "memory": {cols:["A", "B", "C", "D", "E", "F"]}
@@ -63,12 +64,12 @@ class clsModes {
         if (mode == "") {mode = this.activeMode}
 
         if (mode == "standard") {
-            return [["1", "..", "..", "..", "..", "[]"]]
+            return [["1", "..", "..", "..", "..", "..", "[]"]]
         }
         if (mode == "SIDEBAR") {
             return [["1", ".."]]
         }
-        if (mode == "list") {
+        if (mode == "list" || mode == "ulist") {
             return [["1", "..", "..", "document", "[]"]]
         }
         if (mode == "issues") {
