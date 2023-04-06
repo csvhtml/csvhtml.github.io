@@ -3,14 +3,14 @@ class clsModes {
         // var clsMMY = new clsMemory()
         this.defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
         this.activeMode = activeMode
+        this.activeModeType = activeMode
         this.modes = {
-            "standard": {cols:[], valueIncludes:{}},
-            "SIDEBAR": {cols: ["No.","Name"], valueIncludes:{}},
-            "standard": {cols:[], valueIncludes:{}},
-            "ulist": {cols:[], valueIncludes:{}},
-            "issues": {cols:["No.", "Name", "Description", "Type", "Tags [dropdown]"], valueIncludes:{"Type":["item"]}},
+            "standard": {cols:[], valueIncludes:{}, type: "table"},
+            "SIDEBAR": {cols: ["No.","Name"], valueIncludes:{}, type: "table"},
+            "ulist": {cols:[], valueIncludes:{}, type: "list"},
+            "issues": {cols:["No.", "Name", "Description", "Type", "Tags [dropdown]"], valueIncludes:{"Type":["item"]}, type: "table"},
             // "memory": {cols:["A", "B", "C", "D", "E", "F"], valueIncludes:{}, cls: clsMMY}
-            "memory": {cols:["A", "B", "C", "D", "E", "F"]}
+            "memory": {cols:["A", "B", "C", "D", "E", "F"], type: "table"}
         }
     }
 
@@ -86,7 +86,18 @@ class clsModes {
         }
         return false
     }
+
+    ModeType(mode = null) {
+        if (mode == null) {
+            return this.modes[this.activeMode]["type"] 
+        } else {
+            return this.modes[mode][type]
+        }
+        
+    }
 }
+
+
 
 
 

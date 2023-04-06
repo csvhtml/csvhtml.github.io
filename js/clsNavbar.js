@@ -43,6 +43,7 @@ class clsNavbar {
             mode_elements, 
             fkeyyMode
             )
+        this.XSetBGColor('navMode-dd-' + this.Ecsv.mode.activeMode, rgbText(104, 187, 227))
 
         // Right Navbar
         // File Input

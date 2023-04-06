@@ -11,7 +11,7 @@ class clsCSV {
         this.TargetDivID = TargetDivID
         this.mode = new clsModes(Mode)
         this.ReadWrite = new clsCSV_ReadWrite()
-        this.layout = new clsCSVLayout({"TargetDivID": TargetDivID})
+        this.layout = new clsCSVLayout({"TargetDivID": TargetDivID, "mode": this.mode})
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
         this.data1x1.Init_Headers(this.mode.GetCols())

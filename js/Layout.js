@@ -3,7 +3,7 @@
 // ################################################################
 
 class clsCSVLayout {
-    constructor({TargetDivID = ""}) {
+    constructor({TargetDivID = "", mode = null}) {
         this.csvRootPath = ""
         this.LayoutTargetDivID = TargetDivID
         this.cellIDs_highlight = [["", ""], ["", ""]]   // cells that shall be highlighted. fist value is the internal value. Second value is representing the current state of the  site. The secondvalue will be changed by Print()
@@ -20,6 +20,8 @@ class clsCSVLayout {
         this.data = [[]]
         this.headers_dropdown = [] //(obsolete)
         this.headersConfig = []
+
+        this.mode = mode
     }
 
     ReadFullCSVData(headers, data, headersConfig) {
@@ -61,38 +63,39 @@ class clsCSVLayout {
     }
 
     ApplyHighlightToSite () {
-        let hclass = "table-info"
-        for (let row of this.row_highlight) {
-            if (row == this.LayoutTargetDivID) {
-                row = ""}
-        }
-
-        for (let cell of this.cellIDs_highlight) {
-            if (cell[0] == "" && cell[1] != "") {
-                document.getElementById(cell[1]).classList.removeX(hclass)}
-            if (cell[0] != "") {
-                document.getElementById(cell[0]).classList.addX(hclass)}
-            cell[1] = cell[0]
-        }
-
+        if (this.mode.ModeType() == "table") {
+            let hclass = "table-info"
+            for (let row of this.row_highlight) {
+                if (row == this.LayoutTargetDivID) {
+                    row = ""}
+            }
+    
+            for (let cell of this.cellIDs_highlight) {
+                if (cell[0] == "" && cell[1] != "") {
+                    document.getElementById(cell[1]).classList.removeX(hclass)}
+                if (cell[0] != "") {
+                    document.getElementById(cell[0]).classList.addX(hclass)}
+                cell[1] = cell[0]
+            }
          
-        //Highlithing Rows
-        this._ApplyHighlightToSite_Rows(hclass)
+            //Highlithing Rows
+            this._ApplyHighlightToSite_Rows(hclass)
 
-        //Highlithing Cols
-        if (this.col_highlight[0] == "") {
-            if (this.col_highlight[1] != "") {
-                var colcells = document.getElementsByClassName("ecsvcell " + this.col_highlight[1]);
+            //Highlithing Cols
+            if (this.col_highlight[0] == "") {
+                if (this.col_highlight[1] != "") {
+                    var colcells = document.getElementsByClassName("ecsvcell " + this.col_highlight[1]);
+                    for (let colcell of colcells) {
+                        colcell.classList.remove(hclass)}}
+            } else {
+                var colcells = document.getElementsByClassName(this.col_highlight[0]);
                 for (let colcell of colcells) {
-                    colcell.classList.remove(hclass)}}
-        } else {
-            var colcells = document.getElementsByClassName(this.col_highlight[0]);
-            for (let colcell of colcells) {
-                colcell.classList.add(hclass)}
-        this.col_highlight[1] = this.col_highlight[0]
-        }
+                    colcell.classList.add(hclass)}
+            this.col_highlight[1] = this.col_highlight[0]
+            }
 
-        // Highlight Tags/Types
+            // Highlight Tags/Types
+        }
     }
 
     _ApplyHighlightToSite_Rows(hclass) {
@@ -225,10 +228,14 @@ class clsCSVLayout {
     _AsHTMLList_BuildList_NameLink(rows, ColLink) {
         let ret = '<ul>';
         let idxL = this.headers.indexOf(ColLink)
+        let idxN = this.headers.indexOf("Name")
+        let link = ""
         for (let row of rows) {
-            // ret += '<li><a href="' + this._Replace_Link(row[idxL]) + '"> ' + row[idxN] + ' </a></li>'
-            ret += '<li>' + this._Replace_Link(row[idxL]) + '</li>'
-            ret += ' | '
+            if (row[idxL].slice(0,1) == "[" && row[idxL].slice(-1) == "]") {
+                link = RetStringBetween(row[idxL],"[", "]")
+                ret += '<li>' + this._HREF(row[idxN], link, "li-" + row[idxN]) + '</li>'
+                ret += ' | '
+            }
         }
         ret += '</ul>';
         return ret
@@ -470,6 +477,24 @@ class clsCSVLayout {
     //     }
     //     return value
     // }
+    _HREF(name, link, id = "") {
+        if (id == "") {
+            id = name}
+
+        if (link.indexOf("[http:") == 0 || link.indexOf("[https:") == 0) {
+            let ret = '<a ' + id + ' href="' + link + '" target = "#">' + name + '</a>'
+            return ret} 
+        if (link.indexOf("[file:") == 0) {
+            let ret = '<a ' + id + ' href="' + link + '" target = "#">' + name + '</a>'
+            return ret}   
+        if (link.length > 5 && name.length > 3) {
+            let ret = '<a ' + id + ' href="' + link + '" target = "#">' + name + '</a>'
+            return ret}  
+        if (link.length > 5) {
+            let ret = '<a href="' + link + '" target = "#">' + link + '</a>'
+            return ret}  
+        return ".."   
+    }   
 
     _Replace_Link(value, idStr, imgLink = "") {
         // for (let i = 0; i< 100;i++) {
@@ -496,8 +521,8 @@ class clsCSVLayout {
                     let fileName = FileNameFromPath(text)
                     let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + fileName + '</a>'
                     value = value.replace(linkB, rpl)}
-                if (value.indexOf("[http:")!=-1 || value.indexOf("[https:")!=-1) {
-                    let link = RetStringBetween(value,"[http:", "]")
+                if (value.indexOf("[http:") == 0 || value.indexOf("[https:") == 0) {
+                    let link = RetStringBetween(value,"[", "]")
                     let linkB = "[" + link + "]"
                     let id = 'id = "' + idStr + '-link"' 
                     text = link.replace(new RegExp("%20", "g") , " ") 
