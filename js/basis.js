@@ -104,6 +104,9 @@ function FileNameFromPath(path) {
     return path.slice(idx+1)
 }
 
+function rgbText(a,b,c) {
+    return "rgb(" + a + "," + b + "," + c + ")"
+}
 
 // ###############################################################################
 // Basis   Text Functions                                                        #

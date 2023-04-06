@@ -30,7 +30,7 @@ const NAV = new clsNavbar("NAV", Sidecsv, ecsv, SS);
 
 
 // ################################################################
-// HTML Event Listeners                                           #
+// HTML Set Up                                                    #
 // ################################################################
 
 (function () {
@@ -46,7 +46,7 @@ const NAV = new clsNavbar("NAV", Sidecsv, ecsv, SS);
 
 
 // ###############################################################################
-// data Save (hidden)                                                             #
+// Div Interactions                                                              #
 // ###############################################################################
 
 function SaveData(antwort) {
@@ -55,23 +55,4 @@ function SaveData(antwort) {
         ecsv._SaveCellValueToData()
         ecsv.Print()
     }
-}
-
-// ###############################################################################
-// Save / Download                                                               #
-// ###############################################################################
-
-function _download(text) {
-    let filename = " .csv"
-    var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    pom.setAttribute('download', filename);
-    pom.style.display = 'none';
-    document.body.appendChild(pom);
-    pom.click();
-    document.body.removeChild(pom);
-}
-
-function download_saveData() {
-    _download(ecsv._AsCSV())
 }

@@ -26,7 +26,7 @@ class clsNavbar {
         this.libDD.AddDropDownToDiv(
             document.getElementById("nav-Edit"), // html element where drop down elements are created
             "edit", // postfix for parent Drop Down Elelemt
-            "nav-", // prefix for parent and children of Drop Down element
+            "navEdit-", // prefix for parent and children of Drop Down element
             edit_elements, // html text 
             fkeyyEdit // functions called
             )  
@@ -39,7 +39,7 @@ class clsNavbar {
         this.libDD.AddDropDownToDiv(
             document.getElementById("nav-Mode"), 
             "mode", 
-            "nav-", 
+            "navMode-", 
             mode_elements, 
             fkeyyMode
             )
@@ -67,10 +67,24 @@ class clsNavbar {
         // Mode
         if (this.Ecsv.mode.GetModes().includes(mode)) {
             this.Ecsv.SetMode(mode)
+            this.XSetBGColor('navMode-dd-' + mode, rgbText(104, 187, 227))
             this.Ecsv.Print()
             this.Scsv.SetMode(mode)
             this.Scsv.Print()
             return}
+    }
+
+    XSetBGColor(divID, rgb) {
+        if (divID.includes("navMode-dd-")) {
+            let allMenuChildrenIDs = ElemementsWithSubStringInID(["navMode-dd-"], "id")
+            for (let id of allMenuChildrenIDs) {
+                if (id == divID) {
+                    document.getElementById(id).style.backgroundColor = rgb
+                } else {
+                    document.getElementById(id).style.backgroundColor = null
+                }
+            }
+        }
     }
 }
 
@@ -78,6 +92,7 @@ class clsNavbar {
 // Fill menu Input File global functions                          #
 // ################################################################
 
+// this function cant be a class member, because it is called outside its scope
 function DDFileInput(divID) {
     // function DDFileInput() {
         if (divID == "File-csv") {
@@ -91,3 +106,20 @@ function DDFileInput(divID) {
             }
         } 
     }   
+
+
+// ###############################################################################
+// Save Download Button                                                          #
+// ###############################################################################
+
+function download_saveData() {
+    let text = ecsv._AsCSV()
+    let filename = " .csv"
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+    pom.style.display = 'none';
+    document.body.appendChild(pom);
+    pom.click();
+    document.body.removeChild(pom);
+}
