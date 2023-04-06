@@ -24,7 +24,6 @@ const Sidecsv = new clsCSV({egoname : "side", Mode: "SIDEBAR"});
 if (INDEX_SIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}
 
 const SS = new clsSiteSearch();
-const DD = new clsDropDown();
 // const MEM = new clsMemory();
 const UIN = new clsUserInput(Sidecsv, ecsv, SS);
 const NAV = new clsNavbar("NAV", Sidecsv, ecsv, SS);
@@ -43,25 +42,9 @@ const NAV = new clsNavbar("NAV", Sidecsv, ecsv, SS);
 
     NAV.FillMenu()
 
-    DD.AddInputFileAfterDiv({"FormdivID": "form-csv", "EgoID": "File-csv", "accept":".csv", "FunctionToCall": function (a) {DDFileInput(a)}}) 
 })();
 
 
-// ################################################################
-// File Reader to load CSV file                                   #
-// ################################################################
-
-function _ResultToCSV() {
-    looper = [ecsv]
-    if (INDEX_SIDEBEAR) {looper.push(Sidecsv)}
-    for (ele of looper) {
-        ele.ReadCSV(cReader.result);
-        ele.fileLoaded = true
-        ele.Print();
-        ele.ToggleLink();
-    }
-
-  }
 // ###############################################################################
 // data Save (hidden)                                                             #
 // ###############################################################################
@@ -69,18 +52,17 @@ function _ResultToCSV() {
 function SaveData(antwort) {
     if (antwort["action"] == "ChangedCell") {
         // sidebar value
-
         ecsv._SaveCellValueToData()
         ecsv.Print()
     }
 }
 
-
 // ###############################################################################
 // Save / Download                                                               #
 // ###############################################################################
 
-function _download(filename, text) {
+function _download(text) {
+    let filename = " .csv"
     var pom = document.createElement('a');
     pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     pom.setAttribute('download', filename);
@@ -91,14 +73,5 @@ function _download(filename, text) {
 }
 
 function download_saveData() {
-    _download(cCurrentLoadendFileName, ecsv._AsCSV())
-}
-
-// ###############################################################################
-// Nav Drop Down Features                                                        #
-// ###############################################################################
-
-
-function DDFileInput(divID) {
-    if (divID == "File-csv") {_ResultToCSV()} 
+    _download(ecsv._AsCSV())
 }

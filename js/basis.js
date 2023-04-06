@@ -131,6 +131,15 @@ function dicct(keys, vals) {
     return ret
 }
 
+function _RemoveBlanksInList(liste) {
+    let ret = []
+    for (ele of liste) {
+        ret.push(ele.replace(" ", ""))
+    }
+
+    return ret
+}
+
 function _byVal(data) {
     // Creates a hard copy of a list
     let ret = data

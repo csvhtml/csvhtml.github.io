@@ -1,40 +1,52 @@
+var navEcsv
+var navScsv
+
 class clsNavbar {
     // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
     constructor(egoName, Scsv, Ecsv, SS) {
         this.egoName = egoName
-        this.cDropDown = new clsDropDown();
+        this.libDD = new libDropDown();
         this.Ecsv = Ecsv
         this.Scsv = Scsv
         this.Ssearch = SS
+
+        navEcsv = Ecsv
+        navScsv = Scsv
     }
 
     // Create Drop Down Menus and create function call to internal DDLink function
     FillMenu() {
+        // Left Navbar
+        // Edit
         let edit_elements = ["Add Row", "Del Row","Add Col", "Del Col"]
         let fkeyyEdit = []
         for (let keyy of _RemoveBlanksInList(edit_elements)) {
             fkeyyEdit.push(this.egoName + ".DDLink('" + keyy + "')")
         }
-        this.cDropDown.AddDropDownToDiv(
+        this.libDD.AddDropDownToDiv(
             document.getElementById("nav-Edit"), // html element where drop down elements are created
             "edit", // postfix for parent Drop Down Elelemt
             "nav-", // prefix for parent and children of Drop Down element
             edit_elements, // html text 
             fkeyyEdit // functions called
             )  
-
+        // Mode
         let mode_elements = this.Ecsv.mode.GetModes()
         let fkeyyMode = []
         for (let keyy of _RemoveBlanksInList(mode_elements)) {
             fkeyyMode.push(this.egoName + ".DDLink('" + keyy + "')")
         }
-        this.cDropDown.AddDropDownToDiv(
+        this.libDD.AddDropDownToDiv(
             document.getElementById("nav-Mode"), 
             "mode", 
             "nav-", 
             mode_elements, 
             fkeyyMode
             )
+
+        // Right Navbar
+        // File Input
+        this.libDD.AddInputFileAfterDiv({"FormdivID": "form-csv", "EgoID": "File-csv", "accept":".csv", "FunctionToCall": function (a) {DDFileInput(a)}}) 
     }
 
     // Create Link between DDLink and functions to be called
@@ -59,20 +71,23 @@ class clsNavbar {
             this.Scsv.SetMode(mode)
             this.Scsv.Print()
             return}
-
-        // if (mode) {
-        //         if (mode == "toggle link") {ecsv.ToggleLink()} 
-        //         if (mode == "sum") {ecsv.Feature_Sum()}
-        //     }
     }
-
 }
 
-function _RemoveBlanksInList(liste) {
-    let ret = []
-    for (ele of liste) {
-        ret.push(ele.replace(" ", ""))
-    }
+// ################################################################
+// Fill menu Input File global functions                          #
+// ################################################################
 
-    return ret
-}
+function DDFileInput(divID) {
+    // function DDFileInput() {
+        if (divID == "File-csv") {
+            looper = [navEcsv]
+            if (INDEX_SIDEBEAR) {looper.push(navScsv)}
+            for (ele of looper) {
+                ele.ReadCSV(cReader.result);
+                ele.fileLoaded = true
+                ele.Print();
+                ele.ToggleLink();
+            }
+        } 
+    }   

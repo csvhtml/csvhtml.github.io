@@ -1,12 +1,11 @@
-var cCurrentLoadendDivID = ""
-var cCurrentLoadendFileName = ""
-var cFunctionToCallAfterLoadend = undefined
+var cInputFileDivID = ""
+var cInputFileFunction = undefined
 
 // ################################################################
 // DropDown                                                       #
 // ################################################################
 
-class clsDropDown {
+class libDropDown {
     constructor() {
     }
 
@@ -31,14 +30,19 @@ class clsDropDown {
         input.type = type
         input.className = className
         input.accept = accept
+        input.addEventListener('change', _ddReadFile) // input.onchange = ... does not work. no attribute of input
         document.getElementById(FormdivID).append(input)
-        cFunctionToCallAfterLoadend = function (a) {FunctionToCall(a)}
-        document.getElementById(EgoID).addEventListener('change', ReadFile)
+        // document.getElementById(EgoID).addEventListener('change', ReadFile) would also work
+
+
+        // remember fuction and parameter to be called after loadend
+        cInputFileDivID = EgoID
+        cInputFileFunction = function (a) {FunctionToCall(a)}
     }
 }
 
 // ################################################################
-// Drop Down                                                      #
+// Drop Down global function                                      #
 // ################################################################
 
 function ddToggle(divID) {
@@ -51,22 +55,21 @@ function ddToggle(divID) {
   }
 
 // ################################################################
-// Input File                                                     #
+// Input File global functions                                    #
 // ################################################################
 
-const ReadFile = (event)  => {
-    cCurrentLoadendDivID = event.srcElement.id
-
+const _ddReadFile = (event)  => {
     let divFile = document.getElementById(event.srcElement.id);
     cReader.readAsText(divFile.files[0]);
-    cCurrentLoadendFileName = divFile.value.split("\\").slice(-1)[0]
-    cReader.addEventListener("loadend", ReaderResults);
+    cReader.addEventListener("loadend", _ddReadFile_functioncall);
+    // cReader.addEventListener("loadend", DDFileInput(DivID));   // this does not work. Work around via _ddReadFile_functioncall 
+  }
+const _ddReadFile_functioncall = (event)  => {
+    cInputFileFunction(cInputFileDivID)
   }
 
-const ReaderResults = (event)  => {
-    cFunctionToCallAfterLoadend(cCurrentLoadendDivID)
-  }
 
+  
 
 // ################################################################
 // Button (not used)                                              #
