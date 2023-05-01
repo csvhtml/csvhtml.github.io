@@ -27,6 +27,7 @@ const SS = new clsSiteSearch();
 // const MEM = new clsMemory();
 const UIN = new clsUserInput(Sidecsv, ecsv, SS);
 const NAV = new clsNavbar("NAV", Sidecsv, ecsv, SS);
+const HTTP = new clsHTTP();
 
 
 // ################################################################

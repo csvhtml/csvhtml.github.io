@@ -64,6 +64,9 @@ class clsCSV {
     }
 
     ReadCSV(csvtext, delimiter = ";" ) {
+        if (csvtext == undefined) {
+            return
+        }
         var str = csvtext.replace(new RegExp('\r\n', "g") , '\n')           // '\r\n' is the standard for new line in windows. for clsCSV plain \n is used as new line
         // make csv xls readable. Not used here
         str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     

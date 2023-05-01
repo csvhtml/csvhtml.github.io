@@ -44,6 +44,20 @@ class clsNavbar {
             fkeyyMode
             )
         this.XSetBGColor('navMode-dd-' + this.Ecsv.mode.activeMode, rgbText(104, 187, 227))
+        
+        // Feature
+        let feat_elements = ["Start"]
+        let fkeyyFeat = []
+        for (let keyy of _RemoveBlanksInList(feat_elements)) {
+            fkeyyFeat.push(this.egoName + ".DDLink('" + keyy + "')")
+        }
+        this.libDD.AddDropDownToDiv(
+            document.getElementById("nav-Features"), // html element where drop down elements are created
+            "feat", // postfix for parent Drop Down Elelemt
+            "navfeature-", // prefix for parent and children of Drop Down element
+            feat_elements, // html text 
+            fkeyyFeat // functions called
+            )  
 
         // Right Navbar
         // File Input
@@ -73,6 +87,13 @@ class clsNavbar {
             this.Scsv.SetMode(mode)
             this.Scsv.Print()
             return}
+
+        // Mode
+        if (mode == "Start") {
+            HTTP.GetCSV("Start", NAVcallback)
+            console.log("Hallo Mario")
+            // this.Ecsv.DelRow()
+            return}
     }
 
     XSetBGColor(divID, rgb) {
@@ -87,6 +108,13 @@ class clsNavbar {
             }
         }
     }
+}
+
+function NAVcallback(text) {
+    ecsv.ReadCSV(text)
+    ecsv.fileLoaded = true
+    ecsv.Print();
+    ecsv.ToggleLink();
 }
 
 // ################################################################
