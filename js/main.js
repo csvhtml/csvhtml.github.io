@@ -1,27 +1,29 @@
 // ################################################################
+// Base classes                                                   #
+// ################################################################
+var log = new clsLog()
+
+// ################################################################
+// Base classes                                                   #
+// ################################################################
+const cParameter = new clsParameter()
+
+// ################################################################
 // Modify HTML based on URL parameters                            #
 // ################################################################
-var INDEX_SIDEBEAR = true
-const queryString = window.location.search
-const urlParams = new URLSearchParams(queryString)
 
-if (urlParams.has("sidebar")) {
-    if (urlParams.get("sidebar") == "false") {
-        INDEX_SIDEBEAR = false
-        document.getElementById("MySidebar").remove()
-        document.getElementById("MyCSV").classList.remove("col-10")
-        document.getElementById("MyCSV").classList.add("col-12")
-    }
-}
 
 // ################################################################
 // HTML Classes                                                   #
 // ################################################################
 
+
+const cURLHandler = new clsURLParameterHandler();
 const cReader = new FileReader();
 const ecsv = new clsCSV({egoname : "ecsv", TargetDivID : "MyCSV"});
 const Sidecsv = new clsCSV({egoname : "side", Mode: "SIDEBAR"});
-if (INDEX_SIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}
+// if (boolSIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}
+if (cParameter.get("Sidebar")) {Sidecsv.SetTargetDiv("MySidebar")}
 
 const SS = new clsSiteSearch();
 // const MEM = new clsMemory();

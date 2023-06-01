@@ -1,36 +1,13 @@
-class clsLogger {
+class clsLog {
     constructor() {
-        this.LogEntries = []
-        this.active = false
-        this.PushToConsole = true
+        this.logs= []
     }
 
-    Add(Logentry) {
-        this.active = true
-        this.LogEntries.push(Logentry)
-        if (this.PushToConsole) {console.log("clsLOG: " + Logentry)}
-    }
-
-    Get(Idx = -1) {
-        if (Idx == -1) {
-            Idx = this.LogEntries.length-1
-        }
-        return this.LogEntries[Idx]
-    }
-
-    Length() {
-        return this.LogEntries.length
-    }
-
-    IsActive() {
-        return this.active
-    }
-
-    Deactivate() {
-        this.active = false
+    msg(msg) {
+        this.logs.push(msg)
+        console.log(msg)
     }
 }
-
 
 // ###############################################################################
 // Basis   Text Functions                                                        #
@@ -390,3 +367,12 @@ function test_Basis_FileNameFromPath() {
     text = "file:///C:/A/B/World\\FileName.pdf"
     testEqual(FileNameFromPath(text), "FileName.pdf", fname)
 }
+
+
+// ################################################################
+// rest                                                           #
+// ################################################################
+
+function OpenHTTP(url) {
+    window.open(url, "_blank");
+    }
