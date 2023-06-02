@@ -1,7 +1,11 @@
+const LOGG = true
+// const LOGG = false
+
 // ################################################################
 // Base classes                                                   #
 // ################################################################
 var log = new clsLog()
+const cReader = new FileReader();
 
 // ################################################################
 // Parameters                                                     #
@@ -14,33 +18,29 @@ cParameter.setAll(cURLHandler.parameters())
 // Page Layout                                                    #
 // ################################################################
 if (cParameter.get("sidebar")) {
+    document.getElementById("MySidebar Header").classList.add("col-2")
+    document.getElementById("MyCSV Header").classList.add("col-10")
+
     document.getElementById("MySidebar").classList.add("col-2")
     document.getElementById("MyCSV").classList.add("col-10")
 } else {
     document.getElementById("MySidebar").remove()
-    // document.getElementById("MyCSV").classList.remove("col-10")
+    document.getElementById("MySidebar Header").remove()
+
     document.getElementById("MyCSV").classList.add("col-12")
-    
+    document.getElementById("MyCSV Header").classList.add("col-12")
 }
-
-
-// ################################################################
-// Modify HTML based on URL parameters                            #
-// ################################################################
-
 
 // ################################################################
 // HTML Classes                                                   #
 // ################################################################
-
-
-
-const cReader = new FileReader();
 const ecsv = new clsCSV({egoname : "ecsv", TargetDivID : "MyCSV"});
-const Sidecsv = new clsCSV({egoname : "side", Mode: "SIDEBAR"});
+const Sidecsv = new clsCSV({egoname : "side", TargetDivID : "MySidebar", Mode: "SIDEBAR"});
+
+
 // if (boolSIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}
 // Sidecsv.SetTargetDiv("MySidebar")
-if (cParameter.get("sidebar")) {Sidecsv.SetTargetDiv("MySidebar")}
+// if (cParameter.get("sidebar")) {Sidecsv.SetTargetDiv("MySidebar")}
 
 const SS = new clsSiteSearch();
 // const MEM = new clsMemory();

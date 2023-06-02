@@ -5,10 +5,11 @@
 class clsCSV {
     // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
     constructor({egoname = '', TargetDivID = "", Mode = "standard"}) {
+        this.TargetDivID = null
+        
         this.filepath = ""
         this.fileLoaded = false
         this.name = egoname
-        this.TargetDivID = TargetDivID
         this.mode = new clsModes(Mode)
         this.ReadWrite = new clsCSV_ReadWrite()
         this.layout = new clsCSVLayout({"TargetDivID": TargetDivID, "mode": this.mode})
@@ -29,14 +30,20 @@ class clsCSV {
 
         // this.filterTags = []
         // this.filterTypes = []
+        this._SetTargetDiv(TargetDivID)
         this.SetMode()
         this.Print()
     }
 
-    SetTargetDiv(TargetDivID) {
+    _SetTargetDiv(TargetDivID) {
+        let TargetDiv = document.getElementById(TargetDivID);
+        if(TargetDiv == null) {
+            this.log(TargetDivID + " not found in html document. csv for " + TargetDivID + " was not created")
+            return 
+        }
+
         this.TargetDivID = TargetDivID
         this.layout.LayoutTargetDivID = TargetDivID
-        this.Print()
     }
 
     _DataSynch() {
@@ -51,7 +58,7 @@ class clsCSV {
 
 
     Print() {
-        if (this.TargetDivID != "") {
+        if (this.TargetDivID != null) {
             this._DataSynch()
             if (this.mode.activeMode == "ulist") {
                 this.layout._PrintList(this.headers, this.data, this.headersConfig)
@@ -690,6 +697,13 @@ class clsCSV {
 
     MouseOver(event) {
         console.log("Mouse over " + event.srcElement.id)
+    }
+
+    log(key, val) {
+        let msg = "[clsCSV] "
+        if (LOGG) {
+            log.msg(msg + key + ": " + val)
+        }
     }
 }
 

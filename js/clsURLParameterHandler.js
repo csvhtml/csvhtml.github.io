@@ -1,8 +1,6 @@
 const queryString = window.location.search
 const urlParameterX = new URLSearchParams(queryString)
 const urlParameter= Object.fromEntries(urlParameterX.entries())
-// const URLPARAMETER_LOG = false
-const URLPARAMETER_LOG = true
 
 class clsURLParameterHandler {
     constructor(parameters) {
@@ -47,11 +45,12 @@ class clsURLParameterHandler {
     }
 
     log(key, val) {
-        if (URLPARAMETER_LOG) {
+        if (LOGG) {
+            let msg = "[clsURLParameterHandler] "
             if (key in this.pageParameter) {
-                log.msg(key + ": " + val)
+                log.msg(msg+ key + ": " + val)
             } else  {
-                log.msg(key + " : " + val + " (key not defined)")
+                log.msg(msg+ key + " : " + val + " (key not defined)")
             }
             
         }
