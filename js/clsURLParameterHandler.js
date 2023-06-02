@@ -4,42 +4,51 @@ const urlParameter= Object.fromEntries(urlParameterX.entries())
 // const URLPARAMETER_LOG = false
 const URLPARAMETER_LOG = true
 
-var pageParameter = {
-    "sidebar": false,
-    "mode": "",
-}
-
 class clsURLParameterHandler {
-    constructor() {
+    constructor(parameters) {
+        this.urlParameter = urlParameter
+        this.pageParameter = {}
+        
+        let keys = Object.keys(this.urlParameter) 
+        for (let para of keys) {
+            this.urlParameter[para] = forceType(this.urlParameter[para])
+        }
+        for (let para of parameters) {
+            this.pageParameter[para] = null
+        }
         for (let key in urlParameter) {
                 this.log(key, urlParameter[key])
-                this.constructor_HandleURLParameter(key, urlParameter[key])
+                this._setparameterValues(key, urlParameter[key])
         }
     }
 
-    constructor_HandleURLParameter(key, val) {
-        if (!URLPARAMETER_LOG) {
-            if (!(key in pageParameter)) {
+    _setparameterValues(key, val) {
+        if (key in this.pageParameter) {
+                this.pageParameter[key] = forceType(val)
+            } else {
                 return
             }
         }
-        if (key == "sidebar")  {
-            if (val == "false"){
-                cParameter.set("Sidebar", false)
-                // boolSIDEBEAR = false
-                document.getElementById("MySidebar").remove()
-                document.getElementById("MyCSV").classList.remove("col-10")
-                document.getElementById("MyCSV").classList.add("col-12")
+
+    parameters() {
+        let ret = {}
+        let keys = Object.keys(this.pageParameter) 
+        for (let key of keys) {
+            if (key in this.urlParameter) {
+                ret[key] = this.urlParameter[key]
             }
-        } 
-        if (key == "mode") {
-            
         }
+        return ret
+    }
+
+    get(parameter) {
+        assert (parameter in this.pageParameter)
+        return this.pageParameter[parameter]
     }
 
     log(key, val) {
         if (URLPARAMETER_LOG) {
-            if (key in pageParameter) {
+            if (key in this.pageParameter) {
                 log.msg(key + ": " + val)
             } else  {
                 log.msg(key + " : " + val + " (key not defined)")
@@ -50,6 +59,15 @@ class clsURLParameterHandler {
 }
 
 
+function forceType(text) {
+    if (text == "false") {
+        return false
+    }
+    if (text == "true") {
+        return true
+    }
+    return text
+}
 
 // ################################################################
 // test                                                           #

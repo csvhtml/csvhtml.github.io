@@ -1,22 +1,22 @@
-
-
-
-
 class clsParameter {
     constructor() {
         this.Default = {
-            "Sidebar": true
+            "sidebar": true,
+            "mode": "",
         }
 
-        this.Current = {
-            "Sidebar": true
-        }
-
+        this.Current = {}
         let keys = Object.keys(this.Default)
         for (let key of keys) {
-            assert (key in this.Current)
+            this.Current[key] = this.Default[key]
         }
-
+    }
+    setAll(dicct) {
+        let keys = Object.keys(dicct) 
+        for (let key of keys) {
+            assert (key in this.Current)
+            this.Current[key] = dicct[key]
+        }
     }
 
     set(key, val) {
@@ -27,5 +27,9 @@ class clsParameter {
     get(key) {
         assert (key in this.Current)
         return this.Current[key]
+    }
+
+    keys() {
+        return Object.keys(this.Default)
     }
 }

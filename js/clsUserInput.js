@@ -50,7 +50,7 @@ class clsUserInput {
     Click (divElement) {
         // without sidebar
         // if (!boolSIDEBEAR) {
-        if (!cParameter.get("Sidebar")) {
+        if (!cParameter.get("sidebar")) {
             if (this.Ecsv.DivIsPartOfMe(divElement)) {
                 this.Ecsv.Click(divElement)
                 return

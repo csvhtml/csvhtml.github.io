@@ -126,7 +126,7 @@ function DDFileInput(divID) {
     // function DDFileInput() {
         if (divID == "File-csv") {
             looper = [navEcsv]
-            if (cParameter.get("Sidebar")) {looper.push(navScsv)}
+            if (cParameter.get("sidebar")) {looper.push(navScsv)}
             // if (boolSIDEBEAR) {looper.push(navScsv)}
             for (ele of looper) {
                 ele.ReadCSV(cReader.result);
