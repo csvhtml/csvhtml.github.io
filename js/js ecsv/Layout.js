@@ -188,6 +188,15 @@ class clsCSVLayout {
         this.ApplyHighlightToSite()
     }
 
+    _PrintHeader(headers, headersConfig) {   // or filtered
+        // standard use case
+        let cDivOut = document.getElementById(this.LayoutTargetDivID);
+        let colswidth = this._GetColsWidthDictionary(headers)
+
+        cDivOut.innerHTML = this._AsHTMLTableHeader(headers, headersConfig, colswidth)
+            
+    }
+
     _GetColsWidthDictionary(headers) {
         let widths = []
         for (let header of headers) {
@@ -309,6 +318,29 @@ class clsCSVLayout {
 
         return ret;
     }
+
+
+    _AsHTMLTableHeader(cols, headersConfig, colswidth) {
+        let ret = '<table class="table"><thead><tr>';
+        // table header
+        for (let i = 0; i < cols.length; i++) {
+            let header = cols[i]
+            let config = headersConfig[i]
+            ret += '<th id = "header-' + header + '" class="ecsvtable col-' + header + '" '+ colswidth[header] +'>' + header
+            if (config == "dropdown") {
+                ret += " " + this._svgText_ArrowDown(header)
+                ret += this.AddDropDownMenuFromValues(header)}
+            ret += '</th>'
+        }
+        ret += '</tr></thead>'
+        // row body end
+        ret += '</tbody>'
+        // table end
+        ret += '</table>'
+
+        return ret;
+    }
+
 
     InputIsActive() {
         if (this.cellIDs_highlight[0][1] == "") {

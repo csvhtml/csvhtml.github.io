@@ -34,8 +34,10 @@ if (cParameter.get("sidebar")) {
 // ################################################################
 // HTML Classes                                                   #
 // ################################################################
-const ecsv = new clsCSV({egoname : "ecsv", TargetDivID : "MyCSV"});
-const Sidecsv = new clsCSV({egoname : "side", TargetDivID : "MySidebar", Mode: "SIDEBAR"});
+let defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
+const ecsv = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV", InitCols: defaultCols});
+const ecsvH = new clsCSV({egoname: "ecsvH", TargetDivID: "MyCSV Header", Mode: "header", InitCols: defaultCols});
+const Sidecsv = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "SIDEBAR"});
 
 
 // if (boolSIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}

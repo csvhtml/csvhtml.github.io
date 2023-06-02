@@ -1,11 +1,15 @@
 class clsModes {
-    constructor(activeMode = "standard") {
-        // var clsMMY = new clsMemory()
-        this.defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
+    constructor(activeMode = "standard", DefaultCols = []) {
+        if (DefaultCols.length === 0) {
+            this.defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
+        } else {
+            this.defaultCols = DefaultCols
+        }
         this.activeMode = activeMode
         this.activeModeType = activeMode
         this.modes = {
             "standard": {cols:[], valueIncludes:{}, type: "table"},
+            "header": {cols:[], valueIncludes:{}, type: "table"},
             "SIDEBAR": {cols: ["No.","Name"], valueIncludes:{}, type: "table"},
             "ulist": {cols:[], valueIncludes:{}, type: "list"},
             "issues": {cols:["No.", "Name", "Description", "Type", "Tags [dropdown]"], valueIncludes:{"Type":["item"]}, type: "table"},
@@ -32,7 +36,7 @@ class clsModes {
     GetCols(mode = "") {
         if (mode == "") { mode = this.activeMode}
 
-        if (mode == "standard") {
+        if (mode == "standard" || mode == "header") {
             return this.defaultCols
         } else {
             return this.modes[mode]["cols"]
@@ -63,7 +67,7 @@ class clsModes {
     DefaultData(mode = "") {
         if (mode == "") {mode = this.activeMode}
 
-        if (mode == "standard") {
+        if (mode == "standard" || mode == "header") {
             return [["1", "..", "..", "..", "..", "..", "[]"]]
         }
         if (mode == "SIDEBAR") {

@@ -4,13 +4,13 @@
 
 class clsCSV {
     // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
-    constructor({egoname = '', TargetDivID = "", Mode = "standard"}) {
+    constructor({egoname = '', TargetDivID = "", Mode = "standard", InitCols = []}) {
         this.TargetDivID = null
         
         this.filepath = ""
         this.fileLoaded = false
         this.name = egoname
-        this.mode = new clsModes(Mode)
+        this.mode = new clsModes(Mode, InitCols)
         this.ReadWrite = new clsCSV_ReadWrite()
         this.layout = new clsCSVLayout({"TargetDivID": TargetDivID, "mode": this.mode})
         this.data1x1 = new clsData_1x1()
@@ -62,9 +62,13 @@ class clsCSV {
             this._DataSynch()
             if (this.mode.activeMode == "ulist") {
                 this.layout._PrintList(this.headers, this.data, this.headersConfig)
-            } else {
-                this.layout._Print(this.headers, this.data, this.headersConfig)
+                return
+            } 
+            if (this.mode.activeMode == "header") {
+                this.layout._PrintHeader(this.headers, this.headersConfig)
+                return
             }
+            this.layout._Print(this.headers, this.data, this.headersConfig)
             
         }
 
