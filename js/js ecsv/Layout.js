@@ -321,7 +321,7 @@ class clsCSVLayout {
 
 
     _AsHTMLTableHeader(cols, headersConfig, colswidth) {
-        let ret = '<table class="table"><thead><tr>';
+        let ret = '<table class="table" style="margin-bottom:0;"><thead><tr>';
         // table header
         for (let i = 0; i < cols.length; i++) {
             let header = cols[i]

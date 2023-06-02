@@ -35,19 +35,20 @@ if (cParameter.get("sidebar")) {
 // HTML Classes                                                   #
 // ################################################################
 let defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
-const ecsv = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV", InitCols: defaultCols});
-const ecsvH = new clsCSV({egoname: "ecsvH", TargetDivID: "MyCSV Header", Mode: "header", InitCols: defaultCols});
-const Sidecsv = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "SIDEBAR"});
-
+const PAGE = {}
+PAGE["MyCSV"] = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV", InitCols: defaultCols});
+PAGE["MyCSV Header"] = new clsCSV({egoname: "ecsvH", TargetDivID: "MyCSV Header", Mode: "header", InitCols: defaultCols});
+PAGE["MySidebar"] = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "SIDEBAR"});
+PAGE["mySearch"] = new clsSiteSearch();
 
 // if (boolSIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}
 // Sidecsv.SetTargetDiv("MySidebar")
 // if (cParameter.get("sidebar")) {Sidecsv.SetTargetDiv("MySidebar")}
 
-const SS = new clsSiteSearch();
+// const SS = new clsSiteSearch();
 // const MEM = new clsMemory();
-const UIN = new clsUserInput(Sidecsv, ecsv, SS);
-const NAV = new clsNavbar("NAV", Sidecsv, ecsv, SS);
+const UIN = new clsUserInput(Object.keys(PAGE));
+const NAV = new clsNavbar("NAV", PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearch"]);
 const HTTP = new clsHTTP();
 
 
@@ -60,7 +61,7 @@ const HTTP = new clsHTTP();
     window.addEventListener('mouseup', UIN.MouseUp)
     window.addEventListener('keyup', UIN.KeyUp)
 
-    SS.ignore = ["ecsv-sum","dropdown-item"]
+    PAGE["mySearch"].ignore = ["ecsv-sum","dropdown-item"]
 
     NAV.FillMenu()
 

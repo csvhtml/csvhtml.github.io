@@ -1,9 +1,6 @@
 class clsUserInput {
-    // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
-    constructor(Scsv, Ecsv, SS) {
-        this.Ecsv = Ecsv
-        this.Scsv = Scsv
-        this.Ssearch = SS
+    constructor(pageDivIDs) {
+        this.pageDivIDs = pageDivIDs
         this.mousedownTime = new Date().getTime()
         this.mouseupTime = new Date().getTime()
     }
@@ -19,16 +16,8 @@ class clsUserInput {
     MouseUp = (event) => {
         this.nextMouseupTime = new Date().getTime();
         let moustime = this.nextMouseupTime-this.mousedownTime
+        this.log("mouseUp", event, moustime)
 
-        // console log where you are
-        if (event.srcElement.id == "") {
-            let parentDiv = ReturnParentUntilID(event.srcElement)
-            console.log(moustime, event.srcElement.id, "with parent: " + parentDiv.id)
-        } else {
-            console.log(moustime, event.srcElement.id)
-        }
-
-        // action
         if (moustime<300) {
             this.Click(event.srcElement)
         }
@@ -48,43 +37,25 @@ class clsUserInput {
 // ################################################################
 
     Click (divElement) {
-        // without sidebar
-        // if (!boolSIDEBEAR) {
-        if (!cParameter.get("sidebar")) {
-            if (this.Ecsv.DivIsPartOfMe(divElement)) {
-                this.Ecsv.Click(divElement)
-                return
+        for (let divID of this.pageDivIDs) {
+            if (DivIsDescendantOf(divElement, divID)) {
+                let antwort = PAGE[divID].Click(divElement)
+                this.InterAction(antwort)
             }
         }
-
-        // with sidebar
-        let antwort = {"action":"", "divID": "", "requestedBy": ""}
-
-        if (this.Scsv.DivIsPartOfMe(divElement)) {
-            antwort = this.Scsv.Click(divElement)
-            this.InterAction(antwort)
-        }
-        if (this.Ecsv.DivIsPartOfMe(divElement)) {
-            antwort = ecsv.Click(divElement)
-            this.InterAction(antwort)
-        }
-
     }
 
     Hover (event) {
-        if (this.Ecsv.DivIsPartOfMe(event.srcElement)) {
-            this.Ecsv.MouseOver(event)
+        if (PAGE["MyCSV"].DivIsPartOfMe(event.srcElement)) {
+            PAGE["MyCSV"].MouseOver(event)
         }
-        if (this.Scsv.DivIsPartOfMe(event.srcElement)) {
-            this.Scsv.MouseOver(event)
+        if (PAGE["MySidebar"].DivIsPartOfMe(event.srcElement)) {
+            PAGE["MySidebar"].MouseOver(event)
         }
     }
 
     Tipp (event) {
-        this.Ssearch.mySearchfilter();
-        // ecsv._Sum_Refresh();
-        // ecsv.InputFiled_AutoHeight();
-        // ecsv.ButtonClick(event);
+        PAGE["mySearch"].mySearchfilter();
     }
 
 
@@ -94,16 +65,27 @@ class clsUserInput {
 
     InterAction(action) {
         if (action["action"] == "HighlightRow") {
-            if (action["requestedBy"] == this.Scsv.TargetDivID) {
-                this.Ecsv.layout.HighlightRow(action["divID"])
-                this.Ecsv.Print()
-                this.Ecsv.layout.ScrollToHighlight()
+            if (action["requestedBy"] == PAGE["MySidebar"].TargetDivID) {
+                PAGE["MyCSV"].layout.HighlightRow(action["divID"])
+                PAGE["MyCSV"].Print()
+                PAGE["MyCSV"].layout.ScrollToHighlight()
             }
-            if (action["requestedBy"] == this.Ecsv.TargetDivID) {
-                this.Scsv.layout.HighlightRow(action["divID"])
-                this.Scsv.Print()
+            if (action["requestedBy"] == PAGE["MyCSV"].TargetDivID) {
+                PAGE["MySidebar"].layout.HighlightRow(action["divID"])
+                PAGE["MySidebar"].Print()
             }
         }
     }
 
+    log(type, event, moustime) {
+        if (LOGG) {
+            let msg = "[clsUserInput] "
+            if (event.srcElement.id == "") {
+                let parentDiv = ReturnParentUntilID(event.srcElement)
+                log.msg(msg + event.srcElement.id + "with parent: " + parentDiv.id + ". Clicktime: " + moustime)
+            } else {
+                log.msg(msg + event.srcElement.id + ". Clicktime: " + moustime)
+            }
+        }
+    }
 }
