@@ -12,15 +12,18 @@ class libDropDown {
 // ################################################################
 // Drop Down                                                      #
 // ################################################################
-    AddDropDownToDiv(targetDiv, ddName, ddPrefix, ddElements, ddFunctions){
+    AddDropDownToDiv(targetDiv, ddElements, ddFunctions){
         assert(ddElements.length == ddFunctions.length)
-        
+        let ddElements_NoBlanks = _RemoveBlanksInList(ddElements)
+        let ddPrefix = targetDiv
+
         // outer HTML part via set Attribute
-        targetDiv.setAttribute('onclick', "ddToggle('" + ddPrefix + "ddm-" + ddName + "')")
+        targetDiv.setAttribute('onclick', "ddToggle('" + ddPrefix + "-ddmenu')")
+        
         // inner HTML part via string composition
-        let ret = '<div id="' + ddPrefix + 'ddm-' + ddName + '"' + ' class="dropdown-menu">'
+        let ret = '<div id="' + ddPrefix + '-ddmenu"' + ' class="dropdown-menu">'
         for (let i = 0; i < ddElements.length; i++) {
-            ret += '<a id="' + ddPrefix + 'dd-' + ddElements[i] + '" class="dropdown-item" href="#" onclick="' + ddFunctions[i] + '">' + ddElements[i] + '</a>'}
+            ret += '<a id="' + ddPrefix + '-dd-' + ddElements_NoBlanks[i] + '" class="dropdown-item" href="#" onclick="' + ddFunctions[i] + '">' + ddElements[i] + '</a>'}
         targetDiv.innerHTML += ret
     }
 

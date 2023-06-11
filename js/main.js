@@ -10,9 +10,9 @@ const cReader = new FileReader();
 // ################################################################
 // Parameters                                                     #
 // ################################################################
+const cURLHandler = new clsURLHandler()
 const cParameter = new clsParameter()
-const cURLHandler = new clsURLParameterHandler(cParameter.keys());
-cParameter.setAll(cURLHandler.parameters())
+cParameter.setAll(cURLHandler.parameter())
 
 // ################################################################
 // Page Layout                                                    #
@@ -32,7 +32,7 @@ if (cParameter.get("sidebar")) {
 }
 
 // ################################################################
-// HTML Classes                                                   #
+// Main HTML Page Div Container                                   #
 // ################################################################
 let defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
 const PAGE = {}
@@ -41,15 +41,11 @@ PAGE["MyCSV Header"] = new clsCSV({egoname: "ecsvH", TargetDivID: "MyCSV Header"
 PAGE["MySidebar"] = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "SIDEBAR"});
 PAGE["mySearch"] = new clsSiteSearch();
 
-// if (boolSIDEBEAR) {Sidecsv.SetTargetDiv("MySidebar")}
-// Sidecsv.SetTargetDiv("MySidebar")
-// if (cParameter.get("sidebar")) {Sidecsv.SetTargetDiv("MySidebar")}
 
-// const SS = new clsSiteSearch();
 // const MEM = new clsMemory();
 const UIN = new clsUserInput(Object.keys(PAGE));
-const NAV = new clsNavbar("NAV", PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearch"]);
-const HTTP = new clsHTTP();
+const NAV = new clsNavbar("NAV", PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearch"]);   // "MAV" must be equal to variable name
+// const HTTP = new clsHTTP();
 
 
 // ################################################################
@@ -78,4 +74,42 @@ function SaveData(antwort) {
         ecsv._SaveCellValueToData()
         ecsv.Print()
     }
+}
+
+
+
+// ###############################################################################
+// UML                                                                           #
+// ###############################################################################
+//  class diagram
+//
+//    main
+//      |  
+//      |--------clsLog()  
+//      |--------FileReader()
+//      |--------clsParameter()
+//      |--------clsURLHandler();
+//      |
+//      |--------clsCSV() x3
+//      |           |
+//      |           |--------clsModes()
+//      |           |--------clsCSV_ReadWrite()
+//      |           |--------clsData_1x1() x2
+//      |           
+//      |--------clsSiteSearch()
+//      |--------clsUserInput
+//      |
+//      |--------clsNavbar()
+//      |           |
+//      |           |-------libDropDown()
+// 
+// 
+// 
+let main = "Pseudo UML class diagram"
+let next = ""
+if (next) {
+    main = new clsLog()
+    main = new FileReader()
+    main = new clsParameter()
+    main = new clsURLHandler()
 }

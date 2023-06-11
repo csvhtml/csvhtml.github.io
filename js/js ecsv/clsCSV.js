@@ -3,7 +3,14 @@
 // ################################################################
 
 class clsCSV {
-    // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
+/**
+ * Main CSV class. 
+ * At Init is starts with default page parameters
+ * @param {*} setAll - Set all parameters via dictiony.
+ * @param {*} set - Set one parameter via key (String).
+ * @param {*} get - Get one parameter via key (String).
+ * @param {*} keys - Get parameter Keys.
+ */
     constructor({egoname = '', TargetDivID = "", Mode = "standard", InitCols = []}) {
         this.TargetDivID = null
         

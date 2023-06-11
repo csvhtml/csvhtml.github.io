@@ -1,8 +1,19 @@
 var navEcsv
 var navScsv
 
+// ################################################################
+// Left DropDown Menu                                             #
+// ################################################################
+const NAV_LEFT = {
+    // "divID-in-html": [element, of, the drop, down]
+    "nav-Edit":["Add Row", "Del Row","Add Col", "Del Col"],
+}
+
 class clsNavbar {
-    // constructor({csvtext = "", delimiter = ";", egoname = '', TargetDivID = ""}) {
+/**
+ * Handles the page navbar menu
+ * Creates File Menu on left
+ */
     constructor(egoName, Scsv, Ecsv, SS) {
         this.egoName = egoName
         this.libDD = new libDropDown();
@@ -16,20 +27,20 @@ class clsNavbar {
 
     // Create Drop Down Menus and create function call to internal DDLink function
     FillMenu() {
-        // Left Navbar
-        // Edit
-        let edit_elements = ["Add Row", "Del Row","Add Col", "Del Col"]
-        let fkeyyEdit = []
-        for (let keyy of _RemoveBlanksInList(edit_elements)) {
-            fkeyyEdit.push(this.egoName + ".DDLink('" + keyy + "')")
-        }
-        this.libDD.AddDropDownToDiv(
-            document.getElementById("nav-Edit"), // html element where drop down elements are created
-            "edit", // postfix for parent Drop Down Elelemt
-            "navEdit-", // prefix for parent and children of Drop Down element
-            edit_elements, // html text 
-            fkeyyEdit // functions called
-            )  
+        let keys = Object.keys(NAV_LEFT) 
+        for (let key of keys) {
+            let menu_elements = NAV_LEFT[key]
+            let menu_elements_FunctonName = []
+            for (let key2 of _RemoveBlanksInList(menu_elements)) {
+                menu_elements_FunctonName.push(this.egoName + ".DDLink('" + key2 + "')")
+            }
+            this.libDD.AddDropDownToDiv(
+                document.getElementById(key), // html element where drop down elements are created
+                menu_elements, // html text 
+                menu_elements_FunctonName // functions called
+                )  
+            }
+
         // Mode
         let mode_elements = this.Ecsv.mode.GetModes()
         let fkeyyMode = []

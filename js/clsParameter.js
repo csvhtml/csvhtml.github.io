@@ -1,4 +1,13 @@
 class clsParameter {
+/**
+ * Handles the page parameters. 
+ * At Init is starts with default page parameters
+ * @param {*} setAll - Set all parameters via dictiony.
+ * @param {*} set - Set one parameter via key (String).
+ * @param {*} get - Get one parameter via key (String).
+ * @param {*} keys - Get parameter Keys.
+ */
+
     constructor() {
         this.Default = {
             "sidebar": true,
@@ -14,14 +23,16 @@ class clsParameter {
     setAll(dicct) {
         let keys = Object.keys(dicct) 
         for (let key of keys) {
-            assert (key in this.Current)
-            this.Current[key] = dicct[key]
+            this.set(key, dicct[key])
         }
     }
 
     set(key, val) {
-        assert (key in this.Current)
-        this.Current[key] = val
+        if (key in this.Current) {
+            this.Current[key] = val
+        } else {
+            this.log("URL parameter is not a page parameter", "'" + key + "'")
+        }
     }
 
     get(key) {
@@ -31,5 +42,12 @@ class clsParameter {
 
     keys() {
         return Object.keys(this.Default)
+    }
+
+    log(key, val) {
+        if (LOGG) {
+            let msg = "[clsParameterHandler] "
+            log.msg(msg+ key + ": " + val)
+        }
     }
 }

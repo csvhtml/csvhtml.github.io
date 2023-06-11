@@ -2,57 +2,34 @@ const queryString = window.location.search
 const urlParameterX = new URLSearchParams(queryString)
 const urlParameter= Object.fromEntries(urlParameterX.entries())
 
-class clsURLParameterHandler {
-    constructor(parameters) {
+class clsURLHandler {
+/**
+ * Handles the URL parameters. 
+ * @param {*} parameter - returns all URL parameters as dictionary
+ */
+
+    constructor() {
         this.urlParameter = urlParameter
-        this.pageParameter = {}
         
         let keys = Object.keys(this.urlParameter) 
         for (let para of keys) {
             this.urlParameter[para] = forceType(this.urlParameter[para])
         }
-        for (let para of parameters) {
-            this.pageParameter[para] = null
-        }
-        for (let key in urlParameter) {
-                this.log(key, urlParameter[key])
-                this._setparameterValues(key, urlParameter[key])
-        }
     }
 
-    _setparameterValues(key, val) {
-        if (key in this.pageParameter) {
-                this.pageParameter[key] = forceType(val)
-            } else {
-                return
-            }
-        }
-
-    parameters() {
+    parameter() {
         let ret = {}
-        let keys = Object.keys(this.pageParameter) 
+        let keys = Object.keys(this.urlParameter) 
         for (let key of keys) {
-            if (key in this.urlParameter) {
-                ret[key] = this.urlParameter[key]
-            }
+            ret[key] = this.urlParameter[key]
         }
         return ret
     }
 
-    get(parameter) {
-        assert (parameter in this.pageParameter)
-        return this.pageParameter[parameter]
-    }
-
     log(key, val) {
         if (LOGG) {
-            let msg = "[clsURLParameterHandler] "
-            if (key in this.pageParameter) {
-                log.msg(msg+ key + ": " + val)
-            } else  {
-                log.msg(msg+ key + " : " + val + " (key not defined)")
-            }
-            
+            let msg = "[clsURLHandler] "
+            log.msg(msg+ key + ": " + val)
         }
     }
 }
