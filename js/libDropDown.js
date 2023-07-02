@@ -15,7 +15,7 @@ class libDropDown {
     AddDropDownToDiv(targetDiv, ddElements, ddFunctions){
         assert(ddElements.length == ddFunctions.length)
         let ddElements_NoBlanks = _RemoveBlanksInList(ddElements)
-        let ddPrefix = targetDiv
+        let ddPrefix = targetDiv.id
 
         // outer HTML part via set Attribute
         targetDiv.setAttribute('onclick', "ddToggle('" + ddPrefix + "-ddmenu')")
@@ -42,7 +42,14 @@ class libDropDown {
         cInputFileDivID = EgoID
         cInputFileFunction = function (a) {FunctionToCall(a)}
     }
+
+    ChangeDropDownVal(divID, oldVal, newVal) {
+        let div = document.getElementById(divID)
+        div.innerHTML = div.innerHTML.replace(">" + oldVal + "</a>",">" + newVal + "</a>")
+    }
 }
+
+
 
 // ################################################################
 // Drop Down global function                                      #

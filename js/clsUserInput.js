@@ -40,7 +40,7 @@ class clsUserInput {
         for (let divID of this.pageDivIDs) {
             if (DivIsDescendantOf(divElement, divID)) {
                 let antwort = PAGE[divID].Click(divElement)
-                this.InterAction(antwort)
+                cHIF.InterAction(antwort)
             }
         }
     }
@@ -56,25 +56,6 @@ class clsUserInput {
 
     Tipp (event) {
         PAGE["mySearch"].mySearchfilter();
-    }
-
-
-// ################################################################
-// Interactions after actions                                     #
-// ################################################################
-
-    InterAction(action) {
-        if (action["action"] == "HighlightRow") {
-            if (action["requestedBy"] == PAGE["MySidebar"].TargetDivID) {
-                PAGE["MyCSV"].layout.HighlightRow(action["divID"])
-                PAGE["MyCSV"].Print()
-                PAGE["MyCSV"].layout.ScrollToHighlight()
-            }
-            if (action["requestedBy"] == PAGE["MyCSV"].TargetDivID) {
-                PAGE["MySidebar"].layout.HighlightRow(action["divID"])
-                PAGE["MySidebar"].Print()
-            }
-        }
     }
 
     log(type, event, moustime) {

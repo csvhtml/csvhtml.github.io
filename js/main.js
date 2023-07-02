@@ -4,18 +4,19 @@ const LOGG = true
 // ################################################################
 // Base classes                                                   #
 // ################################################################
-var log = new clsLog()
+const log = new clsLog()
 const cReader = new FileReader();
+const cHIF = new clsHtmlInterfaces();
 
 // ################################################################
-// Parameters                                                     #
+// Parameters (get from url)                                      #
 // ################################################################
 const cURLHandler = new clsURLHandler()
 const cParameter = new clsParameter()
 cParameter.setAll(cURLHandler.parameter())
 
 // ################################################################
-// Page Layout                                                    #
+// Page Layout (based on parameters)                              #
 // ################################################################
 if (cParameter.get("sidebar")) {
     document.getElementById("MySidebar Header").classList.add("col-2")
@@ -44,7 +45,7 @@ PAGE["mySearch"] = new clsSiteSearch();
 
 // const MEM = new clsMemory();
 const UIN = new clsUserInput(Object.keys(PAGE));
-const NAV = new clsNavbar("NAV", PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearch"]);   // "MAV" must be equal to variable name
+const NAV = new clsNavbar("NAV", PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearch"]);   // "NAV" must be equal to variable name
 // const HTTP = new clsHTTP();
 
 
@@ -59,7 +60,6 @@ const NAV = new clsNavbar("NAV", PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearc
 
     PAGE["mySearch"].ignore = ["ecsv-sum","dropdown-item"]
 
-    NAV.FillMenu()
 
 })();
 
@@ -99,7 +99,7 @@ function SaveData(antwort) {
 //      |--------clsSiteSearch()
 //      |--------clsUserInput
 //      |
-//      |--------clsNavbar()
+//      |--------clsNavbar(clsCSV() x3)
 //      |           |
 //      |           |-------libDropDown()
 // 
