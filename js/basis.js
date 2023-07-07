@@ -114,7 +114,7 @@ function dicct(keys, vals) {
 function _RemoveBlanksInList(liste) {
     let ret = []
     for (ele of liste) {
-        ret.push(ele.replace(" ", ""))
+        ret.push(ele.replace(" ", "_"))
     }
 
     return ret

@@ -45,7 +45,7 @@ PAGE["mySearch"] = new clsSiteSearch();
 
 // const MEM = new clsMemory();
 const UIN = new clsUserInput(Object.keys(PAGE));
-const NAV = new clsNavbar("NAV", PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearch"]);   // "NAV" must be equal to variable name
+const NAV = new clsNavbar(PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearch"]);   // "NAV" must be equal to variable name
 // const HTTP = new clsHTTP();
 
 

@@ -47,6 +47,11 @@ class libDropDown {
         let div = document.getElementById(divID)
         div.innerHTML = div.innerHTML.replace(">" + oldVal + "</a>",">" + newVal + "</a>")
     }
+
+    ChangeDropDownFunction(divID, oldVal, newVal) {
+        let div = document.getElementById(divID)
+        div.innerHTML = div.innerHTML.replace(' onclick="' + oldVal + '"',' onclick="' + newVal + '"')
+    }
 }
 
 

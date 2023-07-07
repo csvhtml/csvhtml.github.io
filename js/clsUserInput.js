@@ -1,3 +1,5 @@
+const clsUserInput_VALIDINPUTS = ["Click", "Hover", "Tipp"]     // just a reference, this values are actually not used. html classes must provide those interfaces 
+
 class clsUserInput {
     constructor(pageDivIDs) {
         this.pageDivIDs = pageDivIDs

@@ -2,21 +2,21 @@ var navEcsv
 var navScsv
 
 // ################################################################
+// Link to clsNavbar_Calls                                        #
+// ################################################################
+const NAV_LEFT = CLS_NAVBAR_CALLS
+const NAME_NAVBAR_FUNCTIONCALLS = CLS_NAVBAR_FUNCTIONCALL
+// ################################################################
 // Left DropDown Menu                                             #
 // ################################################################
-const NAV_LEFT = {
-    // "divID-in-html": [elements, of, the, drop, down]
-    "nav-Edit":["Add Row", "Del Row","Add Col", "Del Col"],
-    "nav-Mode":["sidebar/no sidebar", "table/list"], // will switch when clicked. example "no sidebar" is clicked, then the menu field changes to "sidebar"
-}
 
 class clsNavbar {
 /**
  * Handles the page navbar menu
  * Creates File Menu on left side. 
  */
-    constructor(egoName, Scsv, Ecsv, SS) {
-        this.egoName = egoName
+    constructor(Scsv, Ecsv, SS) {
+        // this.Calls = new clsNavbar_Calls()
         this.libDD = new libDropDown();
         this.menu = this._initMenu()
         this.Ecsv = Ecsv
@@ -95,6 +95,17 @@ class clsNavbar {
         }
         return false
     }
+
+    Change_Switch(key) {
+        let ret = NAV._switchValInMenu(key)
+        let divID = ret[0]
+        let oldVal = ret[1]
+        let newVal = ret[2]
+        this.libDD.ChangeDropDownVal(divID, oldVal, newVal)
+        oldVal = CLS_NAVBAR_FUNCTIONCALL + "('" + ret[1] + "')" 
+        newVal = CLS_NAVBAR_FUNCTIONCALL + "('" + ret[2] + "')" 
+        this.libDD.ChangeDropDownFunction(divID, oldVal, newVal)
+    }
     
     // Create Drop Down Menus and create function call to internal DDLink function
     FillMenu() {
@@ -103,7 +114,7 @@ class clsNavbar {
             let menu_elements = this.menu[key]
             let menu_elements_FunctonName = []
             for (let key2 of _RemoveBlanksInList(menu_elements)) {
-                menu_elements_FunctonName.push(this.egoName + ".DDLink('" + key2 + "')")
+                menu_elements_FunctonName.push(NAME_NAVBAR_FUNCTIONCALLS + "('" + key2 + "')")
             }
             this.libDD.AddDropDownToDiv(
                 document.getElementById(key), // html element where drop down elements are created
@@ -117,51 +128,6 @@ class clsNavbar {
         this.libDD.AddInputFileAfterDiv({"FormdivID": "form-csv", "EgoID": "File-csv", "accept":".csv", "FunctionToCall": function (a) {DDFileInput(a)}}) 
     }
 
-
-    // Create Link between DDLink and functions to be called
-    DDLink(key) {
-        // Switch
-        if (this._IsSwitch(key)) {
-            let ret = this._switchValInMenu(key)
-            let divID = ret[0]
-            let oldVal = ret[1]
-            let newVal = ret[2]
-            this.libDD.ChangeDropDownVal(divID, oldVal, newVal)
-        }
-        // Edit
-        if (key == "AddCol") {
-            this.Ecsv.AddCol()
-            return}
-        if (key == "AddRow") {
-            this.Ecsv.AddRow()
-            this.Scsv.AddRow()
-            return}
-        if (key == "DelCol") {
-            this.Ecsv.DelCol()
-            return}
-        if (key == "DelRow") {
-            this.Ecsv.DelRow()
-            this.Scsv.DelRow()
-            return}
-        if (key == "sidebar") {
-            }
-
-        // Mode
-        if (this.Ecsv.mode.GetModes().includes(key)) {
-            this.Ecsv.SetMode(key)
-            this.XSetBGColor('navMode-dd-' + key, rgbText(104, 187, 227))
-            this.Ecsv.Print()
-            this.Scsv.SetMode(key)
-            this.Scsv.Print()
-            return}
-
-        // Mode
-        if (key == "Start") {
-            HTTP.GetCSV("Start", NAVcallback)
-            console.log("Hallo Mario")
-            // this.Ecsv.DelRow()
-            return}
-    }
 
     XSetBGColor(divID, rgb) {
         if (divID.includes("navMode-dd-")) {

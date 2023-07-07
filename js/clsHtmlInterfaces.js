@@ -1,3 +1,4 @@
+// an interaction is a dictionary with max three keys defined in clsHtmlInterfaces_VALIDKEYS
 const clsHtmlInterfaces_VALIDKEYS = ["action", "requestedBy", "divID"]
 
 class clsHtmlInterfaces {
