@@ -7,7 +7,7 @@ const CLS_NAVBAR_DOWNLOAD_APPLYFORTAGS = ["</div>", "</a>"]
 // ################################################################
 const CLS_NAV_LEFT = CLS_NAVBAR_CONFIG_LEFT
 const CLS_NAV_RIGHT = CLS_NAVBAR__CONFIG_RIGTH
-const NAME_NAVBAR_FUNCTIONCALLS = CLS_NAVBAR_FUNCTIONCALL
+const NAME_NAVBAR_FUNCTIONCALLS = CLS_NAVBAR__CONFIG_LEFT_FUNCTIONCALL
 // ################################################################
 // Left DropDown Menu                                             #
 // ################################################################
@@ -122,7 +122,8 @@ class clsNavbar {
     
     // Create Drop Down Menus and create function call to internal DDLink function
     FillMenu() {
-        let keys = Object.keys(CLS_NAV_LEFT) 
+        let keys
+        keys = Object.keys(CLS_NAV_LEFT) 
         for (let key of keys) {
             let menu_elements = this.menu[key]
             let menu_elements_FunctonName = []
@@ -136,12 +137,6 @@ class clsNavbar {
                 )  
             }
 
-        // Right Navbar
-        // File Input
-        // this.libDD.AddInputFileAfterDiv({"FormdivID": "form-csv", "EgoID": "File-csv", "accept":".csv", "FunctionToCall": function (a) {DDFileInput(a)}}) 
-
-
-
         keys = Object.keys(CLS_NAV_RIGHT) 
         for (let key of keys) {
             let div = document.getElementById(key)
@@ -152,7 +147,7 @@ class clsNavbar {
                 if (div.id.includes("input")) {
                     let input2 = document.getElementById(key)
                     input2.addEventListener('change', _ddReadFile)
-                    this.libDD.Input_AssignFunction(key, function (a) {DDFileInput(a)})
+                    this.libDD.Input_AssignFunction(key, CLS_NAV_RIGHT[key])
                 }
 
             }
@@ -171,7 +166,6 @@ class clsNavbar {
         }
     }   
 
-
     XSetBGColor(divID, rgb) {
         if (divID.includes("navMode-dd-")) {
             let allMenuChildrenIDs = ElemementsWithSubStringInID(["navMode-dd-"], "id")
@@ -186,19 +180,3 @@ class clsNavbar {
     }
 }
 
-// ################################################################
-// Fill menu Input File global functions                          #
-// ################################################################
-
-// this function cant be a class member, because it is called outside its scope
-function DDFileInput(divID) {
-            looper = [PAGE["MyCSV"]]
-            if (cParameter.get("sidebar")) {looper.push(PAGE["MySidebar"])}
-            // if (boolSIDEBEAR) {looper.push(navScsv)}
-            for (ele of looper) {
-                ele.ReadCSV(cReader.result);
-                ele.fileLoaded = true
-                ele.Print();
-                ele.ToggleLink();
-            }
-    }   

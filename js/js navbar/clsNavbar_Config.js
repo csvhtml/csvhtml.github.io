@@ -1,7 +1,8 @@
 // ################################################################
 // Page specfic nav bar properties                                #
 // ################################################################
-
+// In the Drop Down part (LEFT), alsways the same function is called with different parameters
+const CLS_NAVBAR__CONFIG_LEFT_FUNCTIONCALL = "clsNavbar_Call_DropDown"
 const CLS_NAVBAR_CONFIG_LEFT = {
     "nav-Edit":[
         "Add Row", 
@@ -15,9 +16,10 @@ const CLS_NAVBAR_CONFIG_LEFT = {
     ],
 }
 
+// In the Button Part (RIGHT), functions are called directly. Either via string name or via function reference
 const CLS_NAVBAR__CONFIG_RIGTH = {
-    "nav-input": "clsNavbar_Call_Input()",
-    "nav-download": "clsNavbar_Call_Download()"
+    "nav-input": clsNavbar_Call_Input,      // input must be reference
+    "nav-download": "clsNavbar_Call_Download()"     // download must be string
 }
 
 function _clsNavbar_Call_Functions(key) {
@@ -62,11 +64,10 @@ function _clsNavbar_Call_Functions(key) {
 // This is the main function calleed when a nav btton is clicked.
 // This function must be outside the navbar lib, to make it globally callable from the index.html (otherwise the instances name needs to be knwon)
 
-const CLS_NAVBAR_FUNCTIONCALL = "clsNavbar_Call_DropDown"  // name of main function called. See bottom
-const CLS_NAVBAR_DOWNLOADCALL = "clsNavbar_Call_Download"  // name of main function called for download button. See bottom
+// const CLS_NAVBAR_DOWNLOADCALL = "clsNavbar_Call_Download"  // name of main function called for download button. See bottom
 
 function clsNavbar_Call_DropDown(key) {
-    assert(CLS_NAVBAR_FUNCTIONCALL==arguments.callee.name)
+    assert(CLS_NAVBAR__CONFIG_LEFT_FUNCTIONCALL==arguments.callee.name)
 
     if (NAV._IsSwitch(key)) {
         NAV.Change_Switch(key)}
@@ -78,14 +79,11 @@ function clsNavbar_Call_Download() {
     NAV.DownloadCSV(PAGE["MyCSV"]._AsCSV())
 }
 
-// function clsNavbar_Call_Input() {
-//     PAGE["MyCSV"].ReadCSV(cReader.result)
-//     PAGE["MySidebar"].ReadCSV(cReader.result)
-
-//     PAGE["MyCSV"].fileLoaded = true
-//     PAGE["MyCSV"].Print();
-//     PAGE["MyCSV"].ToggleLink();
-//     PAGE["MySidebar"].fileLoaded = true
-//     PAGE["MySidebar"].Print();
-//     PAGE["MySidebar"].ToggleLink();
-// }
+function clsNavbar_Call_Input() {
+    for (let X of [PAGE["MyCSV"],PAGE["MySidebar"]]) {
+        X.ReadCSV(cReader.result);
+        X.fileLoaded = true
+        X.Print();
+        X.ToggleLink();
+    }
+} 
