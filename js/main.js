@@ -7,6 +7,7 @@ const LOGG = true
 const log = new clsLog()
 const cReader = new FileReader();
 const cHIF = new clsHtmlInterfaces();
+const cSVG = new clsSVG();
 
 // ################################################################
 // Parameters (get from url)                                      #

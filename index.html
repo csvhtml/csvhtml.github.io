@@ -20,21 +20,13 @@
     </nav>
 
     <nav id="navRight" class="nav">
-            <!-- Searchfilter on Page -->
-        <form class="form-inline  my-2 mx-2" >
-            <!-- <input class="form-control" type="text" id="mySearch" onkeyup="mySearchfilter()" placeholder="Site Search"> -->
-            <input class="form-control" type="text" id="mySearch" placeholder="Site Search">
-        </form>
         <form class="form-inline my-2 mx-2" id="form-csv">
         </form>
+
         <form class="form-inline my-2 mx-2" id="forminput">
-            <a id="download" class="btn btn-outline-primary my-2 my-sm-0" type="submit" onclick="download_saveData()"> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                </svg> Save Data
+            <a id="download" class="btn btn-outline-primary my-2 my-sm-0 mySVG-Save mySVG-SqAwDwnBmLine" type="submit" onclick="download_saveData()"> 
+                Save Data
             </a>
-            <!-- Addbuttons here -->
         </form>
     </nav>
 </navbar>
@@ -58,12 +50,13 @@
 </body>
 <script src="js/basis.js"></script>
 <script src="js/clsHTTP.js"></script>
+<script src="js/clsSVG.js"></script>
 <script src="js/clsParameter.js"></script>
 <script src="js/clsURLHandler.js"></script>
 <script src="js/clsHtmlInterfaces.js"></script>
 
 <script src="js/clsUserInput.js"></script>
-<script src="js/js navbar/clsNavbar_Calls.js"></script>
+<script src="js/js navbar/clsNavbar_Config.js"></script>
 <script src="js/js navbar/clsNavbar.js"></script>
 
 <script src="js/js ecsv/clsCSV_ReadWrite.js"></script>

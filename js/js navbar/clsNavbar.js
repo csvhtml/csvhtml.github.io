@@ -4,7 +4,7 @@ var navScsv
 // ################################################################
 // Link to clsNavbar_Calls                                        #
 // ################################################################
-const NAV_LEFT = CLS_NAVBAR_CALLS
+const NAV_LEFT = CLS_NAVBAR_LEFT
 const NAME_NAVBAR_FUNCTIONCALLS = CLS_NAVBAR_FUNCTIONCALL
 // ################################################################
 // Left DropDown Menu                                             #
@@ -17,7 +17,7 @@ class clsNavbar {
  */
     constructor(Scsv, Ecsv, SS) {
         // this.Calls = new clsNavbar_Calls()
-        this.libDD = new libDropDown();
+        this.libDD = new libDropDown()
         this.menu = this._initMenu()
         this.Ecsv = Ecsv
         this.Scsv = Scsv
@@ -141,13 +141,6 @@ class clsNavbar {
             }
         }
     }
-}
-
-function NAVcallback(text) {
-    ecsv.ReadCSV(text)
-    ecsv.fileLoaded = true
-    ecsv.Print();
-    ecsv.ToggleLink();
 }
 
 // ################################################################

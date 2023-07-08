@@ -20,3 +20,22 @@
 // NAV (clsNAV)
 // dedicated html class for the navbar. UIN does not apply here (e. g. if the mosue is clicked somewhere in the navbar). it is equivalent to UIN, where the click or key input on a certain nav button
 // will trigger a certain functionality of the html classes. Hence also NAV gets the global variable 'PAGE'
+
+
+
+
+
+
+
+
+// ##################################################################################################################################                                                                                                                                #
+// Lost                                                                                                                             #
+// ##################################################################################################################################
+
+// index.html
+//
+// <!-- Searchfilter on Page -->
+// <form class="form-inline  my-2 mx-2" >
+//     <!-- <input class="form-control" type="text" id="mySearch" onkeyup="mySearchfilter()" placeholder="Site Search"> -->
+//     <input class="form-control" type="text" id="mySearch" placeholder="Site Search">
+// </form>

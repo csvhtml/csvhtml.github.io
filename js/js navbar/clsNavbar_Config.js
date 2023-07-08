@@ -1,18 +1,20 @@
 const CLS_NAVBAR_FUNCTIONCALL = "clsNavbar_Call"  // name of main function called. See last function at bottom
 
-
 // ################################################################
 // Page specfic nav bar properties                                #
 // ################################################################
 
-const CLS_NAVBAR_CALLS = {
-    // "divID-in-html": [elements, of, the, drop, down]
+const CLS_NAVBAR_LEFT = {
     "nav-Edit":[
         "Add Row", 
         "Del Row",
         "Add Col", 
-        "Del Col"],
-    "nav-Mode":["sidebar/no sidebar", "table/list"], // will switch when clicked. example "no sidebar" is clicked, then the menu field changes to "sidebar"
+        "Del Col"
+    ],
+    "nav-Mode":[
+        "sidebar/no sidebar", 
+        "table/list"
+    ],
 }
 
 function _clsNavbar_Call_Functions(key) {
@@ -47,12 +49,7 @@ function _clsNavbar_Call_Functions(key) {
     //     this.Scsv.Print()
     //     return}
 
-    // // Mode
-    // if (key == "Start") {
-    //     HTTP.GetCSV("Start", NAVcallback)
-    //     console.log("Hallo Mario")
-    //     // this.Ecsv.DelRow()
-    //     return}
+ 
 
 
 // ################################################################
@@ -63,8 +60,9 @@ function _clsNavbar_Call_Functions(key) {
 // This function must be outside the navbar lib, to make it globally callable from the index.html (otherwise the instances name needs to be knwon)
 function clsNavbar_Call(key) {
     assert(CLS_NAVBAR_FUNCTIONCALL==arguments.callee.name)
+
     if (NAV._IsSwitch(key)) {
-        NAV.Change_Switch(key)
-    }
+        NAV.Change_Switch(key)}
+
     _clsNavbar_Call_Functions(key)
 }
