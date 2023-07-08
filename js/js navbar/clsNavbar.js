@@ -1,10 +1,12 @@
 var navEcsv
 var navScsv
 
+const CLS_NAVBAR_DOWNLOAD_APPLYFORTAGS = ["</div>", "</a>"]
 // ################################################################
 // Link to clsNavbar_Calls                                        #
 // ################################################################
-const NAV_LEFT = CLS_NAVBAR_LEFT
+const CLS_NAV_LEFT = CLS_NAVBAR_CONFIG_LEFT
+const CLS_NAV_RIGHT = CLS_NAVBAR__CONFIG_RIGTH
 const NAME_NAVBAR_FUNCTIONCALLS = CLS_NAVBAR_FUNCTIONCALL
 // ################################################################
 // Left DropDown Menu                                             #
@@ -28,12 +30,23 @@ class clsNavbar {
         this.FillMenu()
     }
 
+    DownloadCSV(text) {
+        let filename = " .csv"
+        var pom = document.createElement('a');
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        pom.setAttribute('download', filename);
+        pom.style.display = 'none';
+        document.body.appendChild(pom);
+        pom.click();
+        document.body.removeChild(pom);
+    }
+
     _initMenu() {
-        let keys = Object.keys(NAV_LEFT) 
+        let keys = Object.keys(CLS_NAV_LEFT ) 
         let dicct = {}
         for (let key of keys) {
             dicct[key] = []
-            for (let val of NAV_LEFT[key]) {
+            for (let val of CLS_NAV_LEFT [key]) {
                     dicct[key].push(val.split('/', 1)[0])
             }   
         }
@@ -42,11 +55,11 @@ class clsNavbar {
 
     _switchValInMenu(val) {
         let ret = ["divID", "oldVal", "newVal"]
-        let keys = Object.keys(NAV_LEFT) 
+        let keys = Object.keys(CLS_NAV_LEFT ) 
         for (let key of keys) {
-            // for (let val of NAV_LEFT[key]) {
-            for (let i = 0; i < NAV_LEFT[key].length;i++) {
-                let valConst = NAV_LEFT[key][i]
+            // for (let val of CLS_NAV_LEFT [key]) {
+            for (let i = 0; i < CLS_NAV_LEFT [key].length;i++) {
+                let valConst = CLS_NAV_LEFT [key][i]
                 if (valConst.includes("/")) {
                     ret[0] = key
                     let ping = valConst.split('/', 1)[0] 
@@ -72,9 +85,9 @@ class clsNavbar {
      * Returns all menu entries with switch condition "/" as list of pairs
      */
         let ret = []
-        let keys = Object.keys(NAV_LEFT) 
+        let keys = Object.keys(CLS_NAV_LEFT ) 
         for (let key of keys) {
-            for (let val of NAV_LEFT[key]) {
+            for (let val of CLS_NAV_LEFT [key]) {
                 if (val.includes("/")) {
                     ret.push(val.split('/'))
                 }
@@ -109,7 +122,7 @@ class clsNavbar {
     
     // Create Drop Down Menus and create function call to internal DDLink function
     FillMenu() {
-        let keys = Object.keys(NAV_LEFT) 
+        let keys = Object.keys(CLS_NAV_LEFT ) 
         for (let key of keys) {
             let menu_elements = this.menu[key]
             let menu_elements_FunctonName = []
@@ -126,6 +139,21 @@ class clsNavbar {
         // Right Navbar
         // File Input
         this.libDD.AddInputFileAfterDiv({"FormdivID": "form-csv", "EgoID": "File-csv", "accept":".csv", "FunctionToCall": function (a) {DDFileInput(a)}}) 
+
+        keys = Object.keys(CLS_NAV_RIGHT) 
+        for (let key of keys) {
+            let div = document.getElementById(key)
+            let divTagHTML = div.outerHTML.replace(div.innerHTML, "")
+            for (let tag of CLS_NAVBAR_DOWNLOAD_APPLYFORTAGS) {
+                if (divTagHTML.includes(tag)) {
+                    divTagHTML = divTagHTML.replace(tag, "")
+                    let New_divTagHTML = divTagHTML.replace(">", 'onclick="' + CLS_NAV_RIGHT[key] + '">')
+                    
+                    div.outerHTML = div.outerHTML.replace(divTagHTML, New_divTagHTML)
+                }
+            }
+            
+        }
     }
 
 
@@ -162,20 +190,3 @@ function DDFileInput(divID) {
             }
         } 
     }   
-
-
-// ###############################################################################
-// Save Download Button                                                          #
-// ###############################################################################
-
-function download_saveData() {
-    let text = ecsv._AsCSV()
-    let filename = " .csv"
-    var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    pom.setAttribute('download', filename);
-    pom.style.display = 'none';
-    document.body.appendChild(pom);
-    pom.click();
-    document.body.removeChild(pom);
-}

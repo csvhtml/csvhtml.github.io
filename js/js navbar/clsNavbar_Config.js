@@ -1,10 +1,8 @@
-const CLS_NAVBAR_FUNCTIONCALL = "clsNavbar_Call"  // name of main function called. See last function at bottom
-
 // ################################################################
 // Page specfic nav bar properties                                #
 // ################################################################
 
-const CLS_NAVBAR_LEFT = {
+const CLS_NAVBAR_CONFIG_LEFT = {
     "nav-Edit":[
         "Add Row", 
         "Del Row",
@@ -15,6 +13,10 @@ const CLS_NAVBAR_LEFT = {
         "sidebar/no sidebar", 
         "table/list"
     ],
+}
+
+const CLS_NAVBAR__CONFIG_RIGTH = {
+    "nav-download": "clsNavbar_Call_Download()"
 }
 
 function _clsNavbar_Call_Functions(key) {
@@ -53,16 +55,27 @@ function _clsNavbar_Call_Functions(key) {
 
 
 // ################################################################
-// Main function called                                           #
+// Main function call                                             #
 // ################################################################
 
 // This is the main function calleed when a nav btton is clicked.
 // This function must be outside the navbar lib, to make it globally callable from the index.html (otherwise the instances name needs to be knwon)
-function clsNavbar_Call(key) {
+
+const CLS_NAVBAR_FUNCTIONCALL = "clsNavbar_Call_DropDown"  // name of main function called. See bottom
+const CLS_NAVBAR_DOWNLOADCALL = "clsNavbar_Call_Download"  // name of main function called for download button. See bottom
+
+function clsNavbar_Call_DropDown(key) {
     assert(CLS_NAVBAR_FUNCTIONCALL==arguments.callee.name)
 
     if (NAV._IsSwitch(key)) {
         NAV.Change_Switch(key)}
 
     _clsNavbar_Call_Functions(key)
+}
+
+// function download_saveData() {
+function clsNavbar_Call_Download() {
+
+    NAV.DownloadCSV(PAGE["MyCSV"]._AsCSV())
+
 }
