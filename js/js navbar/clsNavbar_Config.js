@@ -16,6 +16,7 @@ const CLS_NAVBAR_CONFIG_LEFT = {
 }
 
 const CLS_NAVBAR__CONFIG_RIGTH = {
+    "nav-input": "clsNavbar_Call_Input()",
     "nav-download": "clsNavbar_Call_Download()"
 }
 
@@ -73,9 +74,18 @@ function clsNavbar_Call_DropDown(key) {
     _clsNavbar_Call_Functions(key)
 }
 
-// function download_saveData() {
 function clsNavbar_Call_Download() {
-
     NAV.DownloadCSV(PAGE["MyCSV"]._AsCSV())
-
 }
+
+// function clsNavbar_Call_Input() {
+//     PAGE["MyCSV"].ReadCSV(cReader.result)
+//     PAGE["MySidebar"].ReadCSV(cReader.result)
+
+//     PAGE["MyCSV"].fileLoaded = true
+//     PAGE["MyCSV"].Print();
+//     PAGE["MyCSV"].ToggleLink();
+//     PAGE["MySidebar"].fileLoaded = true
+//     PAGE["MySidebar"].Print();
+//     PAGE["MySidebar"].ToggleLink();
+// }

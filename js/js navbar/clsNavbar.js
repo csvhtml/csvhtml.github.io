@@ -122,7 +122,7 @@ class clsNavbar {
     
     // Create Drop Down Menus and create function call to internal DDLink function
     FillMenu() {
-        let keys = Object.keys(CLS_NAV_LEFT ) 
+        let keys = Object.keys(CLS_NAV_LEFT) 
         for (let key of keys) {
             let menu_elements = this.menu[key]
             let menu_elements_FunctonName = []
@@ -138,23 +138,38 @@ class clsNavbar {
 
         // Right Navbar
         // File Input
-        this.libDD.AddInputFileAfterDiv({"FormdivID": "form-csv", "EgoID": "File-csv", "accept":".csv", "FunctionToCall": function (a) {DDFileInput(a)}}) 
+        // this.libDD.AddInputFileAfterDiv({"FormdivID": "form-csv", "EgoID": "File-csv", "accept":".csv", "FunctionToCall": function (a) {DDFileInput(a)}}) 
+
+
 
         keys = Object.keys(CLS_NAV_RIGHT) 
         for (let key of keys) {
             let div = document.getElementById(key)
-            let divTagHTML = div.outerHTML.replace(div.innerHTML, "")
-            for (let tag of CLS_NAVBAR_DOWNLOAD_APPLYFORTAGS) {
-                if (divTagHTML.includes(tag)) {
-                    divTagHTML = divTagHTML.replace(tag, "")
-                    let New_divTagHTML = divTagHTML.replace(">", 'onclick="' + CLS_NAV_RIGHT[key] + '">')
-                    
-                    div.outerHTML = div.outerHTML.replace(divTagHTML, New_divTagHTML)
+            if (div != null) {
+                if (div.id.includes("download")) {
+                    this._FillMenu_InsertOnClick(key, div) 
                 }
+                if (div.id.includes("input")) {
+                    let input2 = document.getElementById(key)
+                    input2.addEventListener('change', _ddReadFile)
+                    this.libDD.Input_AssignFunction(key, function (a) {DDFileInput(a)})
+                }
+
             }
-            
         }
     }
+
+    _FillMenu_InsertOnClick(key, div) {
+        let divTagHTML = div.outerHTML.replace(div.innerHTML, "")
+        for (let tag of CLS_NAVBAR_DOWNLOAD_APPLYFORTAGS) {
+            if (divTagHTML.includes(tag)) {
+                divTagHTML = divTagHTML.replace(tag, "")
+                let New_divTagHTML = divTagHTML.replace(">", 'onclick="' + CLS_NAV_RIGHT[key] + '">')
+                
+                div.outerHTML = div.outerHTML.replace(divTagHTML, New_divTagHTML)
+            }
+        }
+    }   
 
 
     XSetBGColor(divID, rgb) {
@@ -177,10 +192,8 @@ class clsNavbar {
 
 // this function cant be a class member, because it is called outside its scope
 function DDFileInput(divID) {
-    // function DDFileInput() {
-        if (divID == "File-csv") {
-            looper = [navEcsv]
-            if (cParameter.get("sidebar")) {looper.push(navScsv)}
+            looper = [PAGE["MyCSV"]]
+            if (cParameter.get("sidebar")) {looper.push(PAGE["MySidebar"])}
             // if (boolSIDEBEAR) {looper.push(navScsv)}
             for (ele of looper) {
                 ele.ReadCSV(cReader.result);
@@ -188,5 +201,4 @@ function DDFileInput(divID) {
                 ele.Print();
                 ele.ToggleLink();
             }
-        } 
     }   
