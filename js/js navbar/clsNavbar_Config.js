@@ -2,7 +2,7 @@
 // Page specfic nav bar properties                                #
 // ################################################################
 // In the Drop Down part (LEFT), alsways the same function is called with different parameters
-const CLS_NAVBAR__CONFIG_LEFT_FUNCTIONCALL = "clsNavbar_Call_DropDown"
+const CLS_NAVBAR_CONFIG_LEFT_FUNCTIONCALL = "clsNavbar_Call_DropDown"
 const CLS_NAVBAR_CONFIG_LEFT = {
     "nav-Edit":[
         "Add Row", 
@@ -22,7 +22,7 @@ const CLS_NAVBAR__CONFIG_RIGTH = {
     "nav-download": "clsNavbar_Call_Download()"     // download must be string
 }
 
-function _clsNavbar_Call_Functions(key) {
+function clsNavbar_Config_FunctionCall(key) {
     if (key == "Add_Col") {
         PAGE["MyCSV"].AddCol()
         return}
@@ -42,13 +42,18 @@ function _clsNavbar_Call_Functions(key) {
         return}
 
     if (key == "sidebar") {
-            }
+        cParameter.set("sidebar", true)
+        main_Layout()}
+
+    if (key == "no_sidebar") {
+        cParameter.set("sidebar", false)
+        main_Layout()}
 }
 
     // // Mode
     // if (this.Ecsv.mode.GetModes().includes(key)) {
     //     this.Ecsv.SetMode(key)
-    //     this.XSetBGColor('navMode-dd-' + key, rgbText(104, 187, 227))
+    //     this._XSetBGColor('navMode-dd-' + key, rgbText(104, 187, 227))
     //     this.Ecsv.Print()
     //     this.Scsv.SetMode(key)
     //     this.Scsv.Print()
@@ -67,16 +72,16 @@ function _clsNavbar_Call_Functions(key) {
 // const CLS_NAVBAR_DOWNLOADCALL = "clsNavbar_Call_Download"  // name of main function called for download button. See bottom
 
 function clsNavbar_Call_DropDown(key) {
-    assert(CLS_NAVBAR__CONFIG_LEFT_FUNCTIONCALL==arguments.callee.name)
+    assert(CLS_NAVBAR_CONFIG_LEFT_FUNCTIONCALL==arguments.callee.name)
 
-    if (NAV._IsSwitch(key)) {
+    if (NAV.IsSwitch(key)) {
         NAV.Change_Switch(key)}
 
-    _clsNavbar_Call_Functions(key)
+    clsNavbar_Config_FunctionCall(key)
 }
 
 function clsNavbar_Call_Download() {
-    NAV.DownloadCSV(PAGE["MyCSV"]._AsCSV())
+    DownloadCSV(PAGE["MyCSV"]._AsCSV())
 }
 
 function clsNavbar_Call_Input() {

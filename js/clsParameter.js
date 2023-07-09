@@ -1,3 +1,9 @@
+
+const CLS_PARAMETER_VALID = {
+    "sidebar": [true, false],
+    "mode": [""],
+}
+
 class clsParameter {
 /**
  * Handles the page parameters. 
@@ -9,17 +15,24 @@ class clsParameter {
  */
 
     constructor() {
-        this.Default = {
-            "sidebar": true,
-            "mode": "",
-        }
-
+        this.Default = this.initParameter()
         this.Current = {}
         let keys = Object.keys(this.Default)
         for (let key of keys) {
             this.Current[key] = this.Default[key]
         }
     }
+
+    initParameter () {       
+        let keys = Object.keys(CLS_PARAMETER_VALID) 
+        let dicct = {}
+        for (let key of keys) {
+            dicct[key] = []
+            dicct[key].push(CLS_PARAMETER_VALID[key][0])
+        }
+        return dicct
+    }
+
     setAll(dicct) {
         let keys = Object.keys(dicct) 
         for (let key of keys) {
@@ -29,9 +42,14 @@ class clsParameter {
 
     set(key, val) {
         if (key in this.Current) {
-            this.Current[key] = val
+            if (CLS_PARAMETER_VALID[key].includes(val)) {
+                this.Current[key] = val
+            } else {
+                this.log("value " + "'" + key + "'" + " is not valid value for parameter ", "'" + key + "'")
+            }
+
         } else {
-            this.log("URL parameter is not a page parameter", "'" + key + "'")
+            this.log("parameter is not a valid page parameter", "'" + key + "'")
         }
     }
 

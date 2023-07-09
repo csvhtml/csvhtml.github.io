@@ -17,23 +17,6 @@ const cParameter = new clsParameter()
 cParameter.setAll(cURLHandler.parameter())
 
 // ################################################################
-// Page Layout (based on parameters)                              #
-// ################################################################
-if (cParameter.get("sidebar")) {
-    document.getElementById("MySidebar Header").classList.add("col-2")
-    document.getElementById("MyCSV Header").classList.add("col-10")
-
-    document.getElementById("MySidebar").classList.add("col-2")
-    document.getElementById("MyCSV").classList.add("col-10")
-} else {
-    document.getElementById("MySidebar").remove()
-    document.getElementById("MySidebar Header").remove()
-
-    document.getElementById("MyCSV").classList.add("col-12")
-    document.getElementById("MyCSV Header").classList.add("col-12")
-}
-
-// ################################################################
 // Main HTML Page Div Container                                   #
 // ################################################################
 let defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
@@ -46,23 +29,8 @@ PAGE["mySearch"] = new clsSiteSearch();
 
 // const MEM = new clsMemory();
 const UIN = new clsUserInput(Object.keys(PAGE));
-const NAV = new clsNavbar(PAGE["MySidebar"], PAGE["MyCSV"], PAGE["mySearch"]);   // "NAV" must be equal to variable name
+const NAV = new clsNavbar();   // "NAV" must be equal to variable name
 // const HTTP = new clsHTTP();
-
-
-// ################################################################
-// HTML Set Up                                                    #
-// ################################################################
-
-(function () {
-    window.addEventListener('mousedown', UIN.MouseDown)
-    window.addEventListener('mouseup', UIN.MouseUp)
-    window.addEventListener('keyup', UIN.KeyUp)
-
-    PAGE["mySearch"].ignore = ["ecsv-sum","dropdown-item"]
-
-
-})();
 
 
 // ###############################################################################
@@ -77,40 +45,55 @@ function SaveData(antwort) {
     }
 }
 
+// ################################################################
+// Page Set Up                                                    #
+// ################################################################
 
+(function () {
+    main_Events()
+    main_CLS()
+    main_Layout()
+})();
 
-// ###############################################################################
-// UML                                                                           #
-// ###############################################################################
-//  class diagram
-//
-//    main
-//      |  
-//      |--------clsLog()  
-//      |--------FileReader()
-//      |--------clsParameter()
-//      |--------clsURLHandler();
-//      |
-//      |--------clsCSV() x3
-//      |           |
-//      |           |--------clsModes()
-//      |           |--------clsCSV_ReadWrite()
-//      |           |--------clsData_1x1() x2
-//      |           
-//      |--------clsSiteSearch()
-//      |--------clsUserInput
-//      |
-//      |--------clsNavbar(clsCSV() x3)
-//      |           |
-//      |           |-------libDropDown()
-// 
-// 
-// 
-let main = "Pseudo UML class diagram"
-let next = ""
-if (next) {
-    main = new clsLog()
-    main = new FileReader()
-    main = new clsParameter()
-    main = new clsURLHandler()
+// (function () {
+function main_Events() {
+    window.addEventListener('mousedown', UIN.MouseDown)
+    window.addEventListener('mouseup', UIN.MouseUp)
+    window.addEventListener('keyup', UIN.KeyUp)
 }
+// })();
+
+
+function main_CLS() {
+    PAGE["mySearch"].ignore = ["ecsv-sum","dropdown-item"]
+}
+
+function main_Layout() {
+    main_Layout_Init()
+    if (cParameter.get("sidebar")) {
+        document.getElementById("MySidebar Header").classList.add("col-2")
+        document.getElementById("MyCSV Header").classList.add("col-10")
+    
+        document.getElementById("MySidebar").classList.add("col-2")
+        document.getElementById("MyCSV").classList.add("col-10")
+    } else {
+        document.getElementById("MySidebar").style.display = 'none';  
+        document.getElementById("MySidebar Header").style.display = 'none';  
+    
+        document.getElementById("MyCSV").classList.add("col-12")
+        document.getElementById("MyCSV Header").classList.add("col-12")
+    }
+}
+
+function main_Layout_Init() {
+    document.getElementById("MySidebar").style.display = '';  
+    document.getElementById("MySidebar Header").style.display = '';
+
+    document.getElementById("MyCSV").classList.remove("col-10", "col-12")
+    document.getElementById("MyCSV Header").classList.remove("col-10", "col-12")
+     
+    document.getElementById("MySidebar").classList.remove("col-2")
+    document.getElementById("MySidebar Header").classList.remove("col-2")
+}
+
+
