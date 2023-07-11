@@ -1,12 +1,56 @@
+// ################################################################
+// Config                                                         #
+// ################################################################
+const CLS_MODES_DEFAULT_COLS = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
+const CLS_MODES_DEFAULT_DATA = {
+    "No.": 1,
+    "[dropdown]": "[]",
+    "default": ".."
+}
+const CLS_MODES_CSV_VALID_CONFIG = {
+    "CSVLayout": ["table", "list", "headersOnly"]  // first entry is default config
+}
+const CLS_MODES_FILTER = {
+    "type": [],
+    "tags": []
+} 
+
+// ################################################################
+// Pre-defined Configs                                            #
+// ################################################################
+const CLS_MODES_PREDEFINED = {
+    "standard": {},
+    "header": {
+        "CSVLayout": "headersOnly"
+    },
+    "SIDEBAR": {
+        "cols": ["No.","Name"]
+    }
+}
+
 class clsModes {
-    constructor(activeMode = "standard", DefaultCols = []) {
-        if (DefaultCols.length === 0) {
-            this.defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
-        } else {
-            this.defaultCols = DefaultCols
+    constructor(SetMode = "standard", DefaultCols = []) {
+        this.Config = {
+            // Config at Startup
+            "cols": [],
+            "CSVLayout": "",
+            // Filter during run time
+            "type": [],
+            "tags": []
         }
-        this.activeMode = activeMode
-        this.activeModeType = activeMode
+        
+        this.Config["cols"] =  CLS_MODES_DEFAULT_COLS
+        this.Config["CSVLayout"] =  CLS_MODES_CSV_VALID_CONFIG[0]
+        if (SetMode != "standard") {
+            for (let key of Object.keys(CLS_MODES_PREDEFINED[SetMode])) {
+                this.Config[key] = CLS_MODES_PREDEFINED[SetMode][key]
+            }
+        }
+
+        this.Config["cols"].replaceIfEmpty(DefaultCols)
+        this.activeModeName = SetMode
+
+
         this.modes = {
             "standard": {cols:[], valueIncludes:{}, type: "table"},
             "header": {cols:[], valueIncludes:{}, type: "table"},
@@ -18,86 +62,47 @@ class clsModes {
         }
     }
 
-    GetModes() {
-        let ret = []
-        for (let key of Object.keys(this.modes)) {
-            if (!this.IsCapitalMode(key)) {
-                ret.push(key)}
-        }
-        return ret
+    ActiveCols() {
+        return this.Config["cols"]
+    }
+
+    ActiveCSVLayout() {
+        return this.Config["CSVLayout"]
     }
 
     SetMode(mode) {
-        if (this.IsCapitalMode(this.activeMode)) {
-            return}
-        this.activeMode = mode
+        if (CLS_MODES_PREDEFINED.includes(mode)) {
+            this.activeModeName = mode
+            for (let key of Object.keys(CLS_MODES_PREDEFINED[mode])) {
+                this.Config[key] = CLS_MODES_PREDEFINED[mode][key]
+            }
+        }  
     }
 
-    GetCols(mode = "") {
-        if (mode == "") { mode = this.activeMode}
-
-        if (mode == "standard" || mode == "header") {
-            return this.defaultCols
-        } else {
-            return this.modes[mode]["cols"]
+    SetConfig(configKey, configVal) {
+        if (Object.keys(this.Config).includes(configKey)) {
+            if (configKey == "CSVLayout") {
+                if (!CLS_MODES_CSV_VALID_CONFIG["CSVLayout"].includes(configVal)) {
+                    return}
+            }
+            this.Config[configKey] = configVal
         }
     }
-    
-    GetModesOnClick() {
+
+    DefaultRow(atPosition = -1) {
+        let no = 0
         let ret = []
-        for (let key of Object.keys(this.modes)) {
-            if (!this.IsCapitalMode(key)) {
-                ret.push("DDMode('" + key + "')")}
+        if (atPosition = -1) {
+            no = 0}
+        
+        for (let col of this.Config["cols"]) {
+            if (col == "No.") {
+                ret.push(String(CLS_MODES_DEFAULT_DATA["No."] + no));continue}
+            if (col.includes("[dropdown]")) {
+                ret.push(CLS_MODES_DEFAULT_DATA["[dropdown]"]);continue}  
+            ret.push(CLS_MODES_DEFAULT_DATA["default"])
         }
         return ret
-    }
-    
-    GetModeValueEquals(mode = "") {
-        if (mode == "") {mode = this.activeMode}
-
-        return this.modes[mode]["valueEquals"]
-    }
-
-    GetModeValueIncludes(mode = "") {
-        if (mode == "") {mode = this.activeMode}
-
-        return this.modes[mode]["valueIncludes"]
-    }
-
-    DefaultData(mode = "") {
-        if (mode == "") {mode = this.activeMode}
-
-        if (mode == "standard" || mode == "header") {
-            return [["1", "..", "..", "..", "..", "..", "[]"]]
-        }
-        if (mode == "SIDEBAR") {
-            return [["1", ".."]]
-        }
-        if (mode == "list" || mode == "ulist") {
-            return [["1", "..", "..", "document", "[]"]]
-        }
-        if (mode == "issues") {
-            return [["1", "..", "..", "item", "[]"]]
-        }
-        if (mode == "memory") {
-            return this.modes["memory"]["cls"].DefautData()
-        }
-    }
-
-    IsCapitalMode(mode) {
-        if (mode == "SIDEBAR") {
-            return true
-        }
-        return false
-    }
-
-    ModeType(mode = null) {
-        if (mode == null) {
-            return this.modes[this.activeMode]["type"] 
-        } else {
-            return this.modes[mode][type]
-        }
-        
     }
 }
 

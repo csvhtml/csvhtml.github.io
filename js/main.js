@@ -19,10 +19,9 @@ cParameter.setAll(cURLHandler.parameter())
 // ################################################################
 // Main HTML Page Div Container                                   #
 // ################################################################
-let defaultCols = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
 const PAGE = {}
-PAGE["MyCSV"] = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV", InitCols: defaultCols});
-PAGE["MyCSV Header"] = new clsCSV({egoname: "ecsvH", TargetDivID: "MyCSV Header", Mode: "header", InitCols: defaultCols});
+PAGE["MyCSV"] = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV"});
+PAGE["MyCSV Header"] = new clsCSV({egoname: "ecsvH", TargetDivID: "MyCSV Header", Mode: "header"});
 PAGE["MySidebar"] = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "SIDEBAR"});
 PAGE["mySearch"] = new clsSiteSearch();
 
@@ -55,14 +54,11 @@ function SaveData(antwort) {
     main_Layout()
 })();
 
-// (function () {
 function main_Events() {
     window.addEventListener('mousedown', UIN.MouseDown)
     window.addEventListener('mouseup', UIN.MouseUp)
     window.addEventListener('keyup', UIN.KeyUp)
 }
-// })();
-
 
 function main_CLS() {
     PAGE["mySearch"].ignore = ["ecsv-sum","dropdown-item"]

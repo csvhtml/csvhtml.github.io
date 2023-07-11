@@ -22,8 +22,8 @@ class clsCSV {
         this.layout = new clsCSVLayout({"TargetDivID": TargetDivID, "mode": this.mode})
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
-        this.data1x1.Init_Headers(this.mode.GetCols())
-        this.data1x1.data = this.mode.DefaultData()
+        this.data1x1.Init_Headers(this.mode.ActiveCols())
+        this.data1x1.data = [this.mode.DefaultRow()]
         this.data1x1.len = 1;
         this._DataSynch()
         this.sum = -1;          // sum = -1 inactive, sum >=0 sum is active
@@ -117,16 +117,16 @@ class clsCSV {
     //SetMode: Applies layout configuration from mode to csv
 
     SetMode(mode = "") {
-        if (mode == "") {
-            mode = this.mode.activeMode
-        } else {
-            this.mode.SetMode(mode)
-        }
-        let MODE_Filter = this.mode.modes[mode]
-        let MODE_Cols = this.mode.modes[this.mode.activeMode]
-        this.filterValueEquals = MODE_Filter["valueEquals"]
-        this.filterValueIncludes = MODE_Filter["valueIncludes"]
-        this.filterCols = MODE_Cols["cols"]
+        // if (mode == "") {
+        //     mode = this.mode.activeMode
+        // } else {
+        //     this.mode.SetMode(mode)
+        // }
+        // let MODE_Filter = this.mode.modes[mode]
+        // let MODE_Cols = this.mode.modes[this.mode.activeMode]
+        // this.filterValueEquals = MODE_Filter["valueEquals"]
+        // this.filterValueIncludes = MODE_Filter["valueIncludes"]
+        // this.filterCols = MODE_Cols["cols"]
 
     }
 
@@ -144,7 +144,8 @@ class clsCSV {
 
     AddRow() {
         let atPosition = this.ActiveRowIndex()
-        let newRow = this.NewRowDefault(atPosition, this.mode.GetModeValueEquals());
+        // let newRow = this.NewRowDefault(atPosition, this.mode.GetModeValueEquals());
+        let newRow = this.NewRowDefault(atPosition);
         if (atPosition == -1) {atPosition = this.len}
         this.data1x1.AddRow(atPosition, newRow)
         // Update Numbering after atPosition
@@ -217,25 +218,30 @@ class clsCSV {
 
     }
 
-    NewRowDefault(atPosition, SetCols = {}) {
+    NewRowDefault(atPosition, TakveOverCols = []) {
         let newRow = []
         if (atPosition == -1) {
-            newRow.push(String(this.len+1))
-            for (let i = 1; i < this.data1x1.headers.length; i++) {
-                let flag = true
-                for (let col of Object.keys(SetCols)) {
-                    if (this.data1x1.headers[i] == col) {
-                        newRow.push(String(SetCols[col]))
-                        flag = false
-                        break}}
-                if (flag) {
-                    newRow.push('..')
-                }
-            }
+            newRow = this.mode.DefaultRow(atPosition)
+            // newRow.push(String(this.len+1))
+            // for (let i = 1; i < this.data1x1.headers.length; i++) {
+            //     let flag = true
+            //     for (let col of Object.keys(SetCols)) {
+            //         if (this.data1x1.headers[i] == col) {
+            //             newRow.push(String(SetCols[col]))
+            //             flag = false
+            //             break}}
+            //     if (flag) {
+            //         newRow.push('..')
+            //     }
+            // }
         } else {
-            newRow.push(String(atPosition+1))
+            newRow = this.mode.DefaultRow(atPosition)
             for (let i = 1; i < this.data1x1.headers.length; i++) {
-                newRow.push(String(this.data1x1.data[atPosition-1][i]))}
+                if (TakveOverCols.includes(this.data1x1.headers[i])) {
+                    newRow[i] = this.data1x1.data[atPosition-1][i]
+                }
+                // newRow.push(String(this.data1x1.data[atPosition-1][i]))}
+            }
         }
 
         return newRow

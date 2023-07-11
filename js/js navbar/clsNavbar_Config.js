@@ -51,7 +51,7 @@ function clsNavbar_Config_FunctionCall(key) {
 }
 
     // // Mode
-    // if (this.Ecsv.mode.GetModes().includes(key)) {
+    // if (this.Ecsv.mode.GetModes().includes(key)) {   GetModes() to be replaced
     //     this.Ecsv.SetMode(key)
     //     this._XSetBGColor('navMode-dd-' + key, rgbText(104, 187, 227))
     //     this.Ecsv.Print()

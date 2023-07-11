@@ -63,7 +63,7 @@ class clsCSVLayout {
     }
 
     ApplyHighlightToSite () {
-        if (this.mode.ModeType() == "table") {
+        if (this.mode.ActiveCSVLayout() == "table") {
             let hclass = "table-info"
             for (let row of this.row_highlight) {
                 if (row == this.LayoutTargetDivID) {
