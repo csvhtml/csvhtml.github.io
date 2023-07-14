@@ -1,4 +1,8 @@
-ETY = ".."   // default value for empty cells/headers
+CLS_DATA_1X1_RESERVED_COLS ={ // in case key is negative, then index is not specified
+    0: "No."
+}
+
+ETY = ".."
 
 class clsData_1x1 {
     constructor(headers=[], data=[]) {
@@ -57,6 +61,7 @@ class clsData_1x1 {
             this.data.splice(atPosition, 0, newRow)
         }
         this.len += 1
+        this._UpdateNumberCol()
     }
 
     AddRowDict(atPosition = -1, newRowDict = {}) {
@@ -319,6 +324,39 @@ class clsData_1x1 {
         }
         return false
     }
+
+    _UpdateNumberCol() {
+        if (this._HasReservedCol("No.")) {
+            let colIdx = this._ReservedCol_Idx("No.")
+            for (let i = 0;i<this.len;i++) {
+                this.data[i][colIdx] = String(i+1)
+            }
+        }
+        return false
+    }
+
+    _HasReservedCol(colName) {
+        for (let idx of Object.keys(CLS_DATA_1X1_RESERVED_COLS)) {
+            if (colName == CLS_DATA_1X1_RESERVED_COLS[idx]) {
+                if (idx < 0) {
+                    return true}
+                if (-1 < idx && this.headers[idx] == colName) {
+                    return true}
+            }
+        }
+        return false
+    }
+
+    _ReservedCol_Idx(colName) {
+        if (this._HasReservedCol(colName)) {
+            for (let idx of Object.keys(CLS_DATA_1X1_RESERVED_COLS)) {
+                if (colName == CLS_DATA_1X1_RESERVED_COLS[idx]) {
+                    return idx
+                }
+            }
+            return false
+        }
+    }
 }
 
 
@@ -341,6 +379,7 @@ function test_clsData_1x1() {
     test_clsData_1x1__headerNamePure()
     test_clsData_1x1_HeadersRaw_HeadersConfig()
     test_clsData_1x1_IsColsSubset()
+    test_clsData_1x1_UpdateNumberCol()
 
     return 32 // 32 assertions in this file (and should all be catched)
 }
@@ -702,3 +741,27 @@ function test_clsData_1x1_IsColsSubset() {
     testEqual(datta.IsColsSubset(b), true, fname)
     testEqual(datta.IsColsSubset(c), false, fname)
 }
+
+
+function test_clsData_1x1_UpdateNumberCol() {
+    let fname = arguments.callee.name;
+    let colNoIdx = 0
+    let colNo = CLS_DATA_1X1_RESERVED_COLS[colNoIdx]
+    let datta2 = new clsData_1x1([colNo, "B", "C"], [["2", "Welt", "drausen"], ["3", "Mario", "Land"], ["4", "Oktoberfest", "Beer"]])
+
+    assert(datta2.data[0][colNoIdx], "2")
+    assert(datta2.data[1][colNoIdx], "3")
+    assert(datta2.data[2][colNoIdx], "4")
+
+    datta2._UpdateNumberCol()
+
+    testEqual(datta2.data[0][colNoIdx], "1", fname)
+    testEqual(datta2.data[1][colNoIdx], "2", fname)
+    testEqual(datta2.data[2][colNoIdx], "3", fname)
+
+    datta2 = new clsData_1x1([colNo, "B", "C"], [["2", "Welt", "drausen"], ["3", "Mario", "Land"], ["4", "Oktoberfest", "Beer"]])
+    datta2.RenameCol(colNo, "NOT")
+    datta2._UpdateNumberCol()
+
+    testEqual(datta2.data[0][colNoIdx], "2", fname)
+    }
