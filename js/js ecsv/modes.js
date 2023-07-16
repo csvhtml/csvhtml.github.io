@@ -23,7 +23,7 @@ const CLS_MODES_PREDEFINED = {
     "header": {
         "CSVLayout": "headersOnly"
     },
-    "SIDEBAR": {
+    "sidebar": {
         "cols": ["No.","Name"]
     }
 }
@@ -49,17 +49,6 @@ class clsModes {
 
         this.Config["cols"].replaceIfEmpty(DefaultCols)
         this.activeModeName = SetMode
-
-
-        this.modes = {
-            "standard": {cols:[], valueIncludes:{}, type: "table"},
-            "header": {cols:[], valueIncludes:{}, type: "table"},
-            "SIDEBAR": {cols: ["No.","Name"], valueIncludes:{}, type: "table"},
-            "ulist": {cols:[], valueIncludes:{}, type: "list"},
-            "issues": {cols:["No.", "Name", "Description", "Type", "Tags [dropdown]"], valueIncludes:{"Type":["item"]}, type: "table"},
-            // "memory": {cols:["A", "B", "C", "D", "E", "F"], valueIncludes:{}, cls: clsMMY}
-            "memory": {cols:["A", "B", "C", "D", "E", "F"], type: "table"}
-        }
     }
 
     ActiveCols() {

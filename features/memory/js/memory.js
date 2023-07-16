@@ -52,7 +52,7 @@ class clsMemory {
     _checkPair() {
 
         // let n = this.elementsState.count("front")       // count is a prototype defined in basis.js No standard javascript
-        //MOHi
+
     }
 
 

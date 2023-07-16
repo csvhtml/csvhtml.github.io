@@ -22,7 +22,7 @@ cParameter.setAll(cURLHandler.parameter())
 const PAGE = {}
 PAGE["MyCSV"] = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV"});
 PAGE["MyCSV Header"] = new clsCSV({egoname: "ecsvH", TargetDivID: "MyCSV Header", Mode: "header"});
-PAGE["MySidebar"] = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "SIDEBAR"});
+PAGE["MySidebar"] = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "sidebar"});
 PAGE["mySearch"] = new clsSiteSearch();
 
 
@@ -36,13 +36,13 @@ const NAV = new clsNavbar();   // "NAV" must be equal to variable name
 // Div Interactions                                                              #
 // ###############################################################################
 
-function SaveData(antwort) {
-    if (antwort["action"] == "ChangedCell") {
-        // sidebar value
-        ecsv._SaveCellValueToData()
-        ecsv.Print()
-    }
-}
+// function SaveData(antwort) {
+//     if (antwort["action"] == "ChangedCell") {
+//         // sidebar value
+//         ecsv._SaveCellValueToData()
+//         ecsv.Print()
+//     }
+// }
 
 // ################################################################
 // Page Set Up                                                    #

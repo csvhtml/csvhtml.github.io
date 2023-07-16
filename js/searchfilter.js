@@ -53,7 +53,7 @@ class clsSiteSearch {
             }
         }
     }
-    //MOHI
+
     containsIgnore(classList) {
         for (let className of classList) {
             for (let ignore of this.ignore) {

@@ -12,6 +12,8 @@ class clsCSV {
  * @param {*} keys - Get parameter Keys.
  */
     constructor({egoname = '', TargetDivID = "", Mode = "standard", InitCols = []}) {
+        this.ActiveCell = new clsCSV_CellHandler()
+        this.log = new clsClassLog()
         this.TargetDivID = null
         
         this.filepath = ""
@@ -19,7 +21,7 @@ class clsCSV {
         this.name = egoname
         this.mode = new clsModes(Mode, InitCols)
         this.ReadWrite = new clsCSV_ReadWrite()
-        this.layout = new clsCSVLayout({"TargetDivID": TargetDivID, "mode": this.mode})
+        this.layout = new clsCSVLayout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
         this.data1x1.Init_Headers(this.mode.ActiveCols())
@@ -55,7 +57,8 @@ class clsCSV {
 
     _DataSynch() {
         this.layout.ReadFullCSVData(this.data1x1.headers, this.data1x1.data, this.data1x1.headersConfig)
-        this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
+        // this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
+        this.dataSubSet = this.data1x1.Subset({cols: this.mode.Config["cols"], valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
         this.headers = this.dataSubSet.headers
         this.headersConfig = this.dataSubSet.headersConfig
         this.data = this.dataSubSet.data
@@ -89,12 +92,11 @@ class clsCSV {
         // make csv xls readable. Not used here
         str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     
         str = str.replace(new RegExp(delimiter + '"', "g") , delimiter)     
-        // csv config
-        let configtext = str.slice(str.indexOf(";CONFIG;"))
-        this.filepath = RetStringBetween(configtext, "PATH:", "!"); this.layout.csvRootPath = this.filepath
-        str = str.slice(0,str.indexOf(";CONFIG;")); str = str.slice(0,str.lastIndexOf("\n"))
-        //read csv data
+
+        str = this.ReadCSV_ReadConfig_ReturnData(str)
+
         this.data1x1.Init_Headers(str.slice(0, str.indexOf("\n")).split(delimiter))
+
         if (!this.data1x1.headers.includes("No.") && this.mode.activeMode == "standard") {
             this.VirtualCol_No = true
             this.data1x1.headers.splice(0,0,"No.")
@@ -114,6 +116,16 @@ class clsCSV {
                 this.data1x1.len +=1}
         }
     }
+
+    ReadCSV_ReadConfig_ReturnData(str) {
+        let configtext = str.slice(str.indexOf(";CONFIG;"))
+        this.filepath = RetStringBetween(configtext, "PATH:", "!")
+        this.layout.csvRootPath = this.filepath
+        str = str.slice(0,str.indexOf(";CONFIG;")); 
+        str = str.slice(0,str.lastIndexOf("\n"))
+        return str
+    }    
+
     //SetMode: Applies layout configuration from mode to csv
 
     SetMode(mode = "") {
@@ -195,13 +207,13 @@ class clsCSV {
         }
     }
 
-    ActiveCell() {
-        return this.layout.cellIDs_highlight[0][0]
-    }
+    // ActiveCell() {
+    //     return this.layout.cellIDs_highlight[0][0]
+    // }
 
-    ActiveCellValue() {
-        return this.CellValueID(this.ActiveCell())
-    }
+    // ActiveCellValue() {
+    //     return this.CellValueID(this.ActiveCell())
+    // }
 
     CellValueID(divID) {
         let rawID = divID
@@ -251,8 +263,10 @@ class clsCSV {
         if (this.mode.activeMode != "SIDEBAR") {
             this.layout.HighlightCell(divID)
             this.Print()
-            this._CreateInputField(divID)
-            this._svgAppend_Save(divID)
+
+            this.ActiveCell.ApplyEditMode(divID)
+            // this._CreateInputField(divID)
+            // this._svgAppend_Save(divID)
             this._CreateName(divID)
             
             document.getElementById(this.name + "-input").focus();
@@ -264,7 +278,7 @@ class clsCSV {
     Edit_Header(divID) {
         this.layout.HighlightCell(divID)
         this.Print()
-        this._CreateInputField(divID)
+        // this._CreateInputField(divID)
         this._svgAppend_Save(divID)
         
         document.getElementById(this.name + "-input").focus();
@@ -281,6 +295,7 @@ class clsCSV {
 
 
     Click(div) {
+        this.log.AddUserInput("Click")
         let divID = ReturnParentUntilID(div).id
         
         let onclickDivs = ElemementsWithOnClickFunctions("id")
@@ -288,36 +303,60 @@ class clsCSV {
         if (this.layout.IDIncludes(divID, onclickDivs.concat(directlinkDivs))){
             return this._Click_Answer()}
         
-        if (!this.layout.DivIsInsideECSV(divID)){
-        // if (!this.layout.DivIsInsideECSV(divID) || this.layout.DivIsInsideECSV(divID) && divID.includes(this.TargetDivID)){
+        if (this._IsInsideEgoTargetDiv(divID)){    
+            if (this._IsInsideHeader(divID)){
+                if (this.layout.col_highlight[0] == divID.replace("header", "col")) {
+                    this.Edit_Header(divID) 
+                } else {
+                    this.layout.HighlightCol(divID)
+                    this.Print() 
+                }
+
+                return this._Click_Answer()}
+
+            if (this._IsInsideTable(divID)) {
+                if (this.layout.IsActive(divID)) {
+                    this.Edit(divID) 
+                    // return this._Click_Answer("ChangedCell", divID, val)
+                } else {
+                    this.layout.HighlightRow(divID)
+                    this.Print()
+                    return this._Click_Answer("HighlightRow", divID)
+                }}
+
+            assert(false)
+        } else {
             this.layout.Unhighlight_All()
             this.Print()
-            return this._Click_Answer()}
-
-        if (this.layout.DivIsInsideECSV(divID) && divID.includes("header-")){
-            if (this.layout.col_highlight[0] == divID.replace("header", "col")) {
-                this.Edit_Header(divID) 
-            } else {
-                this.layout.HighlightCol(divID)
-                this.Print() 
-            }
-
-            return this._Click_Answer()}
-
-        if (this.layout.DivIsInsideECSV(divID) && divID.includes("R:") && divID.includes("C:")) {
-            if (this.layout._RowDivID({cellID:divID}) == this.layout.row_highlight[0]) {
-                // let val = this.CellValue(divID)
-                this.Edit(divID) 
-                // return this._Click_Answer("ChangedCell", divID, val)
-            } else {
-                this.layout.HighlightRow(divID)
-                this.Print()
-                return this._Click_Answer("HighlightRow", divID)
-            }}
-        
             return this._Click_Answer()
+        }
+
+            
+    
+        return this._Click_Answer()
         
         
+    }
+
+    _IsInsideEgoTargetDiv (divID) {
+        if (this.layout.DivIsInsideECSV(divID)) {
+            return true} 
+        else {
+            return false}
+    }
+
+    _IsInsideHeader (divID) {
+        if (divID.includes("header-")) {
+            return true} 
+        else {
+            return false}
+    }
+
+    _IsInsideTable(divID) {
+        if (divID.includes("R:") && divID.includes("C:")) {
+            return true} 
+        else {
+            return false}
     }
 
     _Click_Answer(lastAction = "", divID = "", val = "") {
@@ -343,14 +382,14 @@ class clsCSV {
         this.Print()
     }
 
-    SaveEdit() {
-        let antwort = {
-            "action": "ChangedCell",
-            "divID": this.ActiveCell(),
-            "val": document.getElementById(this.name + "-input").value
-        }
-        SaveData(antwort)
-    }
+    // SaveEdit() {
+    //     let antwort = {
+    //         "action": "ChangedCell",
+    //         "divID": this.ActiveCell.ID,
+    //         "val": document.getElementById(this.name + "-input").value
+    //     }
+    //     SaveData(antwort)
+    // }
 
     Feature_Sum() {
         if (this.sum == -1) {
@@ -384,23 +423,24 @@ class clsCSV {
         this.sum = sum;
     }
 
-    _CreateInputField(divID) {
-        let oldinput  = document.getElementById(this.name + "-input");
-        if (oldinput != undefined) {
-            oldinput.remove();}
+    // _CreateInputField(divID) {
+    //     let oldinput  = document.getElementById(this.name + "-input");
+    //     if (oldinput != undefined) {
+    //         oldinput.remove();}
 
-        let div = document.getElementById(divID);
+    //     let div = document.getElementById(divID);
         
-        let input = document.createElement('textarea'); input.cols = "50"
-        // ; input.rows = "5"
-        input.id = this.name + "-input"
-        input.classList.add("input-large", "form-control")
-        input.value = this.ActiveCellValue();
-        div.innerHTML = ""
-        div.append(input);
-        this.InputFiled_AutoHeight();
-        this.layout.div_input = input;
-    }
+    //     let input = document.createElement('textarea'); input.cols = "50"
+    //     // ; input.rows = "5"
+    //     input.id = this.name + "-input"
+    //     input.classList.add("input-large", "form-control")
+    //     // input.value = this.ActiveCellValue();
+
+    //     div.innerHTML = ""
+    //     div.append(input);
+    //     this.InputFiled_AutoHeight();
+    //     this.layout.div_input = input;
+    // }
 
     // inhibited by clsCSV Click (will call a Print that will make onclick disaper)
     _CreateName(divID) {
@@ -421,13 +461,13 @@ class clsCSV {
     _SaveCellValueToData(){
         let value = document.getElementById(this.name + "-input").value;
         let rawID = this.layout.cellIDs_highlight[0][0]
-        if (rawID.includes("R:") && rawID.includes("C:")) {
-            let row = parseInt(RetStringBetween(rawID,"R:", "C:"))
-            let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
-            if (value.includes("\n")) {
-                value = value.replace(new RegExp("\n", "g") , "\r")
-            }
-            this.data1x1.data[row][col] = value;}
+        // if (rawID.includes("R:") && rawID.includes("C:")) {
+        //     let row = parseInt(RetStringBetween(rawID,"R:", "C:"))
+        //     let col = parseInt(RetStringBetween(rawID,"C:", "H:"))
+        //     if (value.includes("\n")) {
+        //         value = value.replace(new RegExp("\n", "g") , "\r")
+        //     }
+        //     this.data1x1.data[row][col] = value;}
         if (rawID.includes("header-")) {
                 let idx = this.headers.indexOf(RetStringBetween(rawID,"header-", ""))
                 let headerOld = this.data1x1.headers[idx]
@@ -656,18 +696,18 @@ class clsCSV {
     //     return ret
     // }
 
-    _svgAppend_Save(divID) {
-        let div = document.getElementById(divID);
-        let a = document.createElement('a');
-        a.id = "save-edit"
-        a.href = "#"
-        a.setAttribute('onclick', this.name + '.SaveEdit()');
-        a.innerHTML = '<svg id = "svg-save-edit" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-save m-2" viewBox="0 0 16 16"> \
-        <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 \
-        3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/> \
-        </svg>'
-        div.append(a);
-    }
+    // _svgAppend_Save(divID) {
+    //     let div = document.getElementById(divID);
+    //     let a = document.createElement('a');
+    //     a.id = "save-edit"
+    //     a.href = "#"
+    //     a.setAttribute('onclick', this.name + '.SaveEdit()');
+    //     a.innerHTML = '<svg id = "svg-save-edit" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-save m-2" viewBox="0 0 16 16"> \
+    //     <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 \
+    //     3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/> \
+    //     </svg>'
+    //     div.append(a);
+    // }
 
 
 // ################################################################
@@ -722,12 +762,29 @@ class clsCSV {
             log.msg(msg + key + ": " + val)
         }
     }
+    
+    _SaveActiveCellValueToData() {
+        let row = this.ActiveCell.Row()
+        let col = this.ActiveCell.Col()
+        this.data1x1.data[row][col] = this.ActiveCell.InputValue()
+    }
 }
+
+
+// ################################################################
+// Global callable functions                                                 #
+// ################################################################
 
 function scrollToRow(row) {
     var element = document.getElementById("[MyCSV] row:" + row + "!");
     if(element) {
         element.scrollIntoView()
     }
+  }
+
+function SaveCellValue(TargetDivID, CellID) {
+    let TargetHTMLObJ = PAGE[RetStringBetween(TargetDivID,"[","]")]
+    TargetHTMLObJ._SaveActiveCellValueToData()
+    TargetHTMLObJ.Print()
   }
 

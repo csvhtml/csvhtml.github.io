@@ -1,5 +1,4 @@
-// an interaction is a dictionary with max three keys defined in clsHtmlInterfaces_VALIDKEYS
-const clsHtmlInterfaces_VALIDKEYS = ["action", "requestedBy", "divID"]
+const clsHtmlInterfaces_VALIDKEYS = ["by", "action", "parameters", "divIDSource", "divIDTarget"]
 
 class clsHtmlInterfaces {
     constructor(pageDivIDs) {
@@ -8,8 +7,9 @@ class clsHtmlInterfaces {
     InterAction(action) {
         assert(this.IsAction(action))
 
+            // MOHI: Extract Target DIID form divID
         if (action["action"] == "HighlightRow") {
-            if (action["requestedBy"] == PAGE["MySidebar"].TargetDivID) {
+            if (action["divIDSource"] == PAGE["MySidebar"].TargetDivID) {
                 PAGE["MyCSV"].layout.HighlightRow(action["divID"])
                 PAGE["MyCSV"].Print()
                 PAGE["MyCSV"].layout.ScrollToHighlight()
@@ -18,6 +18,12 @@ class clsHtmlInterfaces {
                 PAGE["MySidebar"].layout.HighlightRow(action["divID"])
                 PAGE["MySidebar"].Print()
             }
+        }
+    }
+
+    InterActions(actions) {
+        for (let action of actions) {
+            this.InterAction(action)
         }
     }
 

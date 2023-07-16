@@ -29,21 +29,11 @@ class clsData_1x1 {
         this.headersConfig =  []
         this.headers =  []
         for (let header of headers) {
-            this._HeaderRawPush(header)
+            this.headers.push(this._headerNamePure(header))
+            this.headersConfig.push(this._headerConfigPure(header))
         }
     }
 
-    _HeaderRawPush(HeaderRaw) {
-        if (this._HeaderHasConfig(HeaderRaw)) {
-            let headerName = RetStringBetween(HeaderRaw, "", "[", true)
-            let headerConfig = RetStringBetween(HeaderRaw, "[", "]")
-            this.headers.push(headerName)
-            this.headersConfig.push(headerConfig)
-        } else {
-            this.headers.push(HeaderRaw)
-            this.headersConfig.push("")
-        }
-    }
 
     AddRow(atPosition = -1, newRow = []) {
         assert(atPosition > -2, "atPosition index below -1")
@@ -117,7 +107,8 @@ class clsData_1x1 {
                 assert(values.length == this.len, "values length not equal to data length")}}
             
         if (atPosition == -1) {
-            this._HeaderRawPush(header)
+            this.headers.push(this._headerNamePure(header))
+            this.headersConfig.push(this._headerConfigPure(header))
             if (this.len == 0) {
                 for (let i = 0; i < values.length; i++) {
                     let row = [_byVal(values[i])]
@@ -182,10 +173,8 @@ class clsData_1x1 {
         if (cols.length == 0) {
             cols = this.headers}
         for (let col of cols) {
-            let headerNamePure = this._headerNamePure(col)
-            ret.AddCol(headerNamePure, -1, this.ColAsList(headerNamePure))
-            let idx = this.HeaderIndex(headerNamePure)
-            ret.headersConfig[ret.headersConfig.length-1] = this.headersConfig[idx]
+            if (this.HeaderIndex(col)>-1) {      
+                ret.AddCol(col, -1, this.ColAsList(this._headerNamePure(col)))}      
         }
         return ret
     }
@@ -307,15 +296,24 @@ class clsData_1x1 {
         return this.headersConfig[idx]
     }
 
-    _headerNamePure(headerName) {
-        assert(typeof headerName === 'string', headerName + " is not of type string")
+    _headerNamePure(headerRaw) {
+        assert(typeof headerRaw === 'string', headerRaw + " is not of type string")
 
-        if (this._HeaderHasConfig(headerName)) {
-            return headerName.substring(0,headerName.indexOf(" ["))
+        if (this._HeaderHasConfig(headerRaw)) {
+            return headerRaw.substring(0,headerRaw.indexOf(" ["))
         } else {
-            return headerName
+            return headerRaw
         }
+    }
 
+    _headerConfigPure(headerRaw) {
+        assert(typeof headerRaw === 'string', headerRaw + " is not of type string")
+
+        if (this._HeaderHasConfig(headerRaw)) {
+            return RetStringBetween(headerRaw, "[", "]")
+        } else {
+            return ""
+        }
     }
 
     _HeaderHasConfig(header) {

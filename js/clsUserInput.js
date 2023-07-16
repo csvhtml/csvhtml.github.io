@@ -41,10 +41,15 @@ class clsUserInput {
     Click (divElement) {
         for (let divID of this.pageDivIDs) {
             if (DivIsDescendantOf(divElement, divID)) {
-                let antwort = PAGE[divID].Click(divElement)
-                cHIF.InterAction(antwort)
+                let rem = PAGE[divID].log.LastIndex() 
+                PAGE[divID].Click(divElement)
+                assert(PAGE[divID].log.LastIndex() > rem)
+
+                cHIF.InterActions(PAGE[divID].log.WhatIvedDone())
             }
         }
+        // Realign page to top
+        document.body.scrollTop = document.documentElement.scrollTop = 0
     }
 
     Hover (event) {
@@ -59,6 +64,8 @@ class clsUserInput {
     Tipp (event) {
         PAGE["mySearch"].mySearchfilter();
     }
+
+    
 
     log(type, event, moustime) {
         if (LOGG) {

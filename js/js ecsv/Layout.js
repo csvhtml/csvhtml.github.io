@@ -3,7 +3,7 @@
 // ################################################################
 
 class clsCSVLayout {
-    constructor({TargetDivID = "", mode = null}) {
+    constructor({TargetDivID = "", mode = null, log = null}) {
         this.csvRootPath = ""
         this.LayoutTargetDivID = TargetDivID
         this.cellIDs_highlight = [["", ""], ["", ""]]   // cells that shall be highlighted. fist value is the internal value. Second value is representing the current state of the  site. The secondvalue will be changed by Print()
@@ -22,6 +22,7 @@ class clsCSVLayout {
         this.headersConfig = []
 
         this.mode = mode
+        this.log = log
     }
 
     ReadFullCSVData(headers, data, headersConfig) {
@@ -369,8 +370,14 @@ class clsCSVLayout {
             divID = "[" + this.LayoutTargetDivID + "] " + divID
         }
         this.Unhighlight_All()
-        // this.row_highlight[0] = this.GetRowID(divID)
         this.row_highlight[0] = this._RowDivID({cellID:divID})
+        
+        this.log.Add({
+            "action": "HighlightRow",
+            "parameters": [],
+            "divIDSource": divID, 
+            "divIDTarget": this.row_highlight[0]
+         })
     }
 
 
@@ -635,6 +642,13 @@ class clsCSVLayout {
             element.scrollIntoView()
         }
       }
+
+    IsActive(divID) {
+        if (this._RowDivID({cellID:divID}) == this.row_highlight[0]) {
+            return true}
+        else {
+            return false}
+    }
     
 }
 
