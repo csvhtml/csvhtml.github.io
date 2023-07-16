@@ -25,13 +25,6 @@ class clsURLHandler {
         }
         return ret
     }
-
-    log(key, val) {
-        if (LOGG) {
-            let msg = "[clsURLHandler] "
-            log.msg(msg+ key + ": " + val)
-        }
-    }
 }
 
 

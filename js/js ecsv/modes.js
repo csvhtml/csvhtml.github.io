@@ -40,7 +40,7 @@ class clsModes {
         }
         
         this.Config["cols"] =  CLS_MODES_DEFAULT_COLS
-        this.Config["CSVLayout"] =  CLS_MODES_CSV_VALID_CONFIG[0]
+        this.Config["CSVLayout"] =  CLS_MODES_CSV_VALID_CONFIG["CSVLayout"][0]
         if (SetMode != "standard") {
             for (let key of Object.keys(CLS_MODES_PREDEFINED[SetMode])) {
                 this.Config[key] = CLS_MODES_PREDEFINED[SetMode][key]

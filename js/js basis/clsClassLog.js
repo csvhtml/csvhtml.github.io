@@ -1,13 +1,17 @@
 const CLS_CLASS_LOG_VALID_KEYS = clsHtmlInterfaces_VALIDKEYS
 
 class clsClassLog {
-    constructor() {
+    constructor(validActions) {
         this.logs= []
-        this.Add({})
+        this.validActions = ["init"] + validActions
+        this.Add({"action":"init"})
     }
 
 
     Add({action = "", parameters = [], divIDSource = "", divIDTarget = ""}) {
+        if (!this.validActions.includes(action)) {
+            cLOG.Add("[clsClassLog].Add: action: '" + action + "' is not valid" )
+        }
         this.logs.push({
             "by": "html class",
             "action": action,

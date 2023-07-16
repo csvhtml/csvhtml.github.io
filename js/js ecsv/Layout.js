@@ -296,11 +296,11 @@ class clsCSVLayout {
             let rowidxx = Number(row[0]) -1 // "No. col
             rowidx = rowidxx.toString()
             var i = -1;
-            ret += '<tr id="' + this._RowDivID({rowidx:rowidx}) + '">';
+            ret += '<tr id="' + this._DivIDTableRow({rowidx:rowidx}) + '">';
             for (let cell of row) {
                 i += 1;
                 // let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
-                let id = this._CellDivID({rowIdx: rowidx,colIdx:i.toString(), cols:cols})
+                let id = this._DivIDTableCell({rowIdx: rowidx,colIdx:i.toString(), cols:cols})
                 if (String(cell).includes("\r")) {
                     cell = cell.replace(new RegExp('\r', "g") , '<br>')  // use \r for in cell new line
                 }
@@ -365,12 +365,12 @@ class clsCSVLayout {
     }
 
     HighlightRow(divID) {
-        assert(divID.includes("R:") || "row:")
+        assert(divID.includes("R:") || divID.includes("row:"))
         if (divID.indexOf("[") == -1 && divID.indexOf("[") == -1) {
             divID = "[" + this.LayoutTargetDivID + "] " + divID
         }
         this.Unhighlight_All()
-        this.row_highlight[0] = this._RowDivID({cellID:divID})
+        this.row_highlight[0] = this._DivIDTableRow({cellID:divID})
         
         this.log.Add({
             "action": "HighlightRow",
@@ -398,10 +398,6 @@ class clsCSVLayout {
             this.col_highlight[0] = "";
         }
     }
-
-    // GetRowID(divID) {
-    //     return "row:" + RetStringBetween(divID, "R:", "C:") + "!"
-    // }
 
     DivIsInsideNavbar(divID) {
         let element = document.getElementById(divID)
@@ -603,35 +599,54 @@ class clsCSVLayout {
             return ""
     }
 
-    // Return RowDivID based on rowIdex or CellID
-    _RowDivID({rowidx= "", cellID = ""}) {
+    // Returns RowDivID
+    _DivIDTableRow({rowidx= "", cellID = ""}) {
         assert(rowidx||cellID)
         assert(rowidx == "" || cellID == "")
             
         if (cellID) {
-            rowidx = RetStringBetween(cellID, "R:", "C:")
-        }
-        let egoname = '[' + this.LayoutTargetDivID + '] '
-        return egoname + 'row:' + rowidx + '!'
-        // return '[' + this.LayoutTargetDivID + '] row:' + rowidx + '!'
-        
+            if (cellID.includes("R:")) {
+                rowidx = RetStringBetween(cellID, "R:", "C:")}
+            if (cellID.includes("row:")) {
+                rowidx = RetStringBetween(cellID, "row:", "!")}
+            assert(ValidChars("0123456789", rowidx))
+        }   
+
+        return this._DivIDTableRow_FromIndex(rowidx)        
     }
 
-        // Return CellDivID based on rowIdex and col or colIdx
-    _CellDivID({rowIdx= "", colIdx = "", col = "", cols = []}) {
+    _DivIDTableRow_FromIndex(indexAsString) {
+        let divID = 'row:' + indexAsString + '!'
+        return this._TableDivID_With_Prefix(divID)
+    }
+
+    // Returns CellDivID
+    _DivIDTableCell({rowIdx= "", colIdx = "", col = "", cols = []}) {
         assert(rowIdx)
         assert(colIdx||col)
         assert(colIdx == "" || col == "")
         assert(cols.length>0)
         
-        let egoname = '[' + this.LayoutTargetDivID + '] '
         if (colIdx) {
-            return egoname + "R:" + rowIdx + "C:" + colIdx + "H:" + cols[colIdx]}
+            let divID = "R:" + rowIdx + "C:" + colIdx + "H:" + cols[colIdx]
+            return this._TableDivID_With_Prefix(divID)
+        }
         if (col) {
             colIdx = cols.indexOf(col)
             assert(colIdx>-1)
-            return egoname + "R:" + rowIdx + "C:" + colIdx + "H:" + col}
+            let divID = "R:" + rowIdx + "C:" + colIdx + "H:" + col
+            return this._TableDivID_With_Prefix(divID)
+        }
         assert(false)
+    }
+
+    _TableDivID_With_Prefix(divID) {
+        let prefix = '[' + this.LayoutTargetDivID + '] '
+        if (divID.includes(prefix)) {
+            return divID}
+        else {
+            return prefix + divID
+        }
     }
 
     ScrollToHighlight() {
@@ -644,7 +659,7 @@ class clsCSVLayout {
       }
 
     IsActive(divID) {
-        if (this._RowDivID({cellID:divID}) == this.row_highlight[0]) {
+        if (this._DivIDTableRow({cellID:divID}) == this.row_highlight[0]) {
             return true}
         else {
             return false}

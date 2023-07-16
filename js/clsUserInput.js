@@ -72,9 +72,9 @@ class clsUserInput {
             let msg = "[clsUserInput] "
             if (event.srcElement.id == "") {
                 let parentDiv = ReturnParentUntilID(event.srcElement)
-                log.msg(msg + event.srcElement.id + "with parent: " + parentDiv.id + ". Clicktime: " + moustime)
+                cLOG.Add(msg + event.srcElement.id + "with parent: " + parentDiv.id + ". Clicktime: " + moustime)
             } else {
-                log.msg(msg + event.srcElement.id + ". Clicktime: " + moustime)
+                cLOG.Add(msg + event.srcElement.id + ". Clicktime: " + moustime)
             }
         }
     }

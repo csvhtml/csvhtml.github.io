@@ -9,13 +9,13 @@ class clsHtmlInterfaces {
 
             // MOHI: Extract Target DIID form divID
         if (action["action"] == "HighlightRow") {
-            if (action["divIDSource"] == PAGE["MySidebar"].TargetDivID) {
-                PAGE["MyCSV"].layout.HighlightRow(action["divID"])
+            if (RootTargetDiv(action["divIDSource"]) == PAGE["MySidebar"].TargetDivID) {
+                PAGE["MyCSV"].layout.HighlightRow(VoidTargetDiv(action["divIDTarget"]))
                 PAGE["MyCSV"].Print()
                 PAGE["MyCSV"].layout.ScrollToHighlight()
             }
-            if (action["requestedBy"] == PAGE["MyCSV"].TargetDivID) {
-                PAGE["MySidebar"].layout.HighlightRow(action["divID"])
+            if (RootTargetDiv(action["divIDSource"]) == PAGE["MyCSV"].TargetDivID) {
+                PAGE["MySidebar"].layout.HighlightRow(VoidTargetDiv(action["divIDTarget"]))
                 PAGE["MySidebar"].Print()
             }
         }
@@ -32,7 +32,10 @@ class clsHtmlInterfaces {
 
         for (let key of Object.keys(action)) {
             if (!VALIDKEYS.includes(key)) {
-                return false
+                return false}
+            if (key == "action") {
+                if (!CLS_CSV_VALID_ACTIONS.includes(action[key])) {
+                    return false}
             }
         }
         return true

@@ -1,3 +1,5 @@
+const CLS_CSV_VALID_ACTIONS = ["Click", "HighlightRow"]
+
 // ################################################################
 // class CSV                                                      #
 // ################################################################
@@ -13,7 +15,7 @@ class clsCSV {
  */
     constructor({egoname = '', TargetDivID = "", Mode = "standard", InitCols = []}) {
         this.ActiveCell = new clsCSV_CellHandler()
-        this.log = new clsClassLog()
+        this.log = new clsClassLog(CLS_CSV_VALID_ACTIONS)
         this.TargetDivID = null
         
         this.filepath = ""
@@ -47,7 +49,7 @@ class clsCSV {
     _SetTargetDiv(TargetDivID) {
         let TargetDiv = document.getElementById(TargetDivID);
         if(TargetDiv == null) {
-            this.log(TargetDivID + " not found in html document. csv for " + TargetDivID + " was not created")
+            cLOG.Add(TargetDivID + " not found in html document. csv for " + TargetDivID + " was not created")
             return 
         }
 
@@ -296,6 +298,7 @@ class clsCSV {
 
     Click(div) {
         this.log.AddUserInput("Click")
+
         let divID = ReturnParentUntilID(div).id
         
         let onclickDivs = ElemementsWithOnClickFunctions("id")
@@ -312,7 +315,8 @@ class clsCSV {
                     this.Print() 
                 }
 
-                return this._Click_Answer()}
+                return this._Click_Answer()
+            }
 
             if (this._IsInsideTable(divID)) {
                 if (this.layout.IsActive(divID)) {
@@ -321,11 +325,19 @@ class clsCSV {
                 } else {
                     this.layout.HighlightRow(divID)
                     this.Print()
-                    return this._Click_Answer("HighlightRow", divID)
-                }}
+                    // return this._Click_Answer("HighlightRow", divID)
+                }
+                return
+            }
 
-            assert(false)
-        } else {
+            if (this._IsInsideRemainingTargetDiv(divID)) {
+                this.layout.Unhighlight_All()
+                return
+            }
+            cLOG.Add("[clsCSV].Click: assert false")
+        }
+        // else
+        if (!this._IsInsideEgoTargetDiv(divID)){ 
             this.layout.Unhighlight_All()
             this.Print()
             return this._Click_Answer()
@@ -354,6 +366,13 @@ class clsCSV {
 
     _IsInsideTable(divID) {
         if (divID.includes("R:") && divID.includes("C:")) {
+            return true} 
+        else {
+            return false}
+    }
+
+    _IsInsideRemainingTargetDiv(divID) {
+        if (divID == this.TargetDivID) {
             return true} 
         else {
             return false}
@@ -720,7 +739,7 @@ class clsCSV {
             this.layout.Unhighlight_All();
             this.Print();
         }
-        console.log(event.keyCode)
+        cLOG.Add("[clsCSV].ButtonClick: event.keyCode:'" + event.keyCode + "'")
         if (this.layout.InputIsActive() == false){
             // "w"
             if (event.keyCode === 87) {
@@ -741,7 +760,6 @@ class clsCSV {
             // if (event.isComposing || event.keyCode === 67) {
             //     this.AddRowCopy();}
         }
-        console.log(event.keyCode)
     }
 
     InputFiled_AutoHeight(event) {
@@ -753,14 +771,7 @@ class clsCSV {
     }
 
     MouseOver(event) {
-        console.log("Mouse over " + event.srcElement.id)
-    }
-
-    log(key, val) {
-        let msg = "[clsCSV] "
-        if (LOGG) {
-            log.msg(msg + key + ": " + val)
-        }
+        cLOG.Add("Mouse over " + event.srcElement.id)
     }
     
     _SaveActiveCellValueToData() {

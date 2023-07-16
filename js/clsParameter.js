@@ -45,11 +45,11 @@ class clsParameter {
             if (CLS_PARAMETER_VALID[key].includes(val)) {
                 this.Current[key] = val
             } else {
-                this.log("value " + "'" + key + "'" + " is not valid value for parameter ", "'" + key + "'")
+                cLOG.Add("value " + "'" + key + "'" + " is not valid value for parameter ", "'" + key + "'")
             }
 
         } else {
-            this.log("parameter is not a valid page parameter", "'" + key + "'")
+            cLOG.Add("parameter is not a valid page parameter", "'" + key + "'")
         }
     }
 
@@ -60,12 +60,5 @@ class clsParameter {
 
     keys() {
         return Object.keys(this.Default)
-    }
-
-    log(key, val) {
-        if (LOGG) {
-            let msg = "[clsParameterHandler] "
-            log.msg(msg+ key + ": " + val)
-        }
     }
 }

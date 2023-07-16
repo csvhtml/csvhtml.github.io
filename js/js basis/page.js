@@ -12,3 +12,19 @@ function DownloadCSV(text) {
     pom.click();
     document.body.removeChild(pom);
 }
+
+function RootTargetDiv(divID) {
+    let ret = RetStringBetween(divID,"[","]")
+    if (ret == "") {
+        cLOG.Add("[page.js].RootTargetDiv: divID '" + divID + "' does not have '[..]' prefix")
+    }
+    return ret
+}
+
+function VoidTargetDiv(divID) {
+    let ret = RetStringBetween(divID,"[","]")
+    if (ret == "") {
+        cLOG.Add("[page.js].RootTargetDiv: divID '" + divID + "' does not have '[..]' prefix")
+    }
+    return divID.replace("[" + ret + "] ", "")
+}

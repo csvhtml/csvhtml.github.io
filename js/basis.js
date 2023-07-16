@@ -3,9 +3,11 @@ class clsLog {
         this.logs= []
     }
 
-    msg(msg) {
-        this.logs.push(msg)
-        console.log(msg)
+    Add(msg) {
+        if (LOGG) {
+            this.logs.push(msg)
+            console.log(msg)
+        }
     }
 }
 
@@ -149,6 +151,14 @@ function IsEqualList(a,b) {
                 return false}}
         }
 
+    return true
+}
+
+function ValidChars(validChars, text) {
+    for (char of text) {
+        if (!validChars.includes(char)) {
+            return false}
+    }
     return true
 }
 
