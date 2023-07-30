@@ -2,46 +2,54 @@
 // Config                                                         #
 // ################################################################
 const CLS_MODES_DEFAULT_COLS = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
-const CLS_MODES_DEFAULT_DATA = {
-    "No.": 1,
-    "[dropdown]": "[]",
-    "default": ".."
-}
+
 const CLS_MODES_CSV_VALID_CONFIG = {
-    "CSVLayout": ["table", "list", "headersOnly"]  // first entry is default config
+    "CSVLayout": ["table", "list", "headersOnly"],  // first entry is default config
+    "colsFixed": [false, true] // alo cols to be changed
 }
 const CLS_MODES_FILTER = {
     "type": [],
     "tags": []
 } 
 
+const CLS_MODES_DEFAULT_DATA = {
+    "No.": 1,
+    "[dropdown]": "[]",
+    "default": ".."
+}
 // ################################################################
 // Pre-defined Configs                                            #
 // ################################################################
 const CLS_MODES_PREDEFINED = {
-    "standard": {},
+    "default": {},
     "header": {
         "CSVLayout": "headersOnly"
     },
     "sidebar": {
-        "cols": ["No.","Name"]
+        "cols": ["No.","Name"],
+        "colsFixed": true
     }
 }
 
 class clsModes {
-    constructor(SetMode = "standard", DefaultCols = []) {
+    constructor(SetMode = "default", DefaultCols = []) {
         this.Config = {
             // Config at Startup
             "cols": [],
             "CSVLayout": "",
+            "colsFixed": "",
             // Filter during run time
             "type": [],
             "tags": []
         }
-        
+        // default Config 
         this.Config["cols"] =  CLS_MODES_DEFAULT_COLS
-        this.Config["CSVLayout"] =  CLS_MODES_CSV_VALID_CONFIG["CSVLayout"][0]
-        if (SetMode != "standard") {
+        for (let key of Object.keys(CLS_MODES_CSV_VALID_CONFIG)) {
+            this.Config[key] =  CLS_MODES_CSV_VALID_CONFIG[key][0]
+        }
+        
+        // standard Configs
+        if (SetMode != "default") {
             for (let key of Object.keys(CLS_MODES_PREDEFINED[SetMode])) {
                 this.Config[key] = CLS_MODES_PREDEFINED[SetMode][key]
             }
@@ -74,7 +82,9 @@ class clsModes {
                 if (!CLS_MODES_CSV_VALID_CONFIG["CSVLayout"].includes(configVal)) {
                     return}
             }
-            this.Config[configKey] = configVal
+            if (configKey == "cols" && this.Config["colsFixed"] == false) {
+                this.Config[configKey] = configVal
+            }
         }
     }
 

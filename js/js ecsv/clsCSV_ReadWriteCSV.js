@@ -19,6 +19,7 @@ class clsCSV_ReadWriteCSV {
 
 
     xReadfromText_0Headers1Data2Config(csvtext) {
+        let ret = []
         let text = csvtext
         // 0 = headers, 1 = data, 2 = config text
         let str0 = ''; let str1 = ''; let str2 = ''
@@ -29,8 +30,23 @@ class clsCSV_ReadWriteCSV {
         if (str12.includes("X;CONFIG;")) {
             str1 = str12.slice(0,str12.indexOf("X;CONFIG;")-1)
             str2 = str12.slice(str12.indexOf("X;CONFIG;"))
+        } else {
+            str1 = str12
         }
-        return [str0, str1, str2] // 0 = headers text, 1 = data text, 2 = config text
+        for (let strX of [str0, str1, str2]) {
+
+            ret.push(this._FixText(strX))
+
+        }
+        return ret // 0 = headers text, 1 = data text, 2 = config text
+    }
+
+    _FixText(text) {
+        let ret = text
+        if (text.charAt(text.length-1)== '\n') {
+            ret = text.slice(0,-1)
+        }
+        return ret
     }
 
     _ReadFromText_UnifyNewLines(text) {

@@ -13,7 +13,7 @@ class clsCSV {
  * @param {*} get - Get one parameter via key (String).
  * @param {*} keys - Get parameter Keys.
  */
-    constructor({egoname = '', TargetDivID = "", Mode = "standard", InitCols = []}) {
+    constructor({egoname = '', TargetDivID = "", Mode = "default", InitCols = []}) {
         this.ActiveCell = new clsCSV_Cell()
         this.log = new clsClassLog(CLS_CSV_VALID_ACTIONS)
         this.mode = new clsModes(Mode, InitCols)
@@ -65,7 +65,6 @@ class clsCSV {
         this.headersConfig = this.dataSubSet.headersConfig
         this.data = this.dataSubSet.data
         this.len = this.dataSubSet.len
-
     }
 
 
@@ -91,14 +90,11 @@ class clsCSV {
             return}
         // 0 = headers, 1 = data, 2 = config text
         let str012 = this.ReadWrite.ReadfromText_0Headers1Data2Config(csvtext)
+        let headers = str012[0].split(delimiter)
 
-        this.data1x1.Init_Headers(str012[0].split(delimiter))
-
+        this.data1x1.Init_Headers(headers)
+        this.mode.SetConfig("cols", headers)
         this.data1x1.Init_Data(str012[1].split("\n"), delimiter)
-        // const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-        // const rows = str012[1].split("\n");
-        // this.data1x1.len = 0;
-
     }
 
     //SetMode: Applies layout configuration from mode to csv
