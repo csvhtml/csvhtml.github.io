@@ -1,33 +1,59 @@
-const CLS_CSV_CELLHANDLER_INPUT_DIVID = "clsCSV-CellHandler-InputField"
-const CLS_CSV_CELLHANDLERSAVE_BUTTON_AID = "clsCSV-CellHandler-SaveButon"
+const CLS_CSV_CELLHANDLER_INPUT_DIVID = "clsCSV-Cell-InputField"
+const CLS_CSV_CELLHANDLERSAVE_BUTTON_AID = "clsCSV-Cell-SaveButon"
 
-class clsCSV_CellHandler {
+
+class clsCSV_Cell {
+    /**
+     * Indivual CSV Cell
+     */
     constructor() {
             this.CellDiv = null
         }
     
     Set(divID) {
+        this.xSet(divID)}
+
+    ApplyEditMode(divID) {
+        this.xApplyEditMode(divID)}
+
+
+    ID() {
+        return this.CellDiv.id}
+
+    Row() {
+        return this.xRow()
+    }
+
+    Col() {
+        return this.xCol()
+    }
+    
+    InputValue() {
+        let ret = document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID).value
+        return this._RefineInvalidChars(ret)}
+
+// ################################################################
+// Sub methods                                                    #
+// ################################################################
+
+    
+    xSet(divID) {
         this.CellDiv = document.getElementById(divID)
         if (this.CellDiv == undefined) {
             this.CellDiv = null
         }
     }
 
-    ID() {
-        return this.CellDiv.id
-    }
-
-    ApplyEditMode(divID) {
-            this.ApplyEditMode_CreateInputField(divID)
-            this.ApplyEditMode_SaveButton(divID)
-            this._CreateName(divID)
+    xApplyEditMode(divID) {
+            this._ApplyEditMode_CreateInputField(divID)
+            this._ApplyEditMode_SaveButton(divID)
             
-            document.getElementById(this.name + "-input").focus();
-            document.getElementById(this.name + "-input").select();
+            document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID).focus();
+            document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID).select();
             
     }
 
-    ApplyEditMode_CreateInputField(divID) {
+    _ApplyEditMode_CreateInputField(divID) {
         this._RemoveInputField()
 
         this.Set(divID);
@@ -42,7 +68,7 @@ class clsCSV_CellHandler {
         // this.layout.div_input = input;
     }
 
-    ApplyEditMode_SaveButton(TargetdivID) {
+    _ApplyEditMode_SaveButton(TargetdivID) {
         let a = document.createElement('a');
         a.id = CLS_CSV_CELLHANDLERSAVE_BUTTON_AID
         a.href = "#"
@@ -51,7 +77,7 @@ class clsCSV_CellHandler {
         cSVG.CreateSVG_FromDivID(CLS_CSV_CELLHANDLERSAVE_BUTTON_AID, "SquareArrowDown")
     }
 
-    Row() {
+    xRow() {
         let row = -1; let col = -1
         if (this.ID().includes("R:") && this.ID().includes("C:")) {
             row = parseInt(RetStringBetween(this.ID(),"R:", "C:"))
@@ -60,7 +86,7 @@ class clsCSV_CellHandler {
         return row
     }
 
-    Col() {
+    xCol() {
         let row = -1; let col = -1
         if (this.ID().includes("R:") && this.ID().includes("C:")) {
             row = parseInt(RetStringBetween(this.ID(),"R:", "C:"))
@@ -90,14 +116,8 @@ class clsCSV_CellHandler {
         if (this.CellDiv != null) {
             this.CellDiv.style.height = (this.CellDiv.scrollHeight)+"px";
         }
-
     }
 
-    InputValue() {
-        let ret = document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID).value
-        ret = this._RefineInvalidChars(ret)
-        return ret
-    }
 
     _RefineInvalidChars(val) {
         let value = val
@@ -106,7 +126,5 @@ class clsCSV_CellHandler {
         }
         return value
     }
-
-
 
 }

@@ -17,7 +17,7 @@ const CLS_NAVBAR_CONFIG_LEFT = {
 }
 
 // In the Button Part (RIGHT), functions are called directly. Either via string name or via function reference
-const CLS_NAVBAR__CONFIG_RIGTH = {
+const CLS_NAVBAR__CONFIG_RIGHT = {
     "nav-input": clsNavbar_Call_Input,      // input must be reference
     "nav-download": "clsNavbar_Call_Download()"     // download must be string
 }
@@ -81,13 +81,12 @@ function clsNavbar_Call_DropDown(key) {
 }
 
 function clsNavbar_Call_Download() {
-    DownloadCSV(PAGE["MyCSV"]._AsCSV())
+    DownloadCSV(PAGE["MyCSV"]._AsCSVText())
 }
 
 function clsNavbar_Call_Input() {
     for (let X of [PAGE["MyCSV"],PAGE["MySidebar"]]) {
         X.ReadCSV(cReader.result);
-        X.fileLoaded = true
         X.Print();
         X.ToggleLink();
     }

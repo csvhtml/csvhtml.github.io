@@ -1,6 +1,9 @@
+// Reserved colls with certain functionality automaticaly applied
 CLS_DATA_1X1_RESERVED_COLS ={ // in case key is negative, then index is not specified
     0: "No."
 }
+
+CLS_DATA_1X1_AUTOFILL_COL_NO = true
 
 ETY = ".."
 
@@ -32,6 +35,22 @@ class clsData_1x1 {
             this.headers.push(this._headerNamePure(header))
             this.headersConfig.push(this._headerConfigPure(header))
         }
+    }
+
+    Init_Data(dataRows, delimiter) {
+        let dataN = 0
+        if (this.headers.length >0) {
+            dataN = this.headers.length
+        } else {
+            dataN = dataRows[0].length}
+        
+        this.len = 0
+        this.data = []
+        for (let row of dataRows) {
+            let tmp = row.split(delimiter)
+            assert(tmp.length == dataN, tmp[0])
+            this.data.push(tmp)
+            this.len +=1}
     }
 
 
@@ -324,13 +343,12 @@ class clsData_1x1 {
     }
 
     _UpdateNumberCol() {
-        if (this._HasReservedCol("No.")) {
+        if (this._HasReservedCol("No.") && CLS_DATA_1X1_AUTOFILL_COL_NO) {
             let colIdx = this._ReservedCol_Idx("No.")
             for (let i = 0;i<this.len;i++) {
                 this.data[i][colIdx] = String(i+1)
             }
         }
-        return false
     }
 
     _HasReservedCol(colName) {

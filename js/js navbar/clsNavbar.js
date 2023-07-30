@@ -7,7 +7,7 @@ const CLS_NAVBAR_DOWNLOAD_APPLYFORTAGS = ["</div>", "</a>"]
 // Link to clsNavbar_Config                                       #
 // ################################################################
 const CLS_NAV_LEFT = CLS_NAVBAR_CONFIG_LEFT
-const CLS_NAV_RIGHT = CLS_NAVBAR__CONFIG_RIGTH
+const CLS_NAV_RIGHT = CLS_NAVBAR__CONFIG_RIGHT
 const NAME_NAVBAR_FUNCTIONCALLS = CLS_NAVBAR_CONFIG_LEFT_FUNCTIONCALL
 
 class clsNavbar {

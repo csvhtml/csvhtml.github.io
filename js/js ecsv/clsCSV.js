@@ -14,15 +14,15 @@ class clsCSV {
  * @param {*} keys - Get parameter Keys.
  */
     constructor({egoname = '', TargetDivID = "", Mode = "standard", InitCols = []}) {
-        this.ActiveCell = new clsCSV_CellHandler()
+        this.ActiveCell = new clsCSV_Cell()
         this.log = new clsClassLog(CLS_CSV_VALID_ACTIONS)
+        this.mode = new clsModes(Mode, InitCols)
         this.TargetDivID = null
         
         this.filepath = ""
-        this.fileLoaded = false
         this.name = egoname
-        this.mode = new clsModes(Mode, InitCols)
-        this.ReadWrite = new clsCSV_ReadWrite()
+        
+        this.ReadWrite = new clsCSV_ReadWriteCSV()
         this.layout = new clsCSVLayout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
         this.data1x1 = new clsData_1x1()
         this.dataSubSet = new clsData_1x1()
@@ -88,45 +88,18 @@ class clsCSV {
 
     ReadCSV(csvtext, delimiter = ";" ) {
         if (csvtext == undefined) {
-            return
-        }
-        var str = csvtext.replace(new RegExp('\r\n', "g") , '\n')           // '\r\n' is the standard for new line in windows. for clsCSV plain \n is used as new line
-        // make csv xls readable. Not used here
-        str = str.replace(new RegExp('"' + delimiter, "g") , delimiter)     
-        str = str.replace(new RegExp(delimiter + '"', "g") , delimiter)     
+            return}
+        // 0 = headers, 1 = data, 2 = config text
+        let str012 = this.ReadWrite.ReadfromText_0Headers1Data2Config(csvtext)
 
-        str = this.ReadCSV_ReadConfig_ReturnData(str)
+        this.data1x1.Init_Headers(str012[0].split(delimiter))
 
-        this.data1x1.Init_Headers(str.slice(0, str.indexOf("\n")).split(delimiter))
+        this.data1x1.Init_Data(str012[1].split("\n"), delimiter)
+        // const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+        // const rows = str012[1].split("\n");
+        // this.data1x1.len = 0;
 
-        if (!this.data1x1.headers.includes("No.") && this.mode.activeMode == "standard") {
-            this.VirtualCol_No = true
-            this.data1x1.headers.splice(0,0,"No.")
-        } else {
-            this.VirtualCol_No = false
-        }
-        this.data1x1.data = [];
-        const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-        this.data1x1.len = 0;
-        for (let row of rows) {
-            if (this._IsValidRow(row)) {
-                if (this.VirtualCol_No) {
-                    row = String(this.len+1) + delimiter + row
-                }
-                let tmp = row.split(delimiter)
-                this.data1x1.data.push(tmp)
-                this.data1x1.len +=1}
-        }
     }
-
-    ReadCSV_ReadConfig_ReturnData(str) {
-        let configtext = str.slice(str.indexOf(";CONFIG;"))
-        this.filepath = RetStringBetween(configtext, "PATH:", "!")
-        this.layout.csvRootPath = this.filepath
-        str = str.slice(0,str.indexOf(";CONFIG;")); 
-        str = str.slice(0,str.lastIndexOf("\n"))
-        return str
-    }    
 
     //SetMode: Applies layout configuration from mode to csv
 
@@ -262,19 +235,9 @@ class clsCSV {
     }
 
     Edit(divID) {
-        if (this.mode.activeMode != "SIDEBAR") {
-            this.layout.HighlightCell(divID)
-            this.Print()
-
-            this.ActiveCell.ApplyEditMode(divID)
-            // this._CreateInputField(divID)
-            // this._svgAppend_Save(divID)
-            this._CreateName(divID)
-            
-            document.getElementById(this.name + "-input").focus();
-            document.getElementById(this.name + "-input").select();
-            
-        }
+        this.layout.HighlightCell(divID)
+        this.Print()
+        this.ActiveCell.ApplyEditMode(divID)
     }
 
     Edit_Header(divID) {
@@ -462,20 +425,7 @@ class clsCSV {
     // }
 
     // inhibited by clsCSV Click (will call a Print that will make onclick disaper)
-    _CreateName(divID) {
-        let div = document.getElementById(divID);
-        let a = document.createElement('a');
-        a.id = "save-NAME"
-        a.href = "#"
-        a.setAttribute('onclick', this.name + '._Prefill_Input()');
-        a.innerHTML = '[NAME:]'
-        a.style.margin = '5pt'
-        div.append(a);
-    }
 
-    _Prefill_Input() {
-        document.getElementById(this.name + '-input').value += '[NAME:]'
-    }
 
     _SaveCellValueToData(){
         let value = document.getElementById(this.name + "-input").value;
@@ -506,13 +456,6 @@ class clsCSV {
             }
         }
         return ""
-    }
-
-
-    _IsValidRow(row) {
-      if (row == "") {
-        return false}
-      return true;
     }
 
     _IsConfigRow(dataRow) {
@@ -549,7 +492,7 @@ class clsCSV {
     }
 
 
-    _AsCSV(sep = ";") {
+    _AsCSVText(sep = ";") {
         return this.ReadWrite.WriteToText(this.data1x1.headers,this.data1x1.data,sep,this.filepath)
   }
 

@@ -49,7 +49,9 @@ class clsUserInput {
             }
         }
         // Realign page to top
-        document.body.scrollTop = document.documentElement.scrollTop = 0
+        setTimeout(function() {document.getElementById("navbar").scrollIntoView()},200)
+        // document.body.scrollTop = document.documentElement.scrollTop = 0
+        // document.getElementById("navbar").scrollIntoView()
     }
 
     Hover (event) {

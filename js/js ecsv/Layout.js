@@ -288,19 +288,18 @@ class clsCSVLayout {
         //row body
         ret += '<tbody>'
         //rows
-        var rowidx = "";
+        var rowIdx = -1;
+        var rowIdxStr = '0';
         // build data table
         for (let row of rows) {
-            // rowidx += 1
-            // rowidx = parseInt(row[0])-1
-            let rowidxx = Number(row[0]) -1 // "No. col
-            rowidx = rowidxx.toString()
+            rowIdx += 1
+            rowIdxStr = rowIdx.toString()
             var i = -1;
-            ret += '<tr id="' + this._DivIDTableRow({rowidx:rowidx}) + '">';
+            ret += '<tr id="' + this._DivIDTableRow({rowidx:rowIdxStr}) + '">';
             for (let cell of row) {
                 i += 1;
                 // let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
-                let id = this._DivIDTableCell({rowIdx: rowidx,colIdx:i.toString(), cols:cols})
+                let id = this._DivIDTableCell({rowIdx: rowIdxStr, colIdx:i.toString(), cols:cols})
                 if (String(cell).includes("\r")) {
                     cell = cell.replace(new RegExp('\r', "g") , '<br>')  // use \r for in cell new line
                 }
