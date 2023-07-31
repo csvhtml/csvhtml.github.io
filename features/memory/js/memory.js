@@ -13,7 +13,7 @@ class clsCard {
 class clsMemory {
     constructor({TargetDivID = "ecsvDivOut"}) {
         // this.state = "off"
-        this.layout = new clsCSVLayout({"TargetDivID": TargetDivID})
+        this.layout = new clsCSV_Layout({"TargetDivID": TargetDivID})
         this.NamesUnique = null // unique list of elemenets the memory is made of
         this.Cards = null // elements on table in order of their appearance
     }

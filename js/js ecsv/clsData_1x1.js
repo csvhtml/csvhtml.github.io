@@ -28,6 +28,7 @@ class clsData_1x1 {
         this.len = this.data.length
     }
 
+
     Init_Headers(headers) {
         this.headersConfig =  []
         this.headers =  []

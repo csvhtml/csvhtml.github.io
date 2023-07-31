@@ -7,6 +7,7 @@ class clsCSV_ReadWriteCSV {
     * Methods to Read in and Write to CSV file
     */
     constructor () {
+        // empty
     }
 
     ReadfromText_0Headers1Data2Config(csvtext) {
@@ -17,6 +18,9 @@ class clsCSV_ReadWriteCSV {
         return this.xWriteToText(headersList, DataList2D, delimiter, csvRootPath)
     }
 
+    // ################################################################
+    // Sub methods                                                    #
+    // ################################################################
 
     xReadfromText_0Headers1Data2Config(csvtext) {
         let ret = []

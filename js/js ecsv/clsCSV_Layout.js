@@ -2,9 +2,8 @@
 // class CSV Layout                                               #
 // ################################################################
 
-class clsCSVLayout {
+class clsCSV_Layout {
     constructor({TargetDivID = "", mode = null, log = null}) {
-        this.csvRootPath = ""
         this.LayoutTargetDivID = TargetDivID
         this.cellIDs_highlight = [["", ""], ["", ""]]   // cells that shall be highlighted. fist value is the internal value. Second value is representing the current state of the  site. The secondvalue will be changed by Print()
         this.row_highlight = ["", ""]                   //Row that is currently selected. First is targeted value, second is currently displayed value and can only be changed by Print()
@@ -534,7 +533,7 @@ class clsCSVLayout {
                     let url = this._LookUp("Name", name, "url")
                     if (url.indexOf("[/")!=-1) {
                         url = RetStringBetween(url,"[/", "]")
-                        url = this.csvRootPath + "/" + url
+                        url = this.mode.CSVFilePath() + "/" + url
                     }
                     let nummer = this._LookUp("Name", name, "No.")
 
@@ -560,7 +559,7 @@ class clsCSVLayout {
                     let link = RetStringBetween(value,"[/", "]")
                     text = link.replace(new RegExp("%20", "g") , " ") 
                     let linkB = "[/" + link + "]"
-                    link = this.csvRootPath + "/" + link
+                    link = this.mode.CSVFilePath() + "/" + link
                     let id = 'id = "' + idStr + '-link"' 
                     let rpl = '<a ' + id + ' href="' + link + '" target = "#">' + text + '</a>'
                     value = value.replace(linkB, rpl)}
@@ -696,7 +695,7 @@ function test_Layout() {
 
 function test_Layout_LookUp() {
     let fname = arguments.callee.name;
-    layoutt = new clsCSVLayout("FakeTargetDivID")
+    layoutt = new clsCSV_Layout("FakeTargetDivID")
 
     let headers = ["A", "B", "C", "D"]
     let data = [["A1", "B1", "C1", "D1"],["A2", "B2", "C2", "D2"],["A3", "B3", "C3", "D3"]]

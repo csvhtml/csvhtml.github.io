@@ -69,8 +69,8 @@ function main_Layout() {
         document.getElementById("MySidebar").classList.add("col-2")
         document.getElementById("MyCSV").classList.add("col-10")
     } else {
+        document.getElementById("MySidebar").style.display = 'None';  
         document.getElementById("MyCSV").classList.add("col-12")
-        document.getElementById("MyCSV Header").classList.add("col-12")
     }
 }
 

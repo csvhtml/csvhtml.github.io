@@ -16,19 +16,16 @@ class clsCSV {
     constructor({egoname = '', TargetDivID = "", Mode = "default", InitCols = []}) {
         this.ActiveCell = new clsCSV_Cell()
         this.log = new clsClassLog(CLS_CSV_VALID_ACTIONS)
-        this.mode = new clsModes(Mode, InitCols)
+        this.mode = new clsCSV_Config(Mode, InitCols)
         this.TargetDivID = null
         
         this.filepath = ""
         this.name = egoname
         
         this.ReadWrite = new clsCSV_ReadWriteCSV()
-        this.layout = new clsCSVLayout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
-        this.data1x1 = new clsData_1x1()
+        this.layout = new clsCSV_Layout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
+        this.data1x1 = new clsData_1x1(this.mode.ActiveCols(),[this.mode.DefaultRow()])
         this.dataSubSet = new clsData_1x1()
-        this.data1x1.Init_Headers(this.mode.ActiveCols())
-        this.data1x1.data = [this.mode.DefaultRow()]
-        this.data1x1.len = 1;
         this._DataSynch()
         this.sum = -1;          // sum = -1 inactive, sum >=0 sum is active
              
@@ -94,8 +91,10 @@ class clsCSV {
         let headers = str012[0].split(delimiter)
 
         this.data1x1.Init_Headers(headers)
-        this.mode.SetConfig("cols", headers)
         this.data1x1.Init_Data(str012[1].split("\n"), delimiter)
+
+        this.mode.SetConfig("cols", headers)
+        this.mode.SetConfigFromCSV(str012[2])
     }
 
     //SetMode: Applies layout configuration from mode to csv

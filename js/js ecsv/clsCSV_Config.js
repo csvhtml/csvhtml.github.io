@@ -31,17 +31,20 @@ const CLS_MODES_PREDEFINED = {
     }
 }
 
-class clsModes {
+class clsCSV_Config {
     constructor(SetMode = "default", DefaultCols = []) {
         this.Config = {
             // Config at Startup
             "cols": [],
             "CSVLayout": "",
             "colsFixed": "",
+            "csvRootPath": "",
             // Filter during run time
             "type": [],
             "tags": []
         }
+        this.activeModeName = SetMode
+
         // default Config 
         this.Config["cols"] =  CLS_MODES_DEFAULT_COLS
         for (let key of Object.keys(CLS_MODES_CSV_VALID_CONFIG)) {
@@ -67,6 +70,10 @@ class clsModes {
         return this.Config["CSVLayout"]
     }
 
+    CSVFilePath() {
+        return this.Config["csvRootPath"]
+    }
+
     SetMode(mode) {
         if (CLS_MODES_PREDEFINED.includes(mode)) {
             this.activeModeName = mode
@@ -87,6 +94,11 @@ class clsModes {
             }
         }
     }
+
+    SetConfigFromCSV(configText) {
+        this.Config["csvRootPath"] = RetStringBetween(configText, "PATH:", "!")
+    }
+
 
     DefaultRow(atPosition = -1) {
         let no = 0
