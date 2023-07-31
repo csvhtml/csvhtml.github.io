@@ -71,11 +71,12 @@ class clsCSV {
     Print() {
         if (this.TargetDivID != null) {
             this._DataSynch()
+
             if (this.mode.activeMode == "ulist") {
                 this.layout._PrintList(this.headers, this.data, this.headersConfig)
                 return
             } 
-            if (this.mode.activeMode == "header") {
+            if (this.mode.ActiveCSVLayout() == "headersOnly") {
                 this.layout._PrintHeader(this.headers, this.headersConfig)
                 return
             }

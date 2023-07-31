@@ -194,7 +194,7 @@ class clsCSVLayout {
         let cDivOut = document.getElementById(this.LayoutTargetDivID);
         let colswidth = this._GetColsWidthDictionary(headers)
 
-        cDivOut.innerHTML = this._AsHTMLTableHeader(headers, headersConfig, colswidth)
+        cDivOut.innerHTML = this._AsHTMLTableHeaderOnly(headers, headersConfig, colswidth)
             
     }
 
@@ -272,18 +272,7 @@ class clsCSVLayout {
     }
 
     _AsHTMLTable(cols, headersConfig, colswidth, rows) {
-        let ret = '<table class="table"><thead><tr>';
-        // table header
-        for (let i = 0; i < cols.length; i++) {
-            let header = cols[i]
-            let config = headersConfig[i]
-            ret += '<th id = "header-' + header + '" class="ecsvtable col-' + header + '" '+ colswidth[header] +'>' + header
-            if (config == "dropdown") {
-                ret += " " + this._svgText_ArrowDown(header)
-                ret += this.AddDropDownMenuFromValues(header)}
-            ret += '</th>'
-        }
-        ret += '</tr></thead>'
+        let ret = this._AsHTMLTableHeader(cols, headersConfig, colswidth)
         
         //row body
         ret += '<tbody>'
@@ -319,6 +308,16 @@ class clsCSVLayout {
         return ret;
     }
 
+    _AsHTMLTableHeaderOnly(cols, headersConfig, colswidth) {
+        let ret = this._AsHTMLTableHeader(cols, headersConfig, colswidth)
+
+        // row body end
+        ret += '</tbody>'
+        // table end
+        ret += '</table>'
+
+        return ret;
+    }
 
     _AsHTMLTableHeader(cols, headersConfig, colswidth) {
         let ret = '<table class="table" style="margin-bottom:0;"><thead><tr>';
@@ -333,11 +332,6 @@ class clsCSVLayout {
             ret += '</th>'
         }
         ret += '</tr></thead>'
-        // row body end
-        ret += '</tbody>'
-        // table end
-        ret += '</table>'
-
         return ret;
     }
 

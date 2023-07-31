@@ -21,7 +21,6 @@ cParameter.setAll(cURLHandler.parameter())
 // ################################################################
 const PAGE = {}
 PAGE["MyCSV"] = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV"});
-PAGE["MyCSV Header"] = new clsCSV({egoname: "ecsvH", TargetDivID: "MyCSV Header", Mode: "header"});
 PAGE["MySidebar"] = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "sidebar"});
 PAGE["mySearch"] = new clsSiteSearch();
 
@@ -67,15 +66,9 @@ function main_CLS() {
 function main_Layout() {
     main_Layout_Init()
     if (cParameter.get("sidebar")) {
-        document.getElementById("MySidebar Header").classList.add("col-2")
-        document.getElementById("MyCSV Header").classList.add("col-10")
-    
         document.getElementById("MySidebar").classList.add("col-2")
         document.getElementById("MyCSV").classList.add("col-10")
     } else {
-        document.getElementById("MySidebar").style.display = 'none';  
-        document.getElementById("MySidebar Header").style.display = 'none';  
-    
         document.getElementById("MyCSV").classList.add("col-12")
         document.getElementById("MyCSV Header").classList.add("col-12")
     }
@@ -83,13 +76,8 @@ function main_Layout() {
 
 function main_Layout_Init() {
     document.getElementById("MySidebar").style.display = '';  
-    document.getElementById("MySidebar Header").style.display = '';
-
     document.getElementById("MyCSV").classList.remove("col-10", "col-12")
-    document.getElementById("MyCSV Header").classList.remove("col-10", "col-12")
-     
     document.getElementById("MySidebar").classList.remove("col-2")
-    document.getElementById("MySidebar Header").classList.remove("col-2")
 }
 
 
