@@ -1,5 +1,5 @@
-var cInputFileDivID = ""
-var cInputFileFunction = undefined
+// var cInputFileDivID = ""
+// var cInputFileFunction = undefined
 
 // ################################################################
 // DropDown                                                       #
@@ -52,22 +52,6 @@ function ddToggle(divID) {
       x.style.display = "none";
     }
   }
-
-
-// // ################################################################
-// // Input File global functions                                    #
-// // ################################################################
-
-// const _ddReadFile = (event)  => {
-//     let divFile = document.getElementById(event.srcElement.id);
-//     cReader.readAsText(divFile.files[0]);
-//     cReader.addEventListener("loadend", _ddReadFile_functioncall);
-//     // cReader.addEventListener("loadend", DDFileInput(DivID));   // this does not work. Work around via _ddReadFile_functioncall 
-//   }
-
-// const _ddReadFile_functioncall = (event)  => {
-//     cInputFileFunction(cInputFileDivID)
-//   }
 
 
 // ################################################################

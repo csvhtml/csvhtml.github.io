@@ -5,7 +5,7 @@ const LOGG = true
 // Base classes                                                   #
 // ################################################################
 const cLOG = new clsLog()
-const cReader = new FileReader();
+
 const cHIF = new clsHtmlInterfaces();
 const cSVG = new clsSVG();
 

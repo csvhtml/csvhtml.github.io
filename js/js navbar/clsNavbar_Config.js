@@ -18,7 +18,7 @@ const CLS_NAVBAR_CONFIG_LEFT = {
 
 // In the Button Part (RIGHT), functions are called directly. Either via string name or via function reference
 const CLS_NAVBAR__CONFIG_RIGHT = {
-    "nav-input": clsNavbar_Call_Input,      // input must be reference to function
+    // "nav-input": clsNavbar_Call_Input,      // input must be reference to function
     "nav-download": "clsNavbar_Call_Download()"     // download must be string of function name
 }
 

@@ -91,11 +91,11 @@ class clsNavbar {
                 if (div.id.includes("download")) {
                     this._fillMenu_InsertOnClick(key, div) 
                 }
-                if (div.id.includes("input")) {
-                    let input2 = document.getElementById(key)
-                    input2.addEventListener('change', _ddReadFile)
-                    this.input.Input_AssignFunction(key, CLS_NAV_RIGHT[key])
-                }
+                // if (div.id.includes("input")) {
+                //     let input2 = document.getElementById(key)
+                //     input2.addEventListener('change', _ddReadFile)
+                //     this.input.Input_AssignFunction(key, CLS_NAV_RIGHT[key])
+                // }
 
             }
         }
