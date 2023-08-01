@@ -18,6 +18,7 @@ class clsNavbar {
  */
     constructor() {
         this.libDD = new libDropDown()
+        this.input = new libInput()
         this.menu = this._initMenu()
         this._fillMenu()
     }
@@ -93,7 +94,7 @@ class clsNavbar {
                 if (div.id.includes("input")) {
                     let input2 = document.getElementById(key)
                     input2.addEventListener('change', _ddReadFile)
-                    this.libDD.Input_AssignFunction(key, CLS_NAV_RIGHT[key])
+                    this.input.Input_AssignFunction(key, CLS_NAV_RIGHT[key])
                 }
 
             }

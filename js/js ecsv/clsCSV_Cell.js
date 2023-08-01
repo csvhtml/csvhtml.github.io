@@ -32,6 +32,11 @@ class clsCSV_Cell {
         let ret = document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID).value
         return this._RefineInvalidChars(ret)}
 
+    // MOHI
+    Value() {
+        let ret = document.getElementById(this.CellDiv).innerHTML
+        return this._RefineInvalidChars(ret)}
+
 // ################################################################
 // Sub methods                                                    #
 // ################################################################
