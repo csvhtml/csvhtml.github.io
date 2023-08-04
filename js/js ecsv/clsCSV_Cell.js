@@ -1,24 +1,39 @@
-const CLS_CSV_CELLHANDLER_INPUT_DIVID = "clsCSV-Cell-InputField"
+// ################################################################
+// Config                                                         #
+// ################################################################
+
+const CLS_CSV_CELLHANDLER_TEXTAREA_DIVID = "clsCSV-Cell-TextArea"
+const CLS_CSV_CELLHANDLER_INPUT_DIVID = "clsCSV-Cell-Input"
 const CLS_CSV_CELLHANDLERSAVE_BUTTON_AID = "clsCSV-Cell-SaveButon"
 
-
+// ################################################################
+// clsCSV                                                         #
+// ################################################################
 class clsCSV_Cell {
     /**
      * Indivual CSV Cell
      */
     constructor() {
             this.CellDiv = null
+            this.Active = false
         }
     
     Set(divID) {
         this.xSet(divID)}
 
+    UnSet(divID) {
+        this.xUnSet(divID)}
+
     ApplyEditMode(divID) {
+        this.Set(divID);
         this.xApplyEditMode(divID)}
 
 
     ID() {
         return this.CellDiv.id}
+
+    IsActive() {
+        return this.Active}
 
     Row() {
         return this.xRow()
@@ -29,10 +44,9 @@ class clsCSV_Cell {
     }
     
     InputValue() {
-        let ret = document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID).value
+        let ret = document.getElementById(CLS_CSV_CELLHANDLER_TEXTAREA_DIVID).value
         return this._RefineInvalidChars(ret)}
 
-    // MOHI
     Value() {
         let ret = document.getElementById(this.CellDiv).innerHTML
         return this._RefineInvalidChars(ret)}
@@ -46,24 +60,43 @@ class clsCSV_Cell {
         this.CellDiv = document.getElementById(divID)
         if (this.CellDiv == undefined) {
             this.CellDiv = null
+        } else {
+            this.Active = true
         }
     }
 
+    xUnSet(divID) {
+        this.CellDiv = null
+        this.Active = false
+    }
+
     xApplyEditMode(divID) {
-            this._ApplyEditMode_CreateInputField(divID)
+            this._ApplyEditMode_CreateTextArea(divID)
             this._ApplyEditMode_SaveButton(divID)
+            this._ApplyEditMode_CreateInput(divID)
             
-            document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID).focus();
-            document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID).select();
+            document.getElementById(CLS_CSV_CELLHANDLER_TEXTAREA_DIVID).focus();
+            document.getElementById(CLS_CSV_CELLHANDLER_TEXTAREA_DIVID).select();
             
     }
 
-    _ApplyEditMode_CreateInputField(divID) {
-        this._RemoveInputField()
-
-        this.Set(divID);
+    _ApplyEditMode_CreateInput(divID) {
+        this._RemoveInput()
         
-        let input = this._InputField()
+        let input = cINPUT.ReturnInputField({
+            id:CLS_CSV_CELLHANDLER_INPUT_DIVID,
+            classList: ["form-control"]
+        })
+        this.CellDiv.append(input);
+        cINPUT.LinkInputWithFunctions()
+    }
+
+    _ApplyEditMode_CreateTextArea(divID) {
+        this._RemoveTextArea()
+
+        // this.Set(divID);
+        
+        let input = this._TextArea()
         // ; input.rows = "5"
         // input.value = this.ActiveCellValue();
         input.value = this.CellDiv.innerHTML
@@ -101,20 +134,35 @@ class clsCSV_Cell {
     }
 
 
-    _RemoveInputField() {
+    _RemoveTextArea() {
+        let oldinput  = document.getElementById(CLS_CSV_CELLHANDLER_TEXTAREA_DIVID);
+        if (oldinput != undefined) {
+            oldinput.remove();}
+    }
+
+    _RemoveInput() {
         let oldinput  = document.getElementById(CLS_CSV_CELLHANDLER_INPUT_DIVID);
         if (oldinput != undefined) {
             oldinput.remove();}
-        this.CellDiv = null
     }
 
-    _InputField() {
+    _TextArea() {
         let input = document.createElement('textarea'); 
         input.cols = "50"
         // ; input.rows = "5"
-        input.id = CLS_CSV_CELLHANDLER_INPUT_DIVID
+        input.id = CLS_CSV_CELLHANDLER_TEXTAREA_DIVID
         input.classList.add("input-large", "form-control")
         return input
+    }
+
+    _InputField() {
+    let input = document.createElement("input")
+    input.id = CLS_CSV_CELLHANDLER_INPUT_DIVID
+    input.type = "file"
+    input.classList.add("form-control")
+    input.multiple = true
+    input.webkitdirectory = true
+    return input
     }
 
     _InputFiled_AutoHeight() {

@@ -18,7 +18,6 @@ class clsNavbar {
  */
     constructor() {
         this.libDD = new libDropDown()
-        this.input = new libInput()
         this.menu = this._initMenu()
         this._fillMenu()
     }

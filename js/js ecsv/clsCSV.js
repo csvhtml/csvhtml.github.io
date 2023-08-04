@@ -357,6 +357,7 @@ class clsCSV {
 
     UnEdit(divID) {
         this.layout.cellIDs_highlight[0][0] = ""
+        this.ActiveCell.xUnSet()
         this.Print()
     }
 
@@ -722,7 +723,7 @@ class clsCSV {
 
 
 // ################################################################
-// Global callable functions                                                 #
+// Global callable functions                                      #
 // ################################################################
 
 function scrollToRow(row) {
@@ -730,11 +731,23 @@ function scrollToRow(row) {
     if(element) {
         element.scrollIntoView()
     }
-  }
+}
 
-function SaveCellValue(TargetDivID, CellID) {
+function SaveCellValue(TargetDivID) {
     let TargetHTMLObJ = PAGE[RetStringBetween(TargetDivID,"[","]")]
     TargetHTMLObJ._SaveActiveCellValueToData()
     TargetHTMLObJ.Print()
-  }
+}
 
+function clsCSV_ParseFileNameToTextArea() {
+    console.log("HiHo")
+    for (let X of ["MyCSV","MySidebar"]) {
+        if (PAGE[X].ActiveCell.IsActive()) {
+            let TargetDivID = X 
+            let PageCSV = PAGE[RetStringBetween(TargetDivID,"[","]")]
+        }
+    }
+    a = cReader.result
+    PageCSV._SaveActiveCellValueToData()
+    PageCSV.Print()
+}
