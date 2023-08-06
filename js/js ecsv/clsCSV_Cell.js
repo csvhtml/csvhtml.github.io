@@ -7,11 +7,11 @@ const CLS_CSV_CELLHANDLER_INPUT_DIVID = "clsCSV-Cell-Input"
 const CLS_CSV_CELLHANDLERSAVE_BUTTON_AID = "clsCSV-Cell-SaveButon"
 
 // ################################################################
-// clsCSV                                                         #
+// Function                                                       #
 // ################################################################
 class clsCSV_Cell {
     /**
-     * Indivual CSV Cell
+     * Active CSV Cell functions 
      */
     constructor() {
             this.CellDiv = null
@@ -85,7 +85,8 @@ class clsCSV_Cell {
         
         let input = cINPUT.ReturnInputField({
             id:CLS_CSV_CELLHANDLER_INPUT_DIVID,
-            classList: ["form-control"]
+            classList: ["form-control", "libInput-NoFileRead"],
+            webkitdirectory: true
         })
         this.CellDiv.append(input);
         cINPUT.LinkInputWithFunctions()
@@ -173,11 +174,7 @@ class clsCSV_Cell {
 
 
     _RefineInvalidChars(val) {
-        let value = val
-        if (value.includes("\n")) {
-            value = value.replace(new RegExp("\n", "g") , "\r")
-        }
-        return value
+        return myReplace(val, "\n", "\r")
     }
 
 }

@@ -86,7 +86,7 @@ function clsNavbar_Call_Download() {
 
 function clsNavbar_Call_Input() {
     for (let X of [PAGE["MyCSV"],PAGE["MySidebar"]]) {
-        X.ReadCSV(cReader.result);
+        X.ReadCSV(cReaders["nav-input"].result);
         X.Print();
         X.ToggleLink();
     }

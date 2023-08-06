@@ -23,9 +23,11 @@ class clsCSV {
         this.name = egoname
         
         this.ReadWrite = new clsCSV_ReadWriteCSV()
+        
         this.layout = new clsCSV_Layout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
         this.data1x1 = new clsData_1x1(this.mode.ActiveCols(),[this.mode.DefaultRow()])
         this.dataSubSet = new clsData_1x1()
+        this.filter = new clsCSV_Filter(this.data1x1.Headers(), this.data1x1.Data(), this.data1x1.HeadersConfig())
         this._DataSynch()
         this.sum = -1;          // sum = -1 inactive, sum >=0 sum is active
              
@@ -719,6 +721,16 @@ class clsCSV {
         let col = this.ActiveCell.Col()
         this.data1x1.data[row][col] = this.ActiveCell.InputValue()
     }
+
+    _SaveFilepathsToData(FilePaths) {
+        let text = ""
+        for (let path of FilePaths) {
+            text += "[" + this.mode.Config["csvRootPath"] + path + "] <br/>"
+        }
+        let row = this.ActiveCell.Row()
+        let col = this.ActiveCell.Col()
+        this.data1x1.data[row][col] = this.ActiveCell.InputValue() + text
+    }
 }
 
 
@@ -740,14 +752,19 @@ function SaveCellValue(TargetDivID) {
 }
 
 function clsCSV_ParseFileNameToTextArea() {
-    console.log("HiHo")
+    let TargetDivID = ""
     for (let X of ["MyCSV","MySidebar"]) {
         if (PAGE[X].ActiveCell.IsActive()) {
-            let TargetDivID = X 
-            let PageCSV = PAGE[RetStringBetween(TargetDivID,"[","]")]
-        }
+            TargetDivID = X}
     }
-    a = cReader.result
-    PageCSV._SaveActiveCellValueToData()
-    PageCSV.Print()
+    if (TargetDivID!="") {
+        let a = []
+        for (let cReaderX of cReaders["clsCSV-Cell-Input"]) {
+            a.push(cReaderX.result)
+        }
+        b = 1
+        PAGE[TargetDivID]._SaveFilepathsToData(cReaders_FilePaths["clsCSV-Cell-Input"])
+        PAGE[TargetDivID].Print()
+    }
+
 }

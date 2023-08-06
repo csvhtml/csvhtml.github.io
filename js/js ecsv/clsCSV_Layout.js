@@ -8,7 +8,6 @@ class clsCSV_Layout {
         this.cellIDs_highlight = [["", ""], ["", ""]]   // cells that shall be highlighted. fist value is the internal value. Second value is representing the current state of the  site. The secondvalue will be changed by Print()
         this.row_highlight = ["", ""]                   //Row that is currently selected. First is targeted value, second is currently displayed value and can only be changed by Print()
         this.col_highlight = ["", ""] 
-        this.div_input = null                           // current text area for user input
         
         this.filter_dropdown = {
             // "Tags": [],

@@ -17,6 +17,7 @@ class clsData_1x1 {
         this.headersConfig =  []
         this.headers =  []
         this.Init_Headers(headers)
+        // this.Init_Data(data)
         this.data =  []
         for (let row of data) {
             let nextrow = []
@@ -28,8 +29,32 @@ class clsData_1x1 {
         this.len = this.data.length
     }
 
-
     Init_Headers(headers) {
+        this.xInit_Headers(headers)
+    }
+
+    Init_Data(dataRows, delimiter) {
+        this.xInit_Data(dataRows, delimiter)
+    }
+
+    Headers() {
+        return this.headers
+    }
+
+    HeadersConfig(headerName = null) {
+        return this.xHeadersConfig(headerName)
+    }
+
+    HeadersRaw(headerName = null) {
+        return this.xHeadersRaw(headerName)
+    }
+
+    Data() {
+        return this.data
+    }
+    
+
+    xInit_Headers(headers) {
         this.headersConfig =  []
         this.headers =  []
         for (let header of headers) {
@@ -38,7 +63,7 @@ class clsData_1x1 {
         }
     }
 
-    Init_Data(dataRows, delimiter) {
+    xInit_Data(dataRows, delimiter=";") {
         let dataN = 0
         if (this.headers.length >0) {
             dataN = this.headers.length
@@ -280,7 +305,7 @@ class clsData_1x1 {
         return this.headers.indexOf(headerNamePure)
     }
 
-    HeadersRaw(headerName = null) {
+    xHeadersRaw(headerName = null) {
         let ret = ""
         if (headerName == null) {
             ret = [] 
@@ -305,7 +330,7 @@ class clsData_1x1 {
         return ret
     }
 
-    HeadersConfig(headerName = null) {
+    xHeadersConfig(headerName = null) {
         if (headerName == null) {
             return this.headersConfig}
 

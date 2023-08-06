@@ -6,14 +6,15 @@ const LIB_INPUT_FUNCTIONMAPPING = {
     "nav-input": clsNavbar_Call_Input,
     "clsCSV-Cell-Input": clsCSV_ParseFileNameToTextArea, 
 }
+const LIB_INPUT_NOFILEREAD = "libInput-NoFileRead" // in case the input field has this class, then the uploaded file content is not read (and only the files path is saved)
 
 // ################################################################
 // Functionality                                                  #
 // ################################################################
 
 // access the data globally via 'cReader.result' as text
-const cReader = new FileReader();
-
+const cReaders = {};  // dict of fileReaders that is dynamically created
+const cReaders_FilePaths = {};  // dict of fileReaders that is dynamically created
 
 class libInput {
     constructor() {
@@ -50,8 +51,17 @@ class libInput {
         let KeysOnPage = Object.keys(this.ActiveEventListeners_OnChange) 
         if (KEYS.includes(divID) && !KeysOnPage.includes(divID)) {
             let input = document.getElementById(divID)
-            input.addEventListener('change', _libInput_OnLoad)
-            this.ActiveEventListeners_OnChange[divID] = LIB_INPUT_FUNCTIONMAPPING[divID]
+            if (!input.multiple && !input.webkitdirectory) {
+                input.addEventListener('change', _libInput_OnLoad)
+                this.ActiveEventListeners_OnChange[divID] = LIB_INPUT_FUNCTIONMAPPING[divID]
+                cReaders[divID] = new FileReader()
+            }
+
+            if (!input.multiple && input.webkitdirectory) {
+                input.addEventListener('change', _libInput_OnLoad)
+                cReaders[divID] = [] // list of later defined FileReaders
+                cReaders_FilePaths[divID] = [] // list of later defined FileNames
+            }
         }
     }
 }
@@ -62,8 +72,36 @@ class libInput {
 
 const _libInput_OnLoad = (event)  => {
     let divFile = document.getElementById(event.srcElement.id);
-    cReader.readAsText(divFile.files[0]);
-    cReader.addEventListener("loadend", LIB_INPUT_FUNCTIONMAPPING[event.srcElement.id]); 
+    if (!divFile.multiple && !divFile.webkitdirectory) {
+        cReaders_FilePaths[event.srcElement.id] = divFile.files[0].name
+        cReaders[event.srcElement.id].addEventListener("loadend", LIB_INPUT_FUNCTIONMAPPING[event.srcElement.id]); 
+        if (!event.srcElement.classList.contains(LIB_INPUT_NOFILEREAD)) {
+            cReaders[event.srcElement.id].readAsText(divFile.files[0]);}
+
+    }
+
+    if (divFile.multiple && !divFile.webkitdirectory) {
+        a = 1
+    }
+
+    if (!divFile.multiple && divFile.webkitdirectory) {
+        let idx = 0
+        for (file of divFile.files) {
+            cReaders_FilePaths[event.srcElement.id].push(file.webkitRelativePath)
+            cReaders[event.srcElement.id].push(new FileReader())
+            if (!event.srcElement.classList.contains(LIB_INPUT_NOFILEREAD)) {
+                cReaders[event.srcElement.id][idx].readAsText(divFile.files[idx])}
+            idx += 1
+        }
+        cReaders[event.srcElement.id][idx-1].readAsText(divFile.files[idx-1]) // last file must be loaded to trigger function call below
+        cReaders[event.srcElement.id][idx-1].addEventListener("loadend", LIB_INPUT_FUNCTIONMAPPING[event.srcElement.id]); 
+    }
+
+    if (divFile.multiple && divFile.webkitdirectory) {
+        // should not exist
+        assert(false)
+    }
+
   }
 
 

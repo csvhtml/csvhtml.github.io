@@ -21,11 +21,12 @@
 
     <nav id="navRight" class="nav">
         <form id="form-csv" class="form-inline my-2 mx-2">
-            <input id="nav-input" type="file" class="form-control" accept=".csv" multiple>
+            <input id="nav-input" type="file" class="form-control" accept=".csv">
+            <label for="nav-input" class="btn btn-outline-primary my-2 my-sm-0 mySVG-FileAwUp"> Choose CSV</label>
         </form>
 
         <form class="form-inline my-2 mx-2" id="forminput">
-            <a id="nav-download" class="btn btn-outline-primary my-2 my-sm-0 mySVG-SqAwDwnBmLine" type="submit"> 
+            <a id="nav-download" class="btn btn-outline-primary my-2 my-sm-0 mySVG-FileAwDown" type="submit"> 
                 Save Data
             </a>
         </form>
@@ -49,6 +50,8 @@
 <script src="js/js basis/page.js"></script>
 <script src="js/js basis/listProperties.js"></script>
 <script src="js/js basis/clsClassLog.js"></script>
+<script src="js/js basis/basisTextFunctions.js"></script>
+
 <script src="js/basis.js"></script>
 <script src="js/clsHTTP.js"></script>
 <script src="js/clsSVG.js"></script>
@@ -66,6 +69,7 @@
 <script src="js/js ecsv/clsData_1x1.js"></script>
 <script src="js/js ecsv/clsCSV.js"></script>
 <script src="js/js ecsv/clsCSV_Cell.js"></script>
+<script src="js/js ecsv/clsCSV_Filter.js"></script>
 
 <script src="js/libInput.js"></script>
 <script src="js/libDropDown.js"></script>
