@@ -27,7 +27,7 @@ class clsCSV {
         this.layout = new clsCSV_Layout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
         this.data1x1 = new clsData_1x1(this.mode.ActiveCols(),[this.mode.DefaultRow()])
         this.dataSubSet = new clsData_1x1()
-        this.filter = new clsCSV_Filter(this.data1x1.Headers(), this.data1x1.Data(), this.data1x1.HeadersConfig())
+        this.filter = new clsCSV_DataFilter(this.data1x1.Headers(), this.data1x1.Data())
         this._DataSynch()
         this.sum = -1;          // sum = -1 inactive, sum >=0 sum is active
              

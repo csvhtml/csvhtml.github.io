@@ -5,6 +5,7 @@ function test() {
     assertions_in_files += test_clsData_1x1() 
     assertions_in_files += test_Basis()
     assertions_in_files += test_TextFunctions()
+    assertions_in_files += test_clsCSV_DataFilter()
     assertions_in_files += test_Layout()
     // assertions_in_files += test_Click()
     console.groupEnd ();

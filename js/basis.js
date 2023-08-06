@@ -43,7 +43,7 @@ function _RemoveBlanksInList(liste) {
 }
 
 function _byVal(data) {
-    // Creates a hard copy of a list
+    // Creates a hard copy of a list (and list of lists)
     let ret = data
     if (Array.isArray(data)) {
         ret = []

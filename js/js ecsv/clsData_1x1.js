@@ -41,7 +41,7 @@ class clsData_1x1 {
         return this.headers
     }
 
-    HeadersConfig(headerName = null) {
+    HeadersConfig(headerName = null) { 
         return this.xHeadersConfig(headerName)
     }
 
@@ -49,8 +49,8 @@ class clsData_1x1 {
         return this.xHeadersRaw(headerName)
     }
 
-    Data() {
-        return this.data
+    Data(cols = []) {
+        return this.xData(cols)
     }
     
 
@@ -190,6 +190,16 @@ class clsData_1x1 {
 
     }
 
+
+    xData(cols = []) {
+        if (cols.length == 0) {
+            return this.data
+        } else {
+            return this._Subset_Cols(cols).Data()
+        }   
+    }
+
+
     Subset({cols = [], valueEquals = {}, valueIncludes = {}}) {
         // Assertions
         assertIsList(cols, "cols")
@@ -255,18 +265,6 @@ class clsData_1x1 {
             }     
         }
         return ret
-        // for (let key of Object.keys(valueIncludes)) {
-        //     let j = ret.headers.indexOf(key)
-        //     for (let i = ret.len-1; i > -1; i-- ) {
-        //         for (let val of valueIncludes[key]) {
-        //             if (ret.data[i][j].indexOf(val) == -1) {
-        //                 ret.RemoveRow(i)
-        //                 break
-        //             }
-        //         }
-        //     }     
-        // }
-        // return ret
     }
 
     IsColsSubset(cols) {
