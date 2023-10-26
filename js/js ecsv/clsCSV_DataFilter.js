@@ -12,6 +12,8 @@ class clsCSV_DataFilter {
         return this.xSubset({valueEquals : valueEquals, valueIncludes : valueIncludes})
     }
 
+    
+
     xSubset({valueEquals = {}, valueIncludes = {}}) {
         // let valueEquals = {"header A": ["Hallo"]} 
         // let valueIncludes = {"header B": ["Welt"]} 

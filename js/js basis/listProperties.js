@@ -50,6 +50,7 @@ Object.defineProperties(Array.prototype, {
         }
 });
 
+
 Object.defineProperties(Array.prototype, {
     replaceIfEmpty: {
         value: function(element) {

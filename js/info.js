@@ -39,3 +39,25 @@
 //     <!-- <input class="form-control" type="text" id="mySearch" onkeyup="mySearchfilter()" placeholder="Site Search"> -->
 //     <input class="form-control" type="text" id="mySearch" placeholder="Site Search">
 // </form>
+
+
+// Layout
+
+// _GetDropDownHeaders() {
+//     let ret = []
+//     for (let header of this.headers) {
+//         if (header.includes("[dropdown]")) {
+//             let head = header.replace(" [dropdown]", "")
+//             head = head.replace("[dropdown]", "")
+//             ret.push(head)
+//         }
+//     }
+//     return ret
+// }
+
+
+// GetDiv_InputCell() {
+//     if (this.cellIDs_highlight[0][0] != "") {
+//         return document.getElementById(this.cellIDs_highlight[0][0]);
+//     }
+// }

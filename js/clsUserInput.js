@@ -64,7 +64,7 @@ class clsUserInput {
     }
 
     Tipp (event) {
-        PAGE["mySearch"].mySearchfilter();
+        // PAGE["mySearch"].mySearchfilter();
     }
 
     

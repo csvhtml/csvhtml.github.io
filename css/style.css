@@ -56,7 +56,7 @@ img.img-list {
     height:88vh;
   }
 
-  th.ecsvtable {
+thead.ecsvtable{
     background: white;
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */

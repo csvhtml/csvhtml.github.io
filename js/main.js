@@ -6,6 +6,7 @@ const LOGG = true
 // ################################################################
 const cLOG = new clsLog()
 const cINPUT = new libInput()
+const cHTML = new libHTML()
 const cHIF = new clsHtmlInterfaces();
 const cSVG = new clsSVG();
 
@@ -22,7 +23,7 @@ cParameter.setAll(cURLHandler.parameter())
 const PAGE = {}
 PAGE["MyCSV"] = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV"});
 PAGE["MySidebar"] = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "sidebar"});
-PAGE["mySearch"] = new clsSiteSearch();
+// PAGE["mySearch"] = new clsSiteSearch();
 
 
 // const MEM = new clsMemory();
@@ -60,7 +61,7 @@ function main_Events() {
 }
 
 function main_CLS() {
-    PAGE["mySearch"].ignore = ["ecsv-sum","dropdown-item"]
+    // PAGE["mySearch"].ignore = ["ecsv-sum","dropdown-item"]
 }
 
 function main_Layout() {

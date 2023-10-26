@@ -5,7 +5,7 @@ const CLS_MODES_DEFAULT_COLS = ["No.", "Name", "Description", "url", "img", "Typ
 
 const CLS_MODES_CSV_VALID_CONFIG = {
     "CSVLayout": ["table", "list", "headersOnly"],  // first entry is default config
-    "colsFixed": [false, true] // alo cols to be changed
+    "colsFixed": [false, true] // allows cols to be changed
 }
 const CLS_MODES_FILTER = {
     "type": [],

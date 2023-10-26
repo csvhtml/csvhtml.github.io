@@ -4,64 +4,85 @@
 
 class clsCSV_Layout {
     constructor({TargetDivID = "", mode = null, log = null}) {
-        this.LayoutTargetDivID = TargetDivID
-        this.cellIDs_highlight = [["", ""], ["", ""]]   // cells that shall be highlighted. fist value is the internal value. Second value is representing the current state of the  site. The secondvalue will be changed by Print()
-        this.row_highlight = ["", ""]                   //Row that is currently selected. First is targeted value, second is currently displayed value and can only be changed by Print()
-        this.col_highlight = ["", ""] 
-        
-        this.filter_dropdown = {
-            // "Tags": [],
-            // "Type": []
-        }
-        
         this.headers = []
         this.data = [[]]
-        this.headers_dropdown = [] //(obsolete)
         this.headersConfig = []
+
+        this.LayoutTargetDivID = TargetDivID
+        this.cellIDs_highlight = [["", ""], ["", ""]]   // cells that shall be highlighted. fist value is the internal value. Second value is representing the current state of the  site. The secondvalue will be changed by Print()
+        this.row_highlight = ["", ""]                   // Row that is currently selected. First is targeted value, second is currently displayed value and can only be changed by Print()
+        this.col_highlight = ["", ""]                   // identified via class, that is shared among all cells and the ehader of the col
 
         this.mode = mode
         this.log = log
+
+        this.Names = new clsCSV_Layout_Naming(TargetDivID)
+        this.AsHTML = new clsCSV_Layout_AsHTML(this.Names)
     }
 
-    ReadFullCSVData(headers, data, headersConfig) {
-        // data
-        this.headers = headers
-        this.data = data
-        // config
-        this.headersConfig = headersConfig
-        for (let i =0; i<this.headersConfig.length;i++) {
-            if (this.headersConfig[i] == "dropdown") {
-                if(!this.filter_dropdown.hasOwnProperty(this.headers[i])) {
-                    this.filter_dropdown[this.headers[i]] = []
-                }
-            }
-        }
-    }
-
-    _GetDropDownHeaders() {
-        let ret = []
-        for (let header of this.headers) {
-            if (header.includes("[dropdown]")) {
-                let head = header.replace(" [dropdown]", "")
-                head = head.replace("[dropdown]", "")
-                ret.push(head)
-            }
-        }
-        return ret
-    }
-
-    Toggle_Filter(tag = "", type = "") {
-        if (tag == "" && type == "") {
-            return}
-        if (tag != "") {
-            this.filter_dropdown["Tags"].toggle(tag)
-            }
-        if (type != "") {
-            this.filter_dropdown["Type"].toggle(type)
-        }
+    DataSynch(headers, data, headersConfig) {
+        this.xDataSynch(headers, data, headersConfig)
     }
 
     ApplyHighlightToSite () {
+        this.xApplyHighlightToSite()
+    }
+
+    Unhighlight_All() {
+        this.xUnhighlight_All()
+    }
+
+    HighlightRow(divID) {
+        this.xHighlightRow(divID)
+    }
+
+    HighlightCol(divID) {
+        this.xHighlightCol(divID)
+    }
+
+    HighlightCell(divID) {
+        this.xHighlightCell(divID)
+    }
+
+    DivIsInsideECSV(divID) {
+        return this.xDivIsInsideECSV(divID)
+    }
+
+    IDIncludes(divID, keys) {
+        for (let key of keys) {
+            if (divID.includes(key)) {
+                return true}}
+        return false
+    }
+
+    ScrollToHighlight() {
+        this.xScrollToHighlight()
+    }
+
+    Print(headers, data, headersConfig) {
+        this.xPrint(headers, data, headersConfig)
+    }
+
+    PrintList(data) {
+        this.xPrintList(data)
+    }
+
+    PrintHeader(headers, headersConfig) {
+        this.xPrintHeader(headers, headersConfig)
+    }
+
+
+    xDataSynch(headers, data, headersConfig) {
+        this.headers = headers
+        this.AsHTML.headers = headers
+        this.data = data
+        this.AsHTML.data = data
+        this.headersConfig = headersConfig
+        this.AsHTML.headersConfig = headersConfig
+    }
+
+
+    xApplyHighlightToSite () {
         if (this.mode.ActiveCSVLayout() == "table") {
             let hclass = "table-info"
             for (let row of this.row_highlight) {
@@ -83,7 +104,7 @@ class clsCSV_Layout {
             //Highlithing Cols
             if (this.col_highlight[0] == "") {
                 if (this.col_highlight[1] != "") {
-                    var colcells = document.getElementsByClassName("ecsvcell " + this.col_highlight[1]);
+                    var colcells = document.getElementsByClassName(LAYOUT_CLASSNAME['Cell'] + " " + this.col_highlight[1]);
                     for (let colcell of colcells) {
                         colcell.classList.remove(hclass)}}
             } else {
@@ -117,237 +138,31 @@ class clsCSV_Layout {
         this.row_highlight[1] = this.row_highlight[0]
     }
 
-    AddDropDownMenuFromValues(header){
-        var prefix = header + "-"
-        let ret = '<div class="dropdown-menu ' + header + '">'
-        let filter =  this.filter_dropdown[header]
-        for (let tag of this._GetColValues(header)) {
-            if (filter.includes(tag)) {
-                ret += '<a id="' + prefix + tag + '" class="dropdown-item bg-info" href="#">' + tag + '</a>'} 
-            else {
-                ret += '<a id="' + prefix + tag + '" class="dropdown-item" href="#">' + tag + '</a>'}  
-        }
+    xPrint(headers, data, headersConfig) {
+        let egoDiv = document.getElementById(this.LayoutTargetDivID);
 
-        return ret
-        // var tags = []; var prefix = "";
-        // if (header == "Type") {
-        //     prefix = "type-"}
-        // if (header == "Tags") {
-        //     prefix = "tag-"}
-        // let ret = '<div class="dropdown-menu ' + header + '">'
-
-        // for (let tag of values) {
-        //     if (filter.includes(tag)) {
-        //         ret += '<a id="' + prefix + tag + '" class="dropdown-item bg-info" href="#">' + tag + '</a>'} 
-        //     else {
-        //         ret += '<a id="' + prefix + tag + '" class="dropdown-item" href="#">' + tag + '</a>'}  
-        // }
-
-        // return ret
+        egoDiv.innerHTML = this.AsHTML.Table(headers, headersConfig, data)    
+        this.ApplyHighlightToSite()
     }
 
-    _Print(headers, data, headersConfig) {   // or filtered
+    xPrintList(data) {   // or filtered
         // standard use case
-        var cDivOut = document.getElementById(this.LayoutTargetDivID);
-        let colswidth = this._GetColsWidthDictionary(headers)
+        var egoDiv = document.getElementById(this.LayoutTargetDivID);
 
-        cDivOut.innerHTML = this._AsHTMLTable(headers, headersConfig, colswidth, data)
-        
-        if (this.mode == "memory") {
-            let TDs = document.getElementsByTagName("td")
-            for (let td of TDs) {
-                td.classList.add("memory-card", "memory-center")
-            }
-            let THs = document.getElementsByTagName("th")
-            for (let th of THs) {
-                th.classList.add("memory-center")
-            }
-        }
+        egoDiv.innerHTML = this.AsHTML.List(data, "Name")
             
         this.ApplyHighlightToSite()
     }
 
-    _PrintList(headers, data, headersConfig) {   // or filtered
+    xPrintHeader(headers, headersConfig) {   // or filtered
         // standard use case
-        var cDivOut = document.getElementById(this.LayoutTargetDivID);
+        let egoDiv = document.getElementById(this.LayoutTargetDivID);
 
-        cDivOut.innerHTML = this._AsHTMLList(data, "Name")
-        
-        if (this.mode == "memory") {
-            let TDs = document.getElementsByTagName("td")
-            for (let td of TDs) {
-                td.classList.add("memory-card", "memory-center")
-            }
-            let THs = document.getElementsByTagName("th")
-            for (let th of THs) {
-                th.classList.add("memory-center")
-            }
-        }
-            
-        this.ApplyHighlightToSite()
-    }
-
-    _PrintHeader(headers, headersConfig) {   // or filtered
-        // standard use case
-        let cDivOut = document.getElementById(this.LayoutTargetDivID);
-        let colswidth = this._GetColsWidthDictionary(headers)
-
-        cDivOut.innerHTML = this._AsHTMLTableHeaderOnly(headers, headersConfig, colswidth)
+        egoDiv.innerHTML = this.AsHTML.TableHeaderOnly(headers, headersConfig)
             
     }
 
-    _GetColsWidthDictionary(headers) {
-        let widths = []
-        for (let header of headers) {
-            let w = "15"
-            if (header == "No.") {w = "2"}
-            if (header == "Name") {w = "15"}
-            if (header == "Description") {w = "38"}
-            if (header == "Type") {w = "5"}
-            if (header == "Tags") {w = "10"}
-            widths.push('style="width:' + w + '%"')
-        }
-        ret = dicct(headers, widths)
-        return ret
-    }
-
-    _AsHTMLList(rows) {
-        let link = ""
-        let text = ""
-        if (this.headers.indexOf("url") >-1) {
-            if (this.headers.indexOf("img") >-1) {
-                return this._AsHTMLList_BuildList_ImgLink(rows, "url", "img")
-            } else if (this.headers.indexOf("Name") >-1) {
-                return this._AsHTMLList_BuildList_NameLink(rows, "url")
-            } else {
-                console.log("Error Layout: csv does not include Name or img")
-            }
-        } else {
-            if (this.headers.indexOf("img") >-1) {
-                
-            } else if (this.headers.indexOf("Name") >-1) {
-
-            } else {
-                console.log("Error Layout: csv does not include Name or img")
-            }
-        }
-    }
-
-    _AsHTMLList_BuildList_NameLink(rows, ColLink) {
-        let ret = '<ul>';
-        let idxL = this.headers.indexOf(ColLink)
-        let idxN = this.headers.indexOf("Name")
-        let link = ""
-        for (let row of rows) {
-            if (row[idxL].slice(0,1) == "[" && row[idxL].slice(-1) == "]") {
-                link = RetStringBetween(row[idxL],"[", "]")
-                ret += '<li>' + this._HREF(row[idxN], link, "li-" + row[idxN]) + '</li>'
-                ret += ' | '
-            }
-        }
-        ret += '</ul>';
-        return ret
-    }
-
-    _AsHTMLList_BuildList_ImgLink(rows, ColLink, ColImg) {
-        let ret = '<ul>';
-        let idxImg = this.headers.indexOf(ColImg)
-        let idxL = this.headers.indexOf(ColLink)
-        let imgText = ""
-
-        for (let row of rows) {
-            // ret += '<li><a href="' + this._Replace_Link(row[idxL]) + '"> ' + row[idxN] + ' </a></li>'
-            if (row[idxImg].length > 5) {
-                imgText = row[idxImg]
-            } else {
-                imgText = ""}
-            
-            ret += '<li>' + this._Replace_Link(row[idxL], "", imgText) + '</li>'
-            ret += ' | '
-        }
-        ret += '</ul>';
-        return ret
-    }
-
-    _AsHTMLTable(cols, headersConfig, colswidth, rows) {
-        let ret = this._AsHTMLTableHeader(cols, headersConfig, colswidth)
-        
-        //row body
-        ret += '<tbody>'
-        //rows
-        var rowIdx = -1;
-        var rowIdxStr = '0';
-        // build data table
-        for (let row of rows) {
-            rowIdx += 1
-            rowIdxStr = rowIdx.toString()
-            var i = -1;
-            ret += '<tr id="' + this._DivIDTableRow({rowidx:rowIdxStr}) + '">';
-            for (let cell of row) {
-                i += 1;
-                // let id = "R:" + rowidx + "C:" + i + "H:" + cols[i]
-                let id = this._DivIDTableCell({rowIdx: rowIdxStr, colIdx:i.toString(), cols:cols})
-                if (String(cell).includes("\r")) {
-                    cell = cell.replace(new RegExp('\r', "g") , '<br>')  // use \r for in cell new line
-                }
-                // cell = this._Replace_NAME(cell)
-                cell = this._Replace_Link(cell, id)
-                // ret += '<td id="R:' + rowidx + 'C:' + i + 'H:' + cols[i] + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
-                ret += '<td id="' + id + '" class="ecsvtable col-' + cols[i] + ' ecsvcell">' + cell + '</td>'
-            }
-              ret += '</tr>'
-        }
-
-        // row body end
-        ret += '</tbody>'
-        // table end
-        ret += '</table>'
-
-        return ret;
-    }
-
-    _AsHTMLTableHeaderOnly(cols, headersConfig, colswidth) {
-        let ret = this._AsHTMLTableHeader(cols, headersConfig, colswidth)
-
-        // row body end
-        ret += '</tbody>'
-        // table end
-        ret += '</table>'
-
-        return ret;
-    }
-
-    _AsHTMLTableHeader(cols, headersConfig, colswidth) {
-        let ret = '<table class="table" style="margin-bottom:0;"><thead><tr>';
-        // table header
-        for (let i = 0; i < cols.length; i++) {
-            let header = cols[i]
-            let config = headersConfig[i]
-            ret += '<th id = "header-' + header + '" class="ecsvtable col-' + header + '" '+ colswidth[header] +'>' + header
-            if (config == "dropdown") {
-                ret += " " + this._svgText_ArrowDown(header)
-                ret += this.AddDropDownMenuFromValues(header)}
-            ret += '</th>'
-        }
-        ret += '</tr></thead>'
-        return ret;
-    }
-
-
-    InputIsActive() {
-        if (this.cellIDs_highlight[0][1] == "") {
-            return false}
-        else {
-            return true}
-    }
-
-    GetDiv_InputCell() {
-        if (this.cellIDs_highlight[0][0] != "") {
-            return document.getElementById(this.cellIDs_highlight[0][0]);
-        }
-    }
-
-    Unhighlight_All() {
+    xUnhighlight_All() {
         for (let cellID_highlight of this.cellIDs_highlight) {
             cellID_highlight[0] = ""
         }
@@ -355,7 +170,7 @@ class clsCSV_Layout {
         this.col_highlight[0] = ""
     }
 
-    HighlightRow(divID) {
+    xHighlightRow(divID) {
         assert(divID.includes("R:") || divID.includes("row:"))
         if (divID.indexOf("[") == -1 && divID.indexOf("[") == -1) {
             divID = "[" + this.LayoutTargetDivID + "] " + divID
@@ -372,13 +187,20 @@ class clsCSV_Layout {
     }
 
 
-    HighlightCol(divID) {
-        assert(divID.includes("header-"))
+    xHighlightCol(headerID) {
+        assert(this._IsHeaderID(headerID))
+        let header = this.Names.header(headerID)
         this.Unhighlight_All()
-        this.col_highlight[0] = "col-" + RetStringBetween(divID,"header-","")
+        this.col_highlight[0] = this.Names.CellClass_Col(header)
     }
 
-    HighlightCell(divID) {
+    _IsHeaderID(divID) {
+        if (divID.includes(LAYOUT_ID['HeaderPrefix']) && divID.includes(LAYOUT_ID['HeaderPostfix'])) {
+            return true}
+        return false
+    }
+
+    xHighlightCell(divID) {
         assert(this.row_highlight[0] + this.col_highlight[0] != "")
         if (divID.includes("R:") && divID.includes("C:")) {
             this.cellIDs_highlight[0][0] = divID;
@@ -389,103 +211,12 @@ class clsCSV_Layout {
             this.col_highlight[0] = "";
         }
     }
-
-    DivIsInsideNavbar(divID) {
+    
+    xDivIsInsideECSV(divID) {
         let element = document.getElementById(divID)
-        if (DivIsDescendantOf(element,"navbar"))
+        if (DivIsDescendantOf(element, this.LayoutTargetDivID))
             {return true}
         return false
-    }
-    
-    DivIsInsideECSV(divID) {
-        let element = document.getElementById(divID)
-        if (DivIsDescendantOf(element,this.LayoutTargetDivID))
-            {return true}
-        return false
-    }
-
-    IDIncludes(divID, keys) {
-        for (let key of keys) {
-            if (divID.includes(key)) {
-                return true
-            }
-        }
-        return false
-    }
-
-
-    _IDIsButton(divID) {
-        if (divID.includes("btn")) {
-            return true}
-        return false
-    }
-    
-    _IDIsNavMenu(divID) {
-        if (divID.includes("nav-")) {
-            return true}
-        return false
-        }
-
-    _IDIsInsideHeader(divID) {
-        if (divID.includes("header-")) {
-            return true
-        }
-        return false
-    }
-
-    _IDIsOutsideTable(divID) {
-        return !this._IDIsInsideTable(divID)
-    }
-
-    _svgText_ArrowDown(header){
-        let para = "Layout_DowpDown_ShowHide('" + header + "')"
-        let param = '"' + para + '"'
-        return '<a id = "a-ArrowDown-' + header + '" href="#" onclick=' + param + '>\
-        <svg id = "svg-ArrowDown-' + header + '" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-down-square" viewBox="0 0 16 16">\
-        <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0\
-         0 1-2 2H2a2 2 0 0 1-2-2V2zm8.5 2.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"/>\
-      </svg></a>'
-    }
-
-    _GetColValuesX(colname, cols, rows) {
-        let tmp = []
-        if (cols.includes(colname)) {
-            let idx = cols.indexOf(colname)
-            for (let row of rows) {
-                if (colname == "Tags") {
-                    let tags = RetStringBetween(row[idx], "[", "]")
-                    tags = tags.replace(new RegExp(', ', "g") , ',') 
-                    let tmptmp = tags.split(",")
-                    for (let tmp3 of tmptmp) {
-                        if (!tmp.includes(tmp3)) {
-                            tmp.push(tmp3)}
-                    }
-                } else {
-                    if (!tmp.includes(row[idx])) {
-                        tmp.push(row[idx])}
-                }
-            }
-        }
-        tmp.sort()  
-        return tmp
-    }
-
-    _GetColValues(header, delim = ",") {
-        assert(this.headers.includes(header))
-        let tmp = []
-        let idx = this.headers.indexOf(header)
-        for (let row of this.data) {
-            if (row[idx][0] === "[" && row[idx][row[idx].length-1] === "]") {
-                let tags = RetStringBetween(row[idx], "[", "]")
-                tags = tags.replace(new RegExp(delim + ' ', "g") , delim)
-                let tmptmp = tags.split(delim)
-                for (let tmp3 of tmptmp) {
-                    tmp.pushX(tmp3)}
-            } else {
-                tmp.pushX(_byVal(row[idx]))}
-        }
-        tmp.sort()  
-        return tmp
     }
 
     // _Replace_NAME(value) {
@@ -607,7 +338,7 @@ class clsCSV_Layout {
     }
 
     _DivIDTableRow_FromIndex(indexAsString) {
-        let divID = 'row:' + indexAsString + '!'
+        let divID = LAYOUT_ID['RowPrefix'] + indexAsString + LAYOUT_ID['RowPostfix']
         return this._TableDivID_With_Prefix(divID)
     }
 
@@ -618,17 +349,14 @@ class clsCSV_Layout {
         assert(colIdx == "" || col == "")
         assert(cols.length>0)
         
-        if (colIdx) {
-            let divID = "R:" + rowIdx + "C:" + colIdx + "H:" + cols[colIdx]
-            return this._TableDivID_With_Prefix(divID)
-        }
+
         if (col) {
             colIdx = cols.indexOf(col)
             assert(colIdx>-1)
-            let divID = "R:" + rowIdx + "C:" + colIdx + "H:" + col
-            return this._TableDivID_With_Prefix(divID)
         }
-        assert(false)
+
+        let divID = LAYOUT_ID["CellR"] + rowIdx + LAYOUT_ID["CellC"] + colIdx + LAYOUT_ID["CellH"] + cols[colIdx]
+        return this._TableDivID_With_Prefix(divID)
     }
 
     _TableDivID_With_Prefix(divID) {
@@ -640,7 +368,7 @@ class clsCSV_Layout {
         }
     }
 
-    ScrollToHighlight() {
+    xScrollToHighlight() {
         if (this.row_highlight[0] != "") {
             var element = document.getElementById(this.row_highlight[0]);
         }
@@ -654,8 +382,7 @@ class clsCSV_Layout {
             return true}
         else {
             return false}
-    }
-    
+    } 
 }
 
 function Layout_DowpDown_ShowHide(className) {

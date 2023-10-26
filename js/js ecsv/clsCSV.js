@@ -57,7 +57,7 @@ class clsCSV {
     }
 
     _DataSynch() {
-        this.layout.ReadFullCSVData(this.data1x1.headers, this.data1x1.data, this.data1x1.headersConfig)
+        this.layout.DataSynch(this.data1x1.headers, this.data1x1.data, this.data1x1.headersConfig)
         // this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
         this.dataSubSet = this.data1x1.Subset({cols: this.mode.Config["cols"], valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
         this.headers = this.dataSubSet.headers
@@ -72,14 +72,14 @@ class clsCSV {
             this._DataSynch()
 
             if (this.mode.activeMode == "ulist") {
-                this.layout._PrintList(this.headers, this.data, this.headersConfig)
+                this.layout.PrintList(this.data)
                 return
             } 
             if (this.mode.ActiveCSVLayout() == "headersOnly") {
-                this.layout._PrintHeader(this.headers, this.headersConfig)
+                this.layout.PrintHeader(this.headers, this.headersConfig)
                 return
             }
-            this.layout._Print(this.headers, this.data, this.headersConfig)
+            this.layout.Print(this.headers, this.data, this.headersConfig)
             
         }
 
@@ -207,18 +207,7 @@ class clsCSV {
         let newRow = []
         if (atPosition == -1) {
             newRow = this.mode.DefaultRow(atPosition)
-            // newRow.push(String(this.len+1))
-            // for (let i = 1; i < this.data1x1.headers.length; i++) {
-            //     let flag = true
-            //     for (let col of Object.keys(SetCols)) {
-            //         if (this.data1x1.headers[i] == col) {
-            //             newRow.push(String(SetCols[col]))
-            //             flag = false
-            //             break}}
-            //     if (flag) {
-            //         newRow.push('..')
-            //     }
-            // }
+
         } else {
             newRow = this.mode.DefaultRow(atPosition)
             for (let i = 1; i < this.data1x1.headers.length; i++) {
@@ -242,10 +231,11 @@ class clsCSV {
         this.layout.HighlightCell(divID)
         this.Print()
         // this._CreateInputField(divID)
-        this._svgAppend_Save(divID)
+        this.ActiveCell.ApplyEditMode(divID)
+    //     this._svgAppend_Save(divID)
         
-        document.getElementById(this.name + "-input").focus();
-        document.getElementById(this.name + "-input").select();
+    //     document.getElementById(this.name + "-input").focus();
+    //     document.getElementById(this.name + "-input").select();
     }
 
     DivIsDescendant(divID) {
@@ -259,77 +249,44 @@ class clsCSV {
 
     Click(div) {
         this.log.AddUserInput("Click")
-
         let divID = ReturnParentUntilID(div).id
-        
-        let onclickDivs = ElemementsWithOnClickFunctions("id")
-        let directlinkDivs = ElemementsWithSubStringInID(["-link", "File-"], "id")
-        if (this.layout.IDIncludes(divID, onclickDivs.concat(directlinkDivs))){
+    
+        if (clsCSVHelper_IDisClickableElement(divID)) {
             return this._Click_Answer()}
-        
-        if (this._IsInsideEgoTargetDiv(divID)){    
-            if (this._IsInsideHeader(divID)){
-                if (this.layout.col_highlight[0] == divID.replace("header", "col")) {
-                    this.Edit_Header(divID) 
-                } else {
-                    this.layout.HighlightCol(divID)
-                    this.Print() 
-                }
 
-                return this._Click_Answer()
+        if (this.layout.Names.Is_headerID(divID)){
+            if (this.layout.col_highlight[0] == divID.replace("header", "col")) {
+                this.Edit_Header(divID) 
+            } else {
+                this.layout.HighlightCol(divID)
+                this.Print() 
             }
 
-            if (this._IsInsideTable(divID)) {
-                if (this.layout.IsActive(divID)) {
-                    this.Edit(divID) 
-                    // return this._Click_Answer("ChangedCell", divID, val)
-                } else {
-                    this.layout.HighlightRow(divID)
-                    this.Print()
-                    // return this._Click_Answer("HighlightRow", divID)
-                }
-                return
-            }
-
-            if (this._IsInsideRemainingTargetDiv(divID)) {
-                this.layout.Unhighlight_All()
-                return
-            }
-            cLOG.Add("[clsCSV].Click: assert false")
-        }
-        // else
-        if (!this._IsInsideEgoTargetDiv(divID)){ 
-            this.layout.Unhighlight_All()
-            this.Print()
             return this._Click_Answer()
         }
 
-            
-    
-        return this._Click_Answer()
-        
-        
-    }
+        if (this.layout.Names.Is_rowID(divID)){
+            // will never happen. cell has prio
+        }
 
-    _IsInsideEgoTargetDiv (divID) {
-        if (this.layout.DivIsInsideECSV(divID)) {
-            return true} 
-        else {
-            return false}
-    }
+        if (this.layout.Names.Is_CellID(divID)) {
+            if (this.layout.IsActive(divID)) {
+                this.Edit(divID) 
+                // return this._Click_Answer("ChangedCell", divID, val)
+            } else {
+                this.layout.HighlightRow(divID)
+                this.Print()
+                // return this._Click_Answer("HighlightRow", divID)
+            }
+            return
+        }
 
-    _IsInsideHeader (divID) {
-        if (divID.includes("header-")) {
-            return true} 
-        else {
-            return false}
-    }
-
-    _IsInsideTable(divID) {
-        if (divID.includes("R:") && divID.includes("C:")) {
-            return true} 
-        else {
-            return false}
+        if (this._IsInsideRemainingTargetDiv(divID)) {
+            this.layout.Unhighlight_All()
+            return
+        }
+        cLOG.Add("[clsCSV].Click: assert false")
+        assert(false)
     }
 
     _IsInsideRemainingTargetDiv(divID) {
@@ -467,15 +424,6 @@ class clsCSV {
         } else {
             ret = false}
         return ret;
-    }
-
-    InitConfig() {
-        // display
-        for (let i = 0; i < this.config.length; i++) {
-            if (this.config[i] == "d-none") {
-                this._Table_ToggleCol("col-" + this.headers[i])
-            }
-        }
     }
 
     _retSumRow(sumcolName = "value") {
@@ -682,7 +630,7 @@ class clsCSV {
             this.Print();
         }
         cLOG.Add("[clsCSV].ButtonClick: event.keyCode:'" + event.keyCode + "'")
-        if (this.layout.InputIsActive() == false){
+        if (this.layout.cellIDs_highlight[0][1] == ""){
             // "w"
             if (event.keyCode === 87) {
                 this.Row_Up();}
@@ -767,4 +715,20 @@ function clsCSV_ParseFileNameToTextArea() {
         PAGE[TargetDivID].Print()
     }
 
+}
+
+// ################################################################
+// CSV helpers                                                    #
+// ################################################################
+
+function clsCSVHelper_IDisClickableElement(divID) {
+    // elements with onclick functions
+    let onclickDivs = ElemementsWithOnClickFunctions("id")
+    // elements with special substring in id
+    let directlinkDivs = ElemementsWithSubStringInID(["-link", "File-"], "id") // not used
+    let divs_clickable = onclickDivs.concat(directlinkDivs)
+
+    if (divs_clickable.includes(divID)) {
+        return true}
+    return false
 }
