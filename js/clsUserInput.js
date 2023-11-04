@@ -1,8 +1,8 @@
 const clsUserInput_VALIDINPUTS = ["Click", "Hover", "Tipp"]     // just a reference, this values are actually not used. html classes must provide those interfaces 
 
 class clsUserInput {
-    constructor(pageDivIDs) {
-        this.pageDivIDs = pageDivIDs
+    constructor(pageSectionIDs) {
+        this.SectionIDs = pageSectionIDs
         this.mousedownTime = new Date().getTime()
         this.mouseupTime = new Date().getTime()
     }
@@ -39,19 +39,14 @@ class clsUserInput {
 // ################################################################
 
     Click (divElement) {
-        for (let divID of this.pageDivIDs) {
+        for (let divID of this.SectionIDs) {
             if (DivIsDescendantOf(divElement, divID)) {
                 let rem = PAGE[divID].log.LastIndex() 
                 PAGE[divID].Click(divElement)
                 assert(PAGE[divID].log.LastIndex() > rem)
-
-                cHIF.InterActions(PAGE[divID].log.WhatIvedDone())
+                PAGE_IF.InterActions(PAGE[divID].log.WhatIvedDone())
             }
         }
-        // Realign page to top
-        setTimeout(function() {document.getElementById("navbar").scrollIntoView()},200)
-        // document.body.scrollTop = document.documentElement.scrollTop = 0
-        // document.getElementById("navbar").scrollIntoView()
     }
 
     Hover (event) {

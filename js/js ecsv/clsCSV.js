@@ -250,43 +250,47 @@ class clsCSV {
     Click(div) {
         this.log.AddUserInput("Click")
         let divID = ReturnParentUntilID(div).id
-    
+        
+        // corner case: when click is excactly on an svg line. Click is ignored
         if (clsCSVHelper_IDisClickableElement(divID)) {
-            return this._Click_Answer()}
+            return}
+        
+        if (this.layout.Names.Is_rowID(divID)){
+            assert(false) // CellID has prio, you should never be here
+            return}
 
         if (this.layout.Names.Is_headerID(divID)){
-            if (this.layout.col_highlight[0] == divID.replace("header", "col")) {
-                this.Edit_Header(divID) 
-            } else {
-                this.layout.HighlightCol(divID)
-                this.Print() 
-            }
-
-            return this._Click_Answer()
-        }
-
-        if (this.layout.Names.Is_rowID(divID)){
-            // will never happen. cell has prio
-        }
+            this._Click_Header(divID)
+            return}
 
         if (this.layout.Names.Is_CellID(divID)) {
-            if (this.layout.IsActive(divID)) {
-                this.Edit(divID) 
-                // return this._Click_Answer("ChangedCell", divID, val)
-            } else {
-                this.layout.HighlightRow(divID)
-                this.Print()
-                // return this._Click_Answer("HighlightRow", divID)
-            }
-            return
-        }
+            this._Click_Cell(divID)
+            return}
 
         if (this._IsInsideRemainingTargetDiv(divID)) {
             this.layout.Unhighlight_All()
-            return
+            return}
+
+        assert(false) // If you are here, then something wsa clicked that is not defined
+    }
+
+    _Click_Header(divID)  {
+        if (this.layout.col_highlight[0] == divID.replace("header", "col")) {
+            this.Edit_Header(divID) 
+        } else {
+            this.layout.HighlightCol(divID)
+            this.Print() 
         }
-        cLOG.Add("[clsCSV].Click: assert false")
-        assert(false)
+    }
+
+    _Click_Cell(divID) {
+        if (this.layout.IsActive(divID)) {
+            this.Edit(divID) 
+        } else {
+            this.layout.HighlightRow(divID)
+            this.Print()
+        }
+        return
     }
 
     _IsInsideRemainingTargetDiv(divID) {
@@ -294,24 +298,6 @@ class clsCSV {
             return true} 
         else {
             return false}
-    }
-
-    _Click_Answer(lastAction = "", divID = "", val = "") {
-        let antwort = {"action": "", "divID": "", "requestedBy": this.TargetDivID}
-        if (lastAction == "HighlightRow") {
-            divID = divID.split('] ')[1]
-            antwort["action"] = lastAction
-            antwort["divID"] = divID
-            return antwort
-        }
-        if (lastAction == "ChangedCell") {
-            if (this.mode.activeMode != "SIDEBAR") {
-                divID = divID.split('] ')[1]
-                return {"action": lastAction, "divID": divID, "val":val}
-            }
-        }
-        return antwort
-
     }
 
     UnEdit(divID) {

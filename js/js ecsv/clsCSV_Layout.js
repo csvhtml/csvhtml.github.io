@@ -373,8 +373,7 @@ class clsCSV_Layout {
             var element = document.getElementById(this.row_highlight[0]);
         }
         if(element) {
-            element.scrollIntoView()
-        }
+            element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })}
       }
 
     IsActive(divID) {

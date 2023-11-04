@@ -7,7 +7,7 @@ const LOGG = true
 const cLOG = new clsLog()
 const cINPUT = new libInput()
 const cHTML = new libHTML()
-const cHIF = new clsHtmlInterfaces();
+
 const cSVG = new clsSVG();
 
 // ################################################################
@@ -20,11 +20,12 @@ cParameter.setAll(cURLHandler.parameter())
 // ################################################################
 // Main HTML Page Div Container                                   #
 // ################################################################
-const PAGE = {}
-PAGE["MyCSV"] = new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV"});
-PAGE["MySidebar"] = new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "sidebar"});
-// PAGE["mySearch"] = new clsSiteSearch();
+const PAGE = {
+    "MyCSV": new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV"}),
+    "MySidebar": new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "sidebar"})
+}
 
+const PAGE_IF = new clsHtmlInterfaces()
 
 // const MEM = new clsMemory();
 const UIN = new clsUserInput(Object.keys(PAGE));
