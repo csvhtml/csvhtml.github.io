@@ -2,11 +2,11 @@
 // Config                                                         #
 // ################################################################
 
-const LIB_INPUT_FUNCTIONMAPPING2 = {
-    "nav-input": clsNavbar_Call_Input,
-    "clsCSV-Cell-Input": clsCSV_ParseFileNameToTextArea, 
-}
-const LIB_INPUT_NOFILEREAD2 = "libInput-NoFileRead" // in case the input field has this class, then the uploaded file content is not read (and only the files path is saved)
+// const LIB_INPUT_FUNCTIONMAPPING2 = {
+//     "nav-input": clsNavbar_Call_Input,
+//     "clsCSV-Cell-Input": clsCSV_ParseFileNameToTextArea, 
+// }
+// const LIB_INPUT_NOFILEREAD2 = "libInput-NoFileRead" // in case the input field has this class, then the uploaded file content is not read (and only the files path is saved)
 
 // ################################################################
 // Functionality                                                  #

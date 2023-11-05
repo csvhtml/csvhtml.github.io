@@ -2,8 +2,8 @@
 // Page Configuration                                                         #
 // ################################################################
 
-const LIB_INPUT_FUNCTIONMAPPING = {
-    "nav-input": clsNavbar_Call_Input,
-    "clsCSV-Cell-Input": clsCSV_ParseFileNameToTextArea, 
+var libInput_FunctionMapping = {
+    "nav-input": {"change": clsNavbar_Call_Input},
+    "clsCSV-Cell-Input": {"change": clsCSV_ParseFileNameToTextArea}, 
 }
 

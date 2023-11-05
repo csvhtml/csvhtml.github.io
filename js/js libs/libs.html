@@ -5,8 +5,14 @@
     </head>
     <body>
         <!-- Input Form in html page -->
+        <b> Single File Input</b>
         <form id="form-csv" class="">
             <input id="TestInput" type="file" class="" accept=".csv">
+        </form>
+
+        <b> Multi File Input</b>
+        <form id="form-csv" class="">
+            <input id="TestInputMuti" type="file" class="" accept=".csv">
         </form>
         <!-- Output where file content can be parsed (optional) -->
         <div id="TestOutput">
@@ -17,7 +23,8 @@
         <script>
             // map function that is called when file is loaded to input form
             var FunctionMapping = {
-                "TestInput": TestFunction,
+                "TestInput": {"change": TestFunction},
+                "TestInputMulti": {"change": TestFunction},
             }
             // class init
             const cINPUT = new libInput(FunctionMapping)

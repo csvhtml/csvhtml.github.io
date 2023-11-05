@@ -5,7 +5,7 @@ const LOGG = true
 // Base classes                                                   #
 // ################################################################
 const cLOG = new clsLog()
-const cINPUT = new libInput(LIB_INPUT_FUNCTIONMAPPING)
+const cINPUT = new libInput(libInput_FunctionMapping)
 const cHTML = new libHTML()
 
 const cSVG = new clsSVG();

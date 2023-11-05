@@ -4,17 +4,44 @@ const cReaders_FilePaths = {};  // dict of fileReaders that is dynamically creat
 const LIB_INPUT_CLASSES = [
     "libInput-NoFileRead", // in case the input field has this class, then the uploaded file content is not read (and only the files path is saved)
 ]
-    var VAR_LIB_INPUT_FUNCTIONMAPPING = {}
+var VAR_LIB_INPUT_EVENTLISTENERS = {
+    //"divID": {"change": FunctionName},  // type of event listeners must be "change". All other types are ignored
+}
 
 
 class libInput {
-    constructor(FunctionMappingDict) {
-        VAR_LIB_INPUT_FUNCTIONMAPPING = FunctionMappingDict
-        this.FuncMap = FunctionMappingDict
-        // variables
-        this.ActiveEventListeners_OnChange = {} // this.FuncMap
-        // actions
-        this.LinkInputWithFunctions()
+    constructor(dictEventListenerMapping) {
+        // Function Mappings globally defined outside this lib
+        VAR_LIB_INPUT_EVENTLISTENERS = this._Init_FilterEventListeners(dictEventListenerMapping)
+        
+        // Function Mappings already mapped (= active event listeners)
+        this.AppliedEventListeners = {}
+
+        // Init
+        this._Init_LinkFunctions()
+    }
+
+    _Init_FilterEventListeners(rawdict) {
+        let ret = {}
+        for (let key of Object.keys(rawdict)) {
+            for (let ky of Object.keys(rawdict[key])) {
+                if (ky == "change") {
+                    ret[key]= {}
+                    ret[key][ky]= rawdict[key][ky]}
+            }
+        }
+        return ret
+    }
+
+    _Init_LinkFunctions() {
+        let KEYS = Object.keys(VAR_LIB_INPUT_EVENTLISTENERS)
+        for (let key of KEYS) {
+            let div = document.getElementById(key)
+            if (div != null) { // key == div.id
+                if (this._IsFunctionMappingDefined(key) && !this._IsFunctionMappingApplied(key)) {
+                    this._AddXEventListener(key)}
+            }
+        }
     }
 
     ReturnInputField({id = "", type="file", classList, multiple = false, webkitdirectory = false}) {
@@ -27,35 +54,45 @@ class libInput {
         input.webkitdirectory = webkitdirectory
         return input
     }
-    
-    LinkInputWithFunctions() {
-        // asserts
-        let KEYS = Object.keys(this.FuncMap)
-        for (let key of KEYS) {
-            let div = document.getElementById(key)
-            if (div != null) {
-                this._EventListenerOnChange_AddX(key)
-            }
-        }
-    }
 
-    _EventListenerOnChange_AddX(divID) {
-        let KEYS = Object.keys(this.FuncMap)
-        let KeysOnPage = Object.keys(this.ActiveEventListeners_OnChange) 
-        if (KEYS.includes(divID) && !KeysOnPage.includes(divID)) {
+    _AddXEventListener(divID) {
             let input = document.getElementById(divID)
-            if (!input.multiple && !input.webkitdirectory) {
-                input.addEventListener('change', _libInput_OnLoad)
-                this.ActiveEventListeners_OnChange[divID] = this.FuncMap[divID]
+            input.addEventListener('change', LIB_INPUT_FUNCTION_ONLOAD)
+            this.AppliedEventListeners[divID] = VAR_LIB_INPUT_EVENTLISTENERS[divID]
+            if (this._IsInputTypeSingleFile(input)) {
                 cReaders[divID] = new FileReader()
             }
-
-            if (!input.multiple && input.webkitdirectory) {
-                input.addEventListener('change', _libInput_OnLoad)
+            if (this._IsInputTypeSingleFolder(input)) {
                 cReaders[divID] = [] // list of later defined FileReaders
                 cReaders_FilePaths[divID] = [] // list of later defined FileNames
             }
-        }
+    }
+
+    _IsFunctionMappingDefined(divID) {
+        let KEYS = Object.keys(VAR_LIB_INPUT_EVENTLISTENERS)  
+        if (KEYS.includes(divID)) {
+            return true}
+        return false
+    }
+
+
+    _IsFunctionMappingApplied(divID) {                        
+        let KEYS = Object.keys(this.AppliedEventListeners)
+        if (KEYS.includes(divID)) {
+            return true}
+        return false
+    }
+
+    _IsInputTypeSingleFile(input) {
+        if (!input.multiple && !input.webkitdirectory) {
+            return true}
+        return false
+    }
+
+    _IsInputTypeSingleFolder(input) {
+        if (!input.multiple && input.webkitdirectory) {
+            return true}
+        return false
     }
 }
 
@@ -63,11 +100,11 @@ class libInput {
 // Global functions of Input File                                 #
 // ################################################################
 
-const _libInput_OnLoad = (event)  => {
+const LIB_INPUT_FUNCTION_ONLOAD = (event)  => {
     let divFile = document.getElementById(event.srcElement.id);
     if (!divFile.multiple && !divFile.webkitdirectory) {
         cReaders_FilePaths[event.srcElement.id] = divFile.files[0].name
-        cReaders[event.srcElement.id].addEventListener("loadend", VAR_LIB_INPUT_FUNCTIONMAPPING[event.srcElement.id]); 
+        cReaders[event.srcElement.id].addEventListener("loadend", VAR_LIB_INPUT_EVENTLISTENERS[event.srcElement.id]["change"]); 
         if (!event.srcElement.classList.contains(LIB_INPUT_CLASSES[0])) {
             cReaders[event.srcElement.id].readAsText(divFile.files[0]);}
 
@@ -87,7 +124,7 @@ const _libInput_OnLoad = (event)  => {
             idx += 1
         }
         cReaders[event.srcElement.id][idx-1].readAsText(divFile.files[idx-1]) // last file must be loaded to trigger function call below
-        cReaders[event.srcElement.id][idx-1].addEventListener("loadend", VAR_LIB_INPUT_FUNCTIONMAPPING[event.srcElement.id]); 
+        cReaders[event.srcElement.id][idx-1].addEventListener("loadend", VAR_LIB_INPUT_EVENTLISTENERS[event.srcElement.id]["change"]); 
     }
 
     if (divFile.multiple && divFile.webkitdirectory) {
