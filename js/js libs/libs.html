@@ -1,0 +1,32 @@
+<!-- Everything with prefix "Test" needs to be changed to actual usage/context where this lib is used -->
+
+<html>
+    <head>
+    </head>
+    <body>
+        <!-- Input Form in html page -->
+        <form id="form-csv" class="">
+            <input id="TestInput" type="file" class="" accept=".csv">
+        </form>
+        <!-- Output where file content can be parsed (optional) -->
+        <div id="TestOutput">
+
+        </div>
+
+        <script src="libInput.js"></script>
+        <script>
+            // map function that is called when file is loaded to input form
+            var FunctionMapping = {
+                "TestInput": TestFunction,
+            }
+            // class init
+            const cINPUT = new libInput(FunctionMapping)
+
+            // define function taht is calles globally
+            function TestFunction() {
+                let Output = document.getElementById("TestOutput")
+                Output.innerHTML = cReaders["TestInput"].result
+            }
+        </script>
+    </body>
+</html>

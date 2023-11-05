@@ -45,6 +45,9 @@ class clsCSV {
         this.Print()
     }
 
+    Click(div) {
+        this.xClick(div)}
+
     _SetTargetDiv(TargetDivID) {
         let TargetDiv = document.getElementById(TargetDivID);
         if(TargetDiv == null) {
@@ -247,7 +250,7 @@ class clsCSV {
     }
 
 
-    Click(div) {
+    xClick(div) {
         this.log.AddUserInput("Click")
         let divID = ReturnParentUntilID(div).id
         
