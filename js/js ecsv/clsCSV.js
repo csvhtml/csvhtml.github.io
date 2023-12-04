@@ -22,7 +22,7 @@ class clsCSV {
         this.filepath = ""
         this.name = egoname
         
-        this.ReadWrite = new clsCSV_ReadWriteCSV()
+        this.ReadWrite = new clsCSV_ReadWriteCSV(this)
         
         this.layout = new clsCSV_Layout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
         this.data1x1 = new clsData_1x1(this.mode.ActiveCols(),[this.mode.DefaultRow()])

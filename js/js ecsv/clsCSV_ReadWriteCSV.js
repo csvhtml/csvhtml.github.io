@@ -6,8 +6,12 @@ class clsCSV_ReadWriteCSV {
     /*
     * Methods to Read in and Write to CSV file
     */
-    constructor () {
-        // empty
+    constructor (parent) {
+        this.parent = parent
+    }
+
+    ReadfromJSON(jsontext,delimiter) {
+        return this.xReadfromJSON(jsontext, delimiter)
     }
 
     ReadfromText_0Headers1Data2Config(csvtext) {
@@ -21,6 +25,17 @@ class clsCSV_ReadWriteCSV {
     // ################################################################
     // Sub methods                                                    #
     // ################################################################
+
+    xReadfromJSON(text, delimiter = ";" ) {
+        // let headers = ["A", "B", "C"]
+        // let dataa = ["Hallo;Welt;Drausen","Super;Mario;World"]
+        let headers = JSON_DATA["TestData"]["headers"]
+        let dataa = JSON_DATA["TestData"]["data"]
+        this.parent.data1x1.Init_Headers(headers, delimiter)
+        this.parent.data1x1.Init_Data(dataa, delimiter)
+        this.parent.mode.SetConfig("cols", headers)
+    }
+
 
     xReadfromText_0Headers1Data2Config(csvtext) {
         let ret = []

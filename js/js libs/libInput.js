@@ -1,8 +1,8 @@
 // access the data globally via 'cReader.result' as text
 const cReaders = {};  // dict of fileReaders that is dynamically created
-const cReaders_FilePaths = {};  // dict of fileReaders that is dynamically created
+const cReaders_FilePath = {};  // dict of fileReaders that is dynamically created
 const LIB_INPUT_CLASSES = [
-    "libInput-NoFileRead", // in case the input field has this class, then the uploaded file content is not read (and only the files path is saved)
+    "libInput-PathOnly", // in case the input field has this class, then the uploaded file content is not read (and only the files path is saved)
 ]
 var VAR_LIB_INPUT_EVENTLISTENERS = {
     //"divID": {"change": FunctionName},  // type of event listeners must be "change". All other types are ignored
@@ -59,13 +59,16 @@ class libInput {
             let input = document.getElementById(divID)
             input.addEventListener('change', LIB_INPUT_FUNCTION_ONLOAD)
             this.AppliedEventListeners[divID] = VAR_LIB_INPUT_EVENTLISTENERS[divID]
-            if (this._IsInputTypeSingleFile(input)) {
+            if (_IsInputTypeSingleFile(input)) {
                 cReaders[divID] = new FileReader()
-            }
-            if (this._IsInputTypeSingleFolder(input)) {
+                cReaders_FilePath[divID] = ""  // later defined
+                return}
+            if (_IsInputTypeSingleFolder(input)) {
                 cReaders[divID] = [] // list of later defined FileReaders
-                cReaders_FilePaths[divID] = [] // list of later defined FileNames
-            }
+                cReaders_FilePath[divID] = [] // list of later defined FileNames
+                return}
+           
+            assert(false)
     }
 
     _IsFunctionMappingDefined(divID) {
@@ -83,17 +86,6 @@ class libInput {
         return false
     }
 
-    _IsInputTypeSingleFile(input) {
-        if (!input.multiple && !input.webkitdirectory) {
-            return true}
-        return false
-    }
-
-    _IsInputTypeSingleFolder(input) {
-        if (!input.multiple && input.webkitdirectory) {
-            return true}
-        return false
-    }
 }
 
 // ################################################################
@@ -102,39 +94,47 @@ class libInput {
 
 const LIB_INPUT_FUNCTION_ONLOAD = (event)  => {
     let divFile = document.getElementById(event.srcElement.id);
-    if (!divFile.multiple && !divFile.webkitdirectory) {
-        cReaders_FilePaths[event.srcElement.id] = divFile.files[0].name
+    if (_IsInputTypeSingleFile(divFile)) {
+        cReaders_FilePath[event.srcElement.id] = divFile.files[0].name
         cReaders[event.srcElement.id].addEventListener("loadend", VAR_LIB_INPUT_EVENTLISTENERS[event.srcElement.id]["change"]); 
         if (!event.srcElement.classList.contains(LIB_INPUT_CLASSES[0])) {
             cReaders[event.srcElement.id].readAsText(divFile.files[0]);}
-
+    return
     }
 
-    if (divFile.multiple && !divFile.webkitdirectory) {
-        a = 1
-    }
-
-    if (!divFile.multiple && divFile.webkitdirectory) {
+    if (_IsInputTypeSingleFolder(divFile)) {
         let idx = 0
         for (file of divFile.files) {
-            cReaders_FilePaths[event.srcElement.id].push(file.webkitRelativePath)
+            cReaders_FilePath[event.srcElement.id].push(file.webkitRelativePath)
             cReaders[event.srcElement.id].push(new FileReader())
             if (!event.srcElement.classList.contains(LIB_INPUT_CLASSES[0])) {
                 cReaders[event.srcElement.id][idx].readAsText(divFile.files[idx])}
             idx += 1
         }
-        cReaders[event.srcElement.id][idx-1].readAsText(divFile.files[idx-1]) // last file must be loaded to trigger function call below
-        cReaders[event.srcElement.id][idx-1].addEventListener("loadend", VAR_LIB_INPUT_EVENTLISTENERS[event.srcElement.id]["change"]); 
+    cReaders[event.srcElement.id][idx-1].readAsText(divFile.files[idx-1]) // last file must be loaded to trigger function call below
+    cReaders[event.srcElement.id][idx-1].addEventListener("loadend", VAR_LIB_INPUT_EVENTLISTENERS[event.srcElement.id]["change"]); 
+    return
     }
-
-    if (divFile.multiple && divFile.webkitdirectory) {
-        // should not exist
-        assert(false)
-    }
-
+    assert(false)
   }
 
 
+// function myReadAsText(event) {
+//     if (!event.srcElement.classList.contains(LIB_INPUT_CLASSES[0])) {
+//         cReaders[event.srcElement.id].readAsText(divFile.files[0]);}
+// }
+  
+function _IsInputTypeSingleFile(input) {
+    if (!input.multiple && !input.webkitdirectory) {
+        return true}
+    return false
+}
+
+function _IsInputTypeSingleFolder(input) {
+    if (!input.multiple && input.webkitdirectory) {
+        return true}
+    return false
+}
 // ################################################################
 // Documentation                                                  #
 // ################################################################

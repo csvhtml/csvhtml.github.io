@@ -72,11 +72,17 @@ class clsData_1x1 {
         
         this.len = 0
         this.data = []
+        let tmp = []
         for (let row of dataRows) {
-            let tmp = row.split(delimiter)
+            if (Array.isArray(row)) {
+                tmp = row
+            } else {
+                tmp = row.split(delimiter)
+                }
             assert(tmp.length == dataN, tmp[0])
             this.data.push(tmp)
-            this.len +=1}
+            this.len +=1
+        }
     }
 
 

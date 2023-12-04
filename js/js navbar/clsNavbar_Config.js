@@ -14,6 +14,9 @@ const CLS_NAVBAR_CONFIG_LEFT = {
         "sidebar/no sidebar", 
         "table/list"
     ],
+    "nav-Data":[
+        "TestData",
+    ],
 }
 
 // In the Button Part (RIGHT), functions are called directly. Either via string name or via function reference
@@ -47,6 +50,11 @@ function clsNavbar_Config_FunctionCall(key) {
 
     if (key == "no_sidebar") {
         cParameter.set("sidebar", false)
+        main_Layout()}
+
+    if (key == "TestData") {
+        PAGE["MyCSV"].ReadWrite.ReadfromJSON("test")
+        PAGE["MyCSV"].Print();
         main_Layout()}
 }
 
