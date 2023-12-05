@@ -10,27 +10,26 @@ class clsCSV_ReadWriteCSV {
         this.parent = parent
     }
 
-    ReadfromJSON(jsontext,delimiter) {
-        return this.xReadfromJSON(jsontext, delimiter)
+    ReadfromJSON(jsonkey,delimiter) {
+        return this.xReadfromJSON(jsonkey, delimiter)
     }
 
     ReadfromText_0Headers1Data2Config(csvtext) {
         return this.xReadfromText_0Headers1Data2Config(csvtext)
     }
 
-    WriteToText(headersList, DataList2D, delimiter = ";", csvRootPath) {
-        return this.xWriteToText(headersList, DataList2D, delimiter, csvRootPath)
+    AsCSV(delimiter = ";",) {
+        return this.xAsCSV(delimiter)
     }
 
     // ################################################################
     // Sub methods                                                    #
     // ################################################################
 
-    xReadfromJSON(text, delimiter = ";" ) {
-        // let headers = ["A", "B", "C"]
-        // let dataa = ["Hallo;Welt;Drausen","Super;Mario;World"]
-        let headers = JSON_DATA["TestData"]["headers"]
-        let dataa = JSON_DATA["TestData"]["data"]
+
+    xReadfromJSON(jsonkey, delimiter = ";" ) {
+        let headers = JSON_DATA[jsonkey]["headers"]
+        let dataa = JSON_DATA[jsonkey]["data"]
         this.parent.data1x1.Init_Headers(headers, delimiter)
         this.parent.data1x1.Init_Data(dataa, delimiter)
         this.parent.mode.SetConfig("cols", headers)
@@ -78,8 +77,12 @@ class clsCSV_ReadWriteCSV {
         return str    
     }
 
-    xWriteToText(headersList, DataList2D, delimiter = ";", csvRootPath) {
+    xAsCSV(delimiter = ";") {
+        let headersList = this.parent.data1x1.headers
+        let DataList2D = this.parent.data1x1.data
+        let csvRootPath = this.parent.filepath
         let ret = '';
+
         // headers
         for (let header of headersList) {
             ret += header + ';'}
@@ -91,8 +94,6 @@ class clsCSV_ReadWriteCSV {
                 cell = this._WriteToText_CellValue_Refinement(cell)
                 ret += cell + delimiter}
             ret = this._Chr10AtEnd(ret)
-            // ret = ret.slice(0, -1) // remove last seperator. open: length of seperator
-            // ret += "\n"
             }
         ret += "X;CONFIG;PATH:" + csvRootPath + "!;" + '\r'
         return ret;

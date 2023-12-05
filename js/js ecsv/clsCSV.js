@@ -427,11 +427,6 @@ class clsCSV {
         return [ret]
     }
 
-
-    _AsCSVText(sep = ";") {
-        return this.ReadWrite.WriteToText(this.data1x1.headers,this.data1x1.data,sep,this.filepath)
-  }
-
     _ConfigAsCSVRow(sep = ";") {
         let ret = '';
         //row

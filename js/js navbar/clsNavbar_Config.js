@@ -53,7 +53,7 @@ function clsNavbar_Config_FunctionCall(key) {
         main_Layout()}
 
     if (key == "TestData") {
-        PAGE["MyCSV"].ReadWrite.ReadfromJSON("test")
+        PAGE["MyCSV"].ReadWrite.ReadfromJSON(key)
         PAGE["MyCSV"].Print();
         main_Layout()}
 }

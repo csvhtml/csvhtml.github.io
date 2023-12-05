@@ -2,7 +2,7 @@
 // Main function call                                             #
 // ################################################################
 
-// This is the main function calleed when a nav btton is clicked.
+// This is the main function called when a nav btton is clicked.
 // This function must be outside the navbar lib, to make it globally callable from the index.html (otherwise the instances name needs to be knwon)
 
 // const CLS_NAVBAR_DOWNLOADCALL = "clsNavbar_Call_Download"  // name of main function called for download button. See bottom
@@ -17,7 +17,7 @@ function clsNavbar_Call_DropDown(key) {
 }
 
 function clsNavbar_Call_Download() {
-    DownloadCSV(PAGE["MyCSV"]._AsCSVText())
+    DownloadCSV(PAGE["MyCSV"].ReadWrite.AsCSV())
 }
 
 function clsNavbar_Call_Input() {
