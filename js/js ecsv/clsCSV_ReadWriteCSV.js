@@ -22,14 +22,54 @@ class clsCSV_ReadWriteCSV {
         return this.xAsCSV(delimiter)
     }
 
+    AsJSON () {
+        return this.xAsJSON()
+    }
+
     // ################################################################
     // Sub methods                                                    #
     // ################################################################
 
+    xAsJSON(delimiter = ";") {
+        let headersList = this.parent.data1x1.headers
+        let DataList2D = this.parent.data1x1.data
+        let csvRootPath = this.parent.filepath
+        let ret = '';
+
+        // pre
+        let varName = 
+        ret += 'var ' + this._VarName() + ' = { \n'
+        // headers
+        ret += '    "headers": ['
+        for (let header in headersList) {
+            ret += '"' + header + '",'
+        }
+        ret += '], \n'
+        // data
+        ret += '    "data": [ \n'
+        for (let row of DataList2D) {
+            ret += '        ['
+            for (let cell of row) {
+                cell = this._WriteToText_CellValue_Refinement(cell)
+                ret += '"' + cell + '",'
+            }
+            ret += '],\n'
+        }
+
+        // post 
+        ret += '        ]\n'
+        ret += '}'
+        
+        return ret    
+    }
+
+    _VarName () {
+        return this.parent.ActiveJSON.toUpperCase() + "JSON"
+    }
 
     xReadfromJSON(jsonkey, delimiter = ";" ) {
-        let headers = JSON_DATA[jsonkey]["headers"]
-        let dataa = JSON_DATA[jsonkey]["data"]
+        let headers = JSONDICT[jsonkey]["headers"]
+        let dataa = JSONDICT[jsonkey]["data"]
         this.parent.data1x1.Init_Headers(headers, delimiter)
         this.parent.data1x1.Init_Data(dataa, delimiter)
         this.parent.mode.SetConfig("cols", headers)

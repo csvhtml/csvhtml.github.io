@@ -1,6 +1,7 @@
 // ################################################################
 // Config                                                         #
 // ################################################################
+const CLSCSV_NAVMIDDLE = "navMiddle"
 const CLS_MODES_DEFAULT_COLS = ["No.", "Name", "Description", "url", "img", "Type [dropdown]", "Tags [dropdown]"]
 
 const CLS_MODES_CSV_VALID_CONFIG = {

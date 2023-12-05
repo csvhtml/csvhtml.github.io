@@ -15,6 +15,7 @@ const CLS_NAVBAR_CONFIG_LEFT = {
         "table/list"
     ],
     "nav-Data":[
+        "Data",
         "TestData",
     ],
 }
@@ -22,7 +23,8 @@ const CLS_NAVBAR_CONFIG_LEFT = {
 // In the Button Part (RIGHT), functions are called directly. Either via string name or via function reference
 const CLS_NAVBAR__CONFIG_RIGHT = {
     // "nav-input": clsNavbar_Call_Input,      // input must be reference to function
-    "nav-download": "clsNavbar_Call_Download()"     // download must be string of function name
+    "nav-download-csv": "clsNavbar_Call_Download_CSV()",     // download must be string of function name
+    "nav-download-json": "clsNavbar_Call_Download_JSON()"     // download must be string of function name
 }
 
 function clsNavbar_Config_FunctionCall(key) {
@@ -52,10 +54,13 @@ function clsNavbar_Config_FunctionCall(key) {
         cParameter.set("sidebar", false)
         main_Layout()}
 
-    if (key == "TestData") {
+    if (["Data", "TestData"].includes(key)) {
+        PAGE["MyCSV"].UpdateNavMiddleInfo(key)
+        PAGE["MyCSV"].ActiveJSON = key
         PAGE["MyCSV"].ReadWrite.ReadfromJSON(key)
         PAGE["MyCSV"].Print();
         main_Layout()}
+
 }
 
     // // Mode

@@ -20,6 +20,7 @@ class clsCSV {
         this.TargetDivID = null
         
         this.filepath = ""
+        this.ActiveJSON = ""
         this.name = egoname
         
         this.ReadWrite = new clsCSV_ReadWriteCSV(this)
@@ -47,6 +48,11 @@ class clsCSV {
 
     Click(div) {
         this.xClick(div)}
+
+    UpdateNavMiddleInfo(InfoText) {
+        let navmiddle = document.getElementById(CLSCSV_NAVMIDDLE)
+        navmiddle.innerHTML = InfoText
+    }
 
     _SetTargetDiv(TargetDivID) {
         let TargetDiv = document.getElementById(TargetDivID);

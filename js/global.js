@@ -16,8 +16,12 @@ function clsNavbar_Call_DropDown(key) {
     clsNavbar_Config_FunctionCall(key)
 }
 
-function clsNavbar_Call_Download() {
+function clsNavbar_Call_Download_CSV() {
     DownloadCSV(PAGE["MyCSV"].ReadWrite.AsCSV())
+}
+
+function clsNavbar_Call_Download_JSON() {
+    DownloadCSV(PAGE["MyCSV"].ReadWrite.AsJSON(), filename = "*.json")
 }
 
 function clsNavbar_Call_Input() {

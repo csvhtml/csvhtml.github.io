@@ -20,15 +20,20 @@
         <form class="form-inline my-2 mx-2" id="form-pdf"></form> 
     </nav>
 
+    <nav id="navMiddle" class="nav"></nav>
+
     <nav id="navRight" class="nav">
         <form id="form-csv" class="form-inline my-2 mx-2">
             <input id="nav-input" type="file" class="form-control" accept=".csv">
-            <label for="nav-input" class="btn btn-outline-primary my-2 my-sm-0 mySVG-FileAwUp"> Choose CSV</label>
+            <label for="nav-input" class="btn btn-outline-primary my-2 my-sm-0 mySVG-FileAwUp">Select CSV</label>
         </form>
 
         <form class="form-inline my-2 mx-2" id="forminput">
-            <a id="nav-download" class="btn btn-outline-primary my-2 my-sm-0 mySVG-FileAwDown" type="submit"> 
-                Save Data
+            <a id="nav-download-csv" class="btn btn-outline-primary my-2 my-sm-0 mySVG-FileAwDown" type="submit"> 
+                CSV
+            </a>
+            <a id="nav-download-json" class="btn btn-outline-primary my-2 my-sm-0 mySVG-FileAwDown" type="submit"> 
+                JSON
             </a>
         </form>
     </nav>
@@ -91,11 +96,12 @@
 <script src="js/test.js"></script>
 <script src="js/test_Click.js"></script>
 
+<script type="text/javascript" src="json/Data.json"></script>
 <script type="text/javascript" src="json/TestData.json"></script>
 <script> 
-    var JSON_DATA = {
-        "TestData": JSON_TestData,
-        "TestData2": JSON_TestData
+    var JSONDICT = {
+        "Data": DATAJSON,
+        "TestData": TESTDATAJSON,
         }; 
 </script> 
 </html>
