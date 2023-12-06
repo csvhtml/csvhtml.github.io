@@ -1,6 +1,7 @@
 const CLS_CLASS_LOG_VALID_KEYS = clsHtmlInterfaces_VALIDKEYS
+const CLS_CSV_VALID_ACTIONS = ["Click", "HighlightRow"]
 
-class clsClassLog {
+class clsCSV_Log {
     constructor(validActions) {
         this.logs= []
         this.validActions = ["init"] + validActions
@@ -10,7 +11,7 @@ class clsClassLog {
 
     Add({action = "", parameters = [], divIDSource = "", divIDTarget = ""}) {
         if (!this.validActions.includes(action)) {
-            cLOG.Add("[clsClassLog].Add: action: '" + action + "' is not valid" )
+            cLOG.Add("[clsCSV_Log].Add: action: '" + action + "' is not valid" )
         }
         this.logs.push({
             "by": "html class",

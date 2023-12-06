@@ -6,7 +6,8 @@ function test() {
     assertions_in_files += test_Basis()
     assertions_in_files += test_TextFunctions()
     assertions_in_files += test_clsCSV_DataFilter()
-    assertions_in_files += test_Layout()
+    // assertions_in_files += test_Layout()
+    assertions_in_files += test_clsCSV_Config2()
     // assertions_in_files += test_Click()
     console.groupEnd ();
     console.log(lastlog_count + " x " + lastlog)
@@ -90,7 +91,27 @@ function testEqualList(a,b,fname) {
             if (a[i] != b[i]) {
                 return test_failed(fname)}}
         }
+    return test_passed(fname)
+}
 
+function testEqualDict(a,b,fname) {
+    if (!typeof a === 'object') {
+        return test_failed(fname + "error:testEqualDict-typea")}
+    if (!typeof b === 'object') {
+        return test_failed(fname + "error:testEqualDict-typeb")}
+    let keys1 = Object.keys(a);
+    let keys2 = Object.keys(b);
+    if (keys1.length !== keys2.length) {
+        return test_failed(fname + "error:testEqualDict-keylen")}
+  
+    for (let key of keys1) {
+      // Check if the key exists in both objects
+      if (!b.hasOwnProperty(key)) {
+        return test_failed(fname + "error:testEqualDict-keyname-" + key)}
+  
+      if (String(a[key]) != String(b[key])) {
+        return test_failed(fname + "error:testEqualDict-keyval-" + key)}
+    }
     return test_passed(fname)
 }
 

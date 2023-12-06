@@ -1,4 +1,4 @@
-const CLS_CSV_VALID_ACTIONS = ["Click", "HighlightRow"]
+
 
 // ################################################################
 // class CSV                                                      #
@@ -15,8 +15,10 @@ class clsCSV {
  */
     constructor({egoname = '', TargetDivID = "", Mode = "default", InitCols = []}) {
         this.ActiveCell = new clsCSV_Cell()
-        this.log = new clsClassLog(CLS_CSV_VALID_ACTIONS)
-        this.mode = new clsCSV_Config(Mode, InitCols)
+        this.log = new clsCSV_Log()
+        this.config = new clsCSV_Config2(this)
+
+        this.mode = new clsCSV_Config(Mode, InitCols)  
         this.TargetDivID = null
         
         this.filepath = ""
@@ -44,6 +46,12 @@ class clsCSV {
         this._SetTargetDiv(TargetDivID)
         this.SetMode()
         this.Print()
+
+        // work aorund for new confi2. Bring back original headers-----------------------
+        this.headers = this.mode.ActiveCols()
+        //------------------------------------------------------------------------------
+
+        this.config.Extract_Config_From_Headers()
     }
 
     Click(div) {

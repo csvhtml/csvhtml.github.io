@@ -15,6 +15,7 @@ const CLS_NAVBAR_CONFIG_LEFT = {
         "table/list"
     ],
     "nav-Data":[
+        "Template",
         "Data",
         "TestData",
     ],
@@ -54,7 +55,7 @@ function clsNavbar_Config_FunctionCall(key) {
         cParameter.set("sidebar", false)
         main_Layout()}
 
-    if (["Data", "TestData"].includes(key)) {
+    if (CLS_NAVBAR_CONFIG_LEFT["nav-Data"].includes(key)) {
         PAGE["MyCSV"].UpdateNavMiddleInfo(key)
         PAGE["MyCSV"].ActiveJSON = key
         PAGE["MyCSV"].ReadWrite.ReadfromJSON(key)
