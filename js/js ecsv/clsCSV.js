@@ -28,7 +28,8 @@ class clsCSV {
         this.ReadWrite = new clsCSV_ReadWriteCSV(this)
         
         this.layout = new clsCSV_Layout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
-        this.data1x1 = new clsData_1x1(this.mode.ActiveCols(),[this.mode.DefaultRow()])
+        // this.data1x1 = new clsData_1x1(this.mode.ActiveCols(),[this.mode.DefaultRow()])
+        this.data1x1 = new clsData_1x1(JSONDICT["Template"]["headers"],JSONDICT["Template"]["data"])
         this.dataSubSet = new clsData_1x1()
         this.filter = new clsCSV_DataFilter(this.data1x1.Headers(), this.data1x1.Data())
         this._DataSynch()
@@ -48,7 +49,7 @@ class clsCSV {
         this.Print()
 
         // work aorund for new confi2. Bring back original headers-----------------------
-        this.headers = this.mode.ActiveCols()
+        this.headers = JSONDICT["Template"]["headers"]
         //------------------------------------------------------------------------------
 
         this.config.Extract_Config_From_Headers()

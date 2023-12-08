@@ -68,7 +68,7 @@ function test_failed(fname) {
 
 function testEqual(a,b,fname) {
     if ((Array.isArray(a) || Array.isArray(b))) {
-        return test_failed(fname)}
+        return test_failed(fname + "error:testEqual-isArray")}
     if (a == b) {
         return test_passed(fname)} 
     else {
@@ -76,42 +76,31 @@ function testEqual(a,b,fname) {
 }
 
 function testEqualList(a,b,fname) {
-    if (!(Array.isArray(a) && Array.isArray(a))) {
-        return test_failed(fname)}
+    if (!Array.isArray(a)) {
+        return test_failed(fname + "error:testEqualList-typea")}
+    if (!Array.isArray(b)) {
+        return test_failed(fname + "error:testEqualList-typeb")}
     if (!(a.length == b.length)) {
-        return test_failed(fname)}
-    for (let i = 0; i< a.length; i++) {
-        if (Array.isArray(a[i]) && Array.isArray(b[i])) {
-            if (!(a[i].length == b[i].length)) {
-                return test_failed(fname)}
-            for (let j = 0; j< a[i].length; j++) {
-                if (a[i][j] != b[i][j]) {
-                    return test_failed(fname)}}
-        } else {
-            if (a[i] != b[i]) {
-                return test_failed(fname)}}
-        }
+        return test_failed(fname + "error:testEqualList-len")}
+    if (IsEqual(a,b)== false) {
+        return test_failed(fname + "error:testEqualList-IsEqual")}
     return test_passed(fname)
 }
 
 function testEqualDict(a,b,fname) {
-    if (!typeof a === 'object') {
+    if (!typeof a === 'object' || Array.isArray(a)) {
         return test_failed(fname + "error:testEqualDict-typea")}
-    if (!typeof b === 'object') {
+    if (!typeof b === 'object' || Array.isArray(b)) {
         return test_failed(fname + "error:testEqualDict-typeb")}
     let keys1 = Object.keys(a);
     let keys2 = Object.keys(b);
     if (keys1.length !== keys2.length) {
         return test_failed(fname + "error:testEqualDict-keylen")}
-  
     for (let key of keys1) {
-      // Check if the key exists in both objects
-      if (!b.hasOwnProperty(key)) {
-        return test_failed(fname + "error:testEqualDict-keyname-" + key)}
-  
-      if (String(a[key]) != String(b[key])) {
-        return test_failed(fname + "error:testEqualDict-keyval-" + key)}
-    }
+        if (!b.hasOwnProperty(key)) {
+            return test_failed(fname + "error:testEqualDict-keyname-" + key)}}
+    if (IsEqual(a,b)== false) {
+        return test_failed(fname + "error:testEqualDict-IsEqual")}
     return test_passed(fname)
 }
 

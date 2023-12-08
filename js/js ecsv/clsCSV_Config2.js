@@ -63,7 +63,7 @@ function test_clsCSV_Config2_Extract_Config_From_Headers() {
     
     let valEq = {
         "A": ["dropdown", "hidden"],
-        "B": "",
+        "B": [""],
         "C": ["hidden"],
         "D": ["dropdown"],
     }
