@@ -12,7 +12,7 @@
 // Functionality                                                  #
 // ################################################################
 
-// Provides Funtionalites to create standatrd html text blocks (usally used for innerHTML or outerHTML), e. g. tables
+// Provides Funtionalites to create standard html text blocks (usally used for innerHTML or outerHTML), e. g. tables
 
 class libHTML {
     constructor() {
@@ -31,10 +31,10 @@ class libHTML {
     xTableHeader({tableID="", tableClasses = [], tableStyles = [], theadClasses = []}, 
         {thsText=["strA", "strB"], thsID= ["strA", "strB"], thsClasses= [["strA", "strB"], ["strA", "strB"]], thsWidth= ["0","0"]}) {
         
-        if (IsEqualList(thsText,["strA", "strB"])) {thsText=[]}
-        if (IsEqualList(thsID,["strA", "strB"])) {thsID=[]}
-        if (IsEqualList(thsClasses,[["strA", "strB"], ["strA", "strB"]])) {thsClasses=[]}
-        if (IsEqualList(thsWidth,["0","0"])) {thsWidth=[]}
+        if (IsEqual(thsText,["strA", "strB"])) {thsText=[]}
+        if (IsEqual(thsID,["strA", "strB"])) {thsID=[]}
+        if (IsEqual(thsClasses,[["strA", "strB"], ["strA", "strB"]])) {thsClasses=[]}
+        if (IsEqual(thsWidth,["0","0"])) {thsWidth=[]}
 
         assert(thsText.length > 0)
         assert(thsID.length == 0 || thsID.length == thsText.length)
@@ -62,11 +62,11 @@ class libHTML {
         {rowsID=["strA", "strB"], rowsClasses= [["strA", "strB"], ["strA", "strB"]]},
         {cellsText=[["strA", "strB"], ["strA", "strB"]], CellIDs = [["strA", "strB"], ["strA", "strB"]], cellsClasses = [[["strA", "strB"], ["strA", "strB"]], [["strA", "strB"], ["strA", "strB"]]]}) {
         
-        if (IsEqualList(rowsID, ["strA", "strB"])) {rowsID=[]}
-        if (IsEqualList(rowsClasses,[["strA", "strB"], ["strA", "strB"]])) {rowClasses=[]}
-        if (IsEqualList(cellsText,[["strA", "strB"], ["strA", "strB"]])) {cellsText=[]}
-        if (IsEqualList(CellIDs,[["strA", "strB"], ["strA", "strB"]])) {CellIDs=[]}
-        if (IsEqualList(cellsClasses,[[["strA", "strB"], ["strA", "strB"]], [["strA", "strB"], ["strA", "strB"]]])) {cellsClasses=[]}
+        if (IsEqual(rowsID, ["strA", "strB"])) {rowsID=[]}
+        if (IsEqual(rowsClasses,[["strA", "strB"], ["strA", "strB"]])) {rowClasses=[]}
+        if (IsEqual(cellsText,[["strA", "strB"], ["strA", "strB"]])) {cellsText=[]}
+        if (IsEqual(CellIDs,[["strA", "strB"], ["strA", "strB"]])) {CellIDs=[]}
+        if (IsEqual(cellsClasses,[[["strA", "strB"], ["strA", "strB"]], [["strA", "strB"], ["strA", "strB"]]])) {cellsClasses=[]}
             
         assert(colsLength > 0)
         assert(cellsText.length > 0)

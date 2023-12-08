@@ -54,32 +54,75 @@ function _byVal(data) {
     return ret
 }
 
-function IsEqualList(a,b) {
-    if (!(Array.isArray(a) && Array.isArray(a))) {
-        return false}
-    if (!(a.length == b.length)) {
-        return false}
-    for (let i = 0; i< a.length; i++) {
-        if (Array.isArray(a[i]) && Array.isArray(b[i])) {
-            if (!(a[i].length == b[i].length)) {
-                return false}
-            for (let j = 0; j< a[i].length; j++) {
-                if (a[i][j] != b[i][j]) {
-                    return false}}
-        } else {
-            if (a[i] != b[i]) {
-                return false}}
-        }
-
-    return true
-}
-
 function ValidChars(validChars, text) {
     for (char of text) {
         if (!validChars.includes(char)) {
             return false}
     }
     return true
+}
+
+function typOf(variable) {
+    if (Array.isArray(variable)) {
+        return 'list'} // javascript 'Array'
+    if (typeof variable === 'object' && variable !== null) {
+        return 'dict'} // javascript 'Object'
+    if (typeof variable === 'string') {
+        return 'str'}
+    if (typeof variable === 'number') {
+        return 'int'}
+    if (typeof variable === 'boolean') {
+        return 'bool'}
+    assert(false)
+}
+
+function IsEqual(a,b, max_iterations = 100) {
+    if (max_iterations<1) {
+        return false}
+    if (typOf(a)!=typOf(b)) {
+        return false}
+
+    if (typOf(a) == "bool") {
+        if (a == b) {
+            return true}
+        return false}
+
+    if (typOf(a) == "int") {
+        if (a == b) {
+            return true}
+        return false}
+
+    if (typOf(a) == "str") {
+        if (a == b) {
+            return true}
+        return false}
+
+    if (typOf(a) == "list") {
+        if (!(a.length == b.length)) {
+            return false}
+        for (let i = 0; i< a.length; i++) {
+            if (IsEqual(a[i], b[i], max_iterations-1) == false) {
+                return false}
+        }
+        return true
+    }
+
+    if (typOf(a) == "dict") {
+        let keysA = Object.keys(a)
+        let keysB= Object.keys(b)
+        if (keysA.length !== keysB.length) {
+            return false}
+        for (let key of keysA) {
+            if (!b.hasOwnProperty(key)) {
+                return false}
+        }
+        for (let key of keysA) {
+            if (IsEqual(a[key], b[key], max_iterations-1) == false) {
+                return false}
+        }
+        return true
+    }
+    return false
 }
 
 // ################################################################
@@ -198,14 +241,73 @@ function DivIsDescendantOf (element, targetID, iterations = 10) {
 // ################################################################
 // test                                                           #
 // ################################################################
+
 function test_Basis() {
     test_Basis_byVal()
     test_Basis_RetStringBetween()   
     test_Basis_FileNameFromPath()  
-
+    test_Basis_typOf()
+    test_Basis_IsEqual() 
     return 0 // 32 assertions in this file (and should all be catched)
 }
 
+function test_Basis_IsEqual() {
+    let fname = arguments.callee.name;
+    
+    let test = [
+        [true, true, true],
+        [false, false, true],
+        [false, true, false],
+        [true, false, false],
+        [1, 1, true],
+        [1, 2, false],
+        [1, "1", false],
+        ["1", "1", true],
+        ["Hello", "Hello", true],
+        ["Hello", "World", false],
+        [[1,2,3], [1,2], false],
+        [[1,2,3], [1,7,3], false],
+        [[1,2,3], [1,2,3], true],
+        [{"A": "Hallo", "B":"Welt"}, {"A": "Hallo", "B":"Welt"}, true],
+        [{"A": "Hallo", "B":"Welt"}, {"A": "Hallo"}, false],
+        [{"A": "Hallo", "B":"Welt"}, {"A": "Hallo", "C":"Welt"}, false],
+        [{"A": "Hallo", "B":"Welt"}, {"A": "Hallo", "B":"World"}, false],
+        [{"A": "Hallo", "B":[1,2,3]}, {"A": "Hallo", "B":[1,2,3]}, true],
+        [{"A": "Hallo", "B":[1,2,3]}, {"A": "Hallo", "B":[1,2,4]}, false],
+        [{"A": "Hallo", "B":{"X":[1,2,3], "Y": [4,5]}}, {"A": "Hallo", "B":{"X":[1,2,3], "Y": [4,5]}}, true],
+        [{"A": "Hallo", "B":{"X":[1,2,3], "Y": [4,5]}}, {"A": "Hallo", "B":{"X":[1,2,3], "Y": [44,5]}}, false],
+    ]
+
+    for (let t of test) {
+        testEqual(IsEqual(t[0], t[1]), t[2],fname)}
+
+    let test1 = [
+        [[[1,1],2,3],[1,2,3],[1,2,3]],
+        [[1,2,3],[1,2,3],[1,2,3]],
+    ]
+    let test2 = [
+        [[[1,1],2,3],[1,2,3],[1,2,3]],
+        [[1,2,3],[1,2,3],[1,2,3]],
+    ]
+    let max_iterations = 4
+
+    testEqual(IsEqual(test1, test2, max_iterations), false, fname)
+}
+
+function test_Basis_typOf() {
+    let fname = arguments.callee.name;
+    
+    let test = [
+        [[1, 2, 3],'list'],
+        [{ key: 'value' },'dict'],
+        ['Hello, World!','str'],
+        [42,'int'],
+        [true,'bool'],
+    ]
+
+    for (let t of test) {
+        testEqual(typOf(t[0]), t[1], fname)}
+}
 function test_Basis_byVal() {
     let fname = arguments.callee.name;
     liste = ["Super", "Mario", "Land"]
