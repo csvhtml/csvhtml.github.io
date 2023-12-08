@@ -1,3 +1,7 @@
+// ################################################################
+// Log                                                            #
+// ################################################################
+
 class clsLog {
     constructor() {
         this.logs= []
@@ -11,27 +15,20 @@ class clsLog {
     }
 }
 
-function len(n) {
-    return n.length
+// ################################################################
+// Assert                                                         #
+// ################################################################
+
+function assert(condition, message) {
+    if (!condition) {
+        throw new Error(message || "Assertion failed");
+    }
 }
 
-function range(n) {
-    ret= []
-    for (let i = 0; i <len(n); i++) {
-        ret.push(i)
-    }
-    return ret
-}
 
-function dicct(keys, vals) {
-    if (len(keys) != len(vals)) {
-        return -1}
-    ret = {}
-    for (let i = 0; i < len(keys); i++)  {
-        ret[keys[i]] = vals[i]
-    }
-    return ret
-}
+// ################################################################
+// Useful functions                                               #
+// ################################################################
 
 function _RemoveBlanksInList(liste) {
     let ret = []
@@ -123,29 +120,6 @@ function IsEqual(a,b, max_iterations = 100) {
         return true
     }
     return false
-}
-
-// ################################################################
-// Assert                                                         #
-// ################################################################
-ASSERT = true
-
-function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message || "Assertion failed");
-    }
-}
-
-function assertIsList(elements, elementsName = "") {
-    let message = ""
-    if (elementsName == "") {
-        message = "not of type list"
-     } else {
-        message = elementsName + " is not of type list"
-    }
-    if (!Array.isArray(elements)) {
-        throw new Error(message);
-    }
 }
 
 

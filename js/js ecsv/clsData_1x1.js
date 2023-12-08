@@ -208,7 +208,7 @@ class clsData_1x1 {
 
     Subset({cols = [], valueEquals = {}, valueIncludes = {}}) {
         // Assertions
-        assertIsList(cols, "cols")
+        assert(typOf(cols) == 'list')
         assert(typeof valueEquals === 'object', "valueEquals is not of type object")
         for (let key of Object.keys(valueEquals)) {
             assert(this.headers.indexOf(key) >-1, "valueEquals element " + key + " not in headers")
