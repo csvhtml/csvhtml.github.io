@@ -8,6 +8,7 @@ function test() {
     assertions_in_files += test_clsCSV_DataFilter()
     // assertions_in_files += test_Layout()
     assertions_in_files += test_clsCSV_Config2()
+    assertions_in_files += test_CSV_Getter()
     // assertions_in_files += test_Click()
     console.groupEnd ();
     console.log(lastlog_count + " x " + lastlog)

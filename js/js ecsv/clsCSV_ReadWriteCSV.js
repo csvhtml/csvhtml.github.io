@@ -68,8 +68,8 @@ class clsCSV_ReadWriteCSV {
     }
 
     xReadfromJSON(jsonkey, delimiter = ";" ) {
-        let headers = JSONDICT[jsonkey]["headers"]
-        let dataa = JSONDICT[jsonkey]["data"]
+        let headers = _byVal(JSONDICT[jsonkey]["headers"])
+        let dataa = _byVal(JSONDICT[jsonkey]["data"])
         this.parent.data1x1.Init_Headers(headers, delimiter)
         this.parent.data1x1.Init_Data(dataa, delimiter)
         this.parent.mode.SetConfig("cols", headers)

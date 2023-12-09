@@ -2,9 +2,9 @@ class clsCSV_Config2 {
     constructor(parent) {
         this.parent = parent
         this.cols = {
-            // "headerA": ["dropdown", "hidden"]
-            // "headerB": []
-            // ...
+            // "headerA": ["dropdown", "hidden"],
+            // "headerB": [],
+            // "headerC": ["dropdown"],
         }
         this.filter = {
             // "headerA": ["Hello", "World"]  OR Logic, all elementes that either have "Hello" or "World". AND Logic between headers
@@ -22,6 +22,8 @@ class clsCSV_Config2 {
                 headerConfig = RetStringBetween(header, "[", "]")
                 if (headerConfig.indexOf(",") > 0) {
                     headerConfig = headerConfig.split(",")}
+                else {
+                    headerConfig = [headerConfig]}
                 // set
                 this.parent.headers[i] = headerName
                 this.cols[headerName] = headerConfig
@@ -63,7 +65,7 @@ function test_clsCSV_Config2_Extract_Config_From_Headers() {
     
     let valEq = {
         "A": ["dropdown", "hidden"],
-        "B": [""],
+        "B": [],
         "C": ["hidden"],
         "D": ["dropdown"],
     }

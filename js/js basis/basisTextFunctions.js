@@ -81,6 +81,19 @@ function myReplace(val,re,place) {
     return value
 }
 
+function ChangeLastChar(inputString, newChar) {
+    if (inputString.length == 0) {
+        return ''}
+    if (newChar.length != 1) {
+        return inputString}
+
+    let charArray = inputString.split('');
+    charArray[charArray.length - 1] = newChar;
+    let resultString = charArray.join('');
+
+    return resultString;
+  }
+
 
 // ################################################################
 // test                                                           #

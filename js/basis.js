@@ -40,15 +40,23 @@ function _RemoveBlanksInList(liste) {
 }
 
 function _byVal(data) {
-    // Creates a hard copy of a list (and list of lists)
-    let ret = data
-    if (Array.isArray(data)) {
-        ret = []
+    if ( ["bool", "str", "int"].indexOf(typOf(data)) >-1) {
+        return data}
+
+    if (typOf(data) == "list") {
+        let ret = []
         for (let element of data) {
-            ret.push(_byVal(element))
-        }
-    }
-    return ret
+            ret.push(_byVal(element))}
+        return ret}
+    
+    if (typOf(data) == "dict") { 
+        let ret = { }
+        let keys= Object.keys(data)
+        for (key of keys) {
+            ret[key] = _byVal(data[key])}
+        return ret}
+
+    return data
 }
 
 function ValidChars(validChars, text) {
@@ -301,6 +309,14 @@ function test_Basis_byVal() {
     testEqualList(listeA, [["Super", "Mario", "Land"], ["Super", "Mario", "Land"], ["Super", "Mario", "Land"]], fname)
     testEqualList(listeB, [["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"], ["Super", "Sonic", "Land"]], fname)
 
+
+    dicct = {"A": ["Super", "Mario", "Land"], "B":[1,2,3]}
+    dicctA = _byVal(dicct)
+    dicctB = dicct
+
+    dicct["A"] = "Wolf"
+    testEqualDict(dicctA, {"A": ["Super", "Mario", "Land"], "B": [1,2,3]}, fname)
+    testEqualDict(dicctB, {"A": "Wolf", "B": [1,2,3]}, fname)
     return 0
 }
 
