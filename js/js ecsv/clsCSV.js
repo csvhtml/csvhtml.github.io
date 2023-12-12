@@ -16,7 +16,8 @@ class clsCSV {
     constructor({egoname = '', TargetDivID = "", Mode = "default", InitCols = []}) {
         this.ActiveCell = new clsCSV_Cell()
         this.log = new clsCSV_Log()
-        this.config2 = new clsCSV_Config2(this, _byVal(InitCols), this._view(Mode)); 
+        this.config2 = new clsCSV_Config2(this, _byVal(InitCols), this._view(Mode))
+            let headersWithConfig = this.config2.HeadersWithConfig()
 
         this.mode = new clsCSV_Config(Mode, InitCols)  
         // this.Get = new clsCSV_Getter(this)
@@ -31,10 +32,10 @@ class clsCSV {
         this.layout = new clsCSV_Layout(this, {"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
         // this.data1x1 = new clsData_1x1(this.mode.ActiveCols(),[this.mode.DefaultRow()])
         // this.data1x1 = new clsData_1x1(_byVal(JSONDICT["Template"]["headers"]), _byVal(JSONDICT["Template"]["data"]))
-        this.data1x1 = new clsData_1x1(this, _byVal(InitCols))
-        this.dataSubSet = new clsData_1x1(this, _byVal(InitCols))
+        this.data1x1 = new clsData_1x1(this, headersWithConfig)
+        // this.dataSubSet = new clsData_1x1(this, _byVal(InitCols))
         this.filter = new clsCSV_DataFilter(this.data1x1.Headers(), this.data1x1.Data())
-        this._DataSynch()
+        // this._DataSynch()
         this.sum = -1;          // sum = -1 inactive, sum >=0 sum is active
              
         // // Styles
@@ -81,23 +82,23 @@ class clsCSV {
         this.layout.LayoutTargetDivID = TargetDivID
     }
 
-    _DataSynch() {
-        this.layout.DataSynch(this.data1x1.headers, this.data1x1.data, this.data1x1.headersConfig)
-        // this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
-        // this.dataSubSet = this.data1x1.Subset({cols: this.mode.Config["cols"], valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
-        this.dataSubSet = this.data1x1.Subset({cols: this.config2.ColsVisible(), valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
-        this.headers = this.dataSubSet.headers
-        this.headersConfig = this.dataSubSet.headersConfig
-        this.data = this.dataSubSet.data
-        this.len = this.dataSubSet.len
-    }
+    // _DataSynch() {
+    //     this.layout.DataSynch(this.data1x1.headers, this.data1x1.data, this.data1x1.headersConfig)
+    //     // this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
+    //     // this.dataSubSet = this.data1x1.Subset({cols: this.mode.Config["cols"], valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
+    //     this.dataSubSet = this.data1x1.Subset({cols: this.config2.HeadersVisible(), valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
+    //     this.headers = this.dataSubSet.headers
+    //     this.headersConfig = this.dataSubSet.headersConfig
+    //     this.data = this.dataSubSet.data
+    //     this.len = this.dataSubSet.len
+    // }
 
 
     Print() {
         if (this.TargetDivID != null) {
-            this._DataSynch()
+            // this._DataSynch()
             if (["table", "sidebar"].indexOf(this.config2.ActiveView) >-1 ) {
-                this.layout.Print(this.config2.ColsVisible(), this.data, this.headersConfig)}
+                this.layout.Print(this.config2.HeadersVisible(), this.data, this.headersConfig)}
             if (this.config2.ActiveView == "list") {
                 this.layout.PrintList(this.data)}
         }
@@ -110,12 +111,16 @@ class clsCSV {
         // 0 = headers, 1 = data, 2 = config text
         let str012 = this.ReadWrite.ReadfromText_0Headers1Data2Config(csvtext)
         let headers = str012[0].split(delimiter)
+        let data = this.data1x1.xDataStringTo2DList(str012[1])
+        let config = str012[2]
+        this.config2.Init(headers)
+        this.data1x1.Init(headers, data, delimiter)
+        
+        // this.data1x1.Init_Headers(headers)
+        // this.data1x1.Init_Data(str012[1].split("\n"), delimiter)
 
-        this.data1x1.Init_Headers(headers)
-        this.data1x1.Init_Data(str012[1].split("\n"), delimiter)
-
-        this.mode.SetConfig("cols", headers)
-        this.mode.SetConfigFromCSV(str012[2])
+        // this.mode.SetConfig("cols", headers)
+        // this.mode.SetConfigFromCSV(str012[2])
     }
 
     AddCol() {
@@ -454,29 +459,6 @@ class clsCSV {
       else {
           let id = 'id = "' + cell.id + '-link"'  
           return '<a ' + id + ' href="' + cell.innerText +'"><img src="' + cell.innerText + '" height="80"></a>'}
-    }
-
-    _GetColValues(colname) {
-        let tmp = []
-        if (this.headers.includes(colname)) {
-            let idx = this.headers.indexOf(colname)
-            for (let row of this.data) {
-                if (colname == "Tags") {
-                    let tags = RetStringBetween(row[idx], "[", "]")
-                    tags = tags.replace(new RegExp(', ', "g") , ',') 
-                    let tmptmp = tags.split(",")
-                    for (let tmp3 of tmptmp) {
-                        if (!tmp.includes(tmp3)) {
-                            tmp.push(tmp3)}
-                    }
-                } else {
-                    if (!tmp.includes(row[idx])) {
-                        tmp.push(row[idx])}
-                }
-            }
-        }
-        tmp.sort()  
-        return tmp
     }
 
     CellValue(rowIndex, colName) {

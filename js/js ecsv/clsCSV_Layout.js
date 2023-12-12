@@ -18,7 +18,7 @@ class clsCSV_Layout {
         this.log = log
 
         this.Names = new clsCSV_Layout_Naming(TargetDivID)
-        this.AsHTML = new clsCSV_Layout_AsHTML(this.Names)
+        this.AsHTML = new clsCSV_Layout_AsHTML(parent, this.Names)
     }
 
     DataSynch(headers, data, headersConfig) {
@@ -141,7 +141,7 @@ class clsCSV_Layout {
 
     xPrint(headers, data, headersConfig) {
         let egoDiv = document.getElementById(this.LayoutTargetDivID);
-        headers = this.parent.config2.ColsVisible()
+        headers = this.parent.config2.HeadersVisible()
         data = this.parent.data1x1.Data(headers)
 
         headersConfig = this.parent.config2.HeadersConfig()

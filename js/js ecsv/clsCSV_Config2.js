@@ -4,7 +4,7 @@ const CLSCSV_CONFIG = {
 
 
 class clsCSV_Config2 {
-    constructor(parent, headers = [], view) {
+    constructor(parent, headers = [], view = "") {
         this.parent = parent
         this.cols = {
             // "headerA": ["dropdown", "hidden"],
@@ -16,22 +16,24 @@ class clsCSV_Config2 {
             // "headerB": []
             // ...
         }
-        this.views = _byVal(CLSCSV_CONFIG["Views"])
-        this.ActiveView = this.views[0]
+        this.ActiveView = view 
 
         // ACTIONS
-        if (!IsEqual(headers, [])) {
-            this.Set_Config_From_Headers(headers)}
+        this.SetView(view)
 
-        if (CLSCSV_CONFIG["Views"].indexOf(view) > -1) {
-            this.ApplyView(view)
-        }
-        let a = 1
+        if (!IsEqual(headers, [])) {
+            this.Init(headers)}
     }
 
-    ApplyView(view) {
+
+    SetView(view) {
+        if (view == ""){
+            this.ActiveView = CLSCSV_CONFIG["Views"][0]; return}
         this.ActiveView = view
-        if (view == "sidebar") {
+    }
+
+    ApplyViewOnHeadersConfig() {
+        if (this.ActiveView == "sidebar") {
             for (let header of Object.keys(this.cols)) {
                 if (header != "Name") {
                     this.cols[header].pushX("hidden")}
@@ -44,7 +46,7 @@ class clsCSV_Config2 {
         this.cols[headerName] = this._ConfigFromColString(header)
     }
 
-    ColsVisible() {
+    HeadersVisible(all = false) {
         let ret = []; let flag = false
 
         for (let header of Object.keys(this.cols)) {
@@ -53,33 +55,27 @@ class clsCSV_Config2 {
                 if (parameter == "hidden") {
                     flag = true; break}
             }
-            if (flag == false) {
+            if (flag == false || all) {
                 ret.push(header)}
         }
         return ret
     }
 
-    Set_Config_From_Headers(headers = []) {
-        let headerName = ""; let headerConfig = ""; let i = -1; 
-        headers = this._headers(headers)
+    Init(headers = []) {
+        this.cols =  {}
+        let headerName = ""
+        if (IsEqual(headers, [])) {
+            headers = this._headersFromTemplate()}
 
         for (let header of headers) {
             headerName = RetStringBetween(header, "", "[", true)
-            this.cols[headerName] = this._ConfigFromColString(header)
+            this.cols[headerName] = this._ConfigFromColString(header)}
 
-            // i +=1
-            // if (header.indexOf("[") > 0 && header.indexOf("]") > header.indexOf("[") ) {
-            //     headerName = RetStringBetween(header, "", "[", true)
-            //     this.cols[headerName] = this._ConfigFromColString(header)
-            // } else {
-            //     // set
-            //     this.cols[header] = []
-            // }
-        }
+        this.ApplyViewOnHeadersConfig()
     }
 
     _ConfigFromColString(header) {
-        if (header.indexOf("[") > 0 && header.indexOf("]") > header.indexOf("[") ) {
+        if (this.HeaderHasConfig(header)) {
             let headerConfig = RetStringBetween(header, "[", "]")
             if (headerConfig.indexOf(",") > 0) {
                 headerConfig = headerConfig.split(",")}
@@ -90,24 +86,60 @@ class clsCSV_Config2 {
         return []
     }
 
-    HeaderConfig(header="") {
+    HeaderConfig(header, AsString = false, WithBlank = false) {
         if (IsEqual(this.cols, {})) {
-            return [] }
-        if (header == "") {
-            return []}
+            if (AsString) {return ""}; return []}
+        
+        if (AsString) {
+            let ret = "["
+            for (let config of this.HeaderConfig(header)) {
+                ret+=config + ","}
+            ret = ChangeLastChar(ret,"]")
+            if (ret == "]") {
+                return ""}
+            
+            if (WithBlank) {
+                return " " + ret}
+            return ret
+        }
         return this.cols[header]
+    }
+
+    HeadersWithConfig() {
+        let ret = []
+        for (let header of Object.keys(this.cols)) {
+            ret.push(this.HeaderWithConfig(header))}
+        return ret
+    }
+
+    HeaderWithConfig(header) {
+        return header + this.HeaderConfig(header, true, true)
     }
 
     HeadersConfig() {
         return this.cols
     }
 
-    _headers(headers) {
-        if (IsEqual(headers, [])) {
-            return JSONDICT["Template"]["headers"]}
-        return headers
+    Headers() {
+        return this.HeadersVisible(true) 
     }
 
+    HeadersHaveConfig(headers) {
+        for (let header of headers) {
+            if (this.HeaderHasConfig(header)) {
+                return true}
+        }
+        return false   
+    }
+
+    HeaderHasConfig(header) {
+        if (header.indexOf("[") > 0 && header.indexOf("]") > header.indexOf("[") ) {
+            return true}
+        return false
+    }
+
+    _headersFromTemplate(headers) {
+        return JSONDICT["Template"]["headers"]}
 }
 
 
@@ -150,7 +182,7 @@ function test_clsCSV_Config2_Extract_Config_From_Headers() {
     let testConfig = new clsCSV_Config2(parent)
     testEqualDict(testConfig.HeadersConfig(),{}, fname)
     // then you can manually add a header to get the config
-    testConfig.Set_Config_From_Headers(headers)  // when you pass no parameter, then teh config of the JSON will be taken
+    testConfig.Init(headers)  // when you pass no parameter, then teh config of the JSON will be taken
     testEqualDict(testConfig.HeadersConfig(),valEq, fname)
 
 
@@ -160,7 +192,7 @@ function test_clsCSV_Config2_Extract_Config_From_Headers() {
 
     testEqualDict(testConfig.HeadersConfig(),valEq, fname)
 
-    testEqualList(testConfig.ColsVisible(),["B", "D"], fname)
+    testEqualList(testConfig.HeadersVisible(),["B", "D"], fname)
     
     
     

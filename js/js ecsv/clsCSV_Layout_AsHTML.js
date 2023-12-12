@@ -1,5 +1,6 @@
 class clsCSV_Layout_AsHTML {
-    constructor(clsLayoutNames) {
+    constructor(parent, clsLayoutNames) {
+        this.parent = parent
         this.headers = []
         this.data = [[]]
         this.headersConfig = []
@@ -108,7 +109,7 @@ class clsCSV_Layout_AsHTML {
     _AddDropDownMenuFromValues(header){
         var prefix = header + "-"
         let ret = '<div class="dropdown-menu ' + header + '">'
-        for (let tag of this._GetColValues(header)) {
+        for (let tag of this.parent.data1x1.ColValues(header)) {
             // if (filter.includes(tag)) {
             //     ret += '<a id="' + prefix + tag + '" class="dropdown-item bg-info" href="#">' + tag + '</a>'} 
             // else {
@@ -117,24 +118,6 @@ class clsCSV_Layout_AsHTML {
         }
 
         return ret
-    }
-
-    _GetColValues(header, delim = ",") {
-        assert(this.headers.includes(header))
-        let tmp = []
-        let idx = this.headers.indexOf(header)
-        for (let row of this.data) {
-            if (row[idx][0] === "[" && row[idx][row[idx].length-1] === "]") {
-                let tags = RetStringBetween(row[idx], "[", "]")
-                tags = tags.replace(new RegExp(delim + ' ', "g") , delim)
-                let tmptmp = tags.split(delim)
-                for (let tmp3 of tmptmp) {
-                    tmp.pushX(tmp3)}
-            } else {
-                tmp.pushX(_byVal(row[idx]))}
-        }
-        tmp.sort()  
-        return tmp
     }
 
     _svgText_ArrowDown(header){
