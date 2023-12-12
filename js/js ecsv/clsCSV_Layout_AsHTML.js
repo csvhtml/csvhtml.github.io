@@ -96,11 +96,11 @@ class clsCSV_Layout_AsHTML {
 
     _xxManipulateHeaderByConfig(HTML, cols, colsConfig) {
         let retIns = ""; let ret = HTML
-        for (let i = 0; i < cols.length; i++) {
-            if (colsConfig[i] == "dropdown") {
-                retIns = ' ' + this._svgText_ArrowDown(cols[i])
-                retIns += this._AddDropDownMenuFromValues(cols[i])
-                ret = ret.replace(cols[i] + "</th>", cols[i] + retIns + "</th>")}
+        for (let col of cols) {
+            if (colsConfig[col].indexOf("dropdown") >-1) {
+                retIns = ' ' + this._svgText_ArrowDown(col)
+                retIns += this._AddDropDownMenuFromValues(col)
+                ret = ret.replace(col + "</th>", col + retIns + "</th>")}
         }
         return ret
     }

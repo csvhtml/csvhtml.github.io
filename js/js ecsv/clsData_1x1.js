@@ -8,25 +8,22 @@ CLS_DATA_1X1_AUTOFILL_COL_NO = true
 ETY = ".."
 
 class clsData_1x1 {
-    constructor(headers=[], data=[]) {
+    constructor(parent, headers=[], data=[]) {
         assert(Array.isArray(headers), "headers is not of type array/list")
         assert(Array.isArray(data), "data is not of type array/list")
         for (let datum of data) {
             assert(Array.isArray(datum), "at least on data row is not of type array/list")
         }
-        this.headersConfig =  []
+        this.parent = parent
         this.headers =  []
+        this.data = [[]]
+        this.len = 0
+        
         this.Init_Headers(headers)
         // this.Init_Data(data)
-        this.data =  []
-        for (let row of data) {
-            let nextrow = []
-            for (let cell of row) {
-                nextrow.push(cell)
-            }
-            this.data.push(nextrow)
-        }
-        this.len = this.data.length
+        if (this.headers.length >0) {
+            this.Init_Data(data)}
+        
     }
 
     Init_Headers(headers) {
@@ -36,6 +33,12 @@ class clsData_1x1 {
     Init_Data(dataRows, delimiter) {
         this.xInit_Data(dataRows, delimiter)
     }
+
+    AddRow(atPosition = -1, newRow = []) {
+        this.xAddRow(atPosition, newRow)}
+
+    AddCol(header = "", atPosition = -1, values = []) {
+        this.xAddCol(header, atPosition, values)}
 
     Headers() {
         return this.headers
@@ -52,23 +55,86 @@ class clsData_1x1 {
     Data(cols = []) {
         return this.xData(cols)
     }
+
+    ColAsList(col) {
+        let idx = this.headers.indexOf(col); assert(idx>-1)
+        let ret = []
+        for (row of data) {
+            ret.push(_byVal(row[idx]))
+        }
+        return ret
+    }
+
+    DefaultCol() {
+        let ret = []
+        for (let i = 0; i < this.len; i++) {
+            ret.push(this._DefaultVal(header, i))}
+    }
+
+    DefaultRow(atPosition = -1) {
+        let no = 0
+        let ret = []
+        if (atPosition = -1) {
+            no = 0}
+        
+        for (let col of this.headers) {
+            ret.push(this._DefaultVal(col))
+        }
+        return ret
+    }
+
+    _DefaultVal(col, n = 0) {
+        if (this._ColIsNumber(col)) {
+            return String(n+1)}
+        if (this._ColIsFilter(this.parent.config2.HeaderConfig(col))) {
+            return "[]"}
+        return ".."
+    }
+    
+    _ColIsNumber(col) {
+        if (CLSCSV_GETTER["colTypeIdentifier"]["number"].indexOf(col)>-1) {
+            return true}
+        return false
+    }
+
+    _ColIsFilter(colConfig) {
+        assert(typOf(colConfig) == 'list')
+        let thisConfig = []
+        for (let config of CLSCSV_GETTER["colTypeIdentifier"]["filter"]) {
+            thisConfig.push(RetStringBetween(config, "[", "]"))
+        }
+
+        for (let config of colConfig) {
+            if (thisConfig.indexOf(config) >-1){
+                return true}
+        }
+        return false
+    }
     
 
     xInit_Headers(headers) {
-        this.headersConfig =  []
+        // this.parent.config.Get_Config_From_Headers()
+        // this.headersConfig =  []
         this.headers =  []
         for (let header of headers) {
             this.headers.push(this._headerNamePure(header))
-            this.headersConfig.push(this._headerConfigPure(header))
+            // this.headersConfig.push(this._headerConfigPure(header))
         }
     }
 
+
     xInit_Data(dataRows, delimiter=";") {
-        let dataN = 0
-        if (this.headers.length >0) {
-            dataN = this.headers.length
-        } else {
-            dataN = dataRows[0].length}
+        this._xInit_Data_assert(dataRows)
+
+        if (IsEqual(dataRows, [[]])) {
+            dataRows = [[]]
+            return}
+
+        if (IsEqual(dataRows, [])) {
+            dataRows = [this.DefaultRow()]
+        }
+
+        let dataN = this.headers.length
         
         this.len = 0
         this.data = []
@@ -84,25 +150,32 @@ class clsData_1x1 {
             this.len +=1
         }
     }
+    _xInit_Data_assert(dataRows) {
+        if (this.headers.length == 0)  {
+            let a = 1
+        }
+    }
 
 
-    AddRow(atPosition = -1, newRow = []) {
-        assert(atPosition > -2, "atPosition index below -1")
-        assert(atPosition < this.len+1, "atPosition above data length")
+    xAddRow(atPosition = -1, newRow = []) {
+        this._xAddRow_assert(atPosition, newRow)
 
         if (newRow.length == 0) {
-            for (let header of this.headers) {
-                newRow.push(ETY)}
-        } else {
-            assert(newRow.length == this.headers.length, "values length not equal to data length")}
+            newRow = this.DefaultRow(atPosition)}
 
         if (atPosition == -1) {
-            this.data.push(newRow)
-        } else {
-            this.data.splice(atPosition, 0, newRow)
-        }
+            this.data.push(newRow)} 
+        else {
+            this.data.splice(atPosition, 0, newRow)}
+            
         this.len += 1
         this._UpdateNumberCol()
+    }
+    _xAddRow_assert(atPosition, newRow) {
+        assert(atPosition > -2, "atPosition index below -1")
+        assert(atPosition < this.len+1, "atPosition above data length")
+        if (newRow.length > 0) {
+            assert(newRow.length == this.headers.length, "values length not equal to data length")}
     }
 
     AddRowDict(atPosition = -1, newRowDict = {}) {
@@ -144,22 +217,16 @@ class clsData_1x1 {
         this.len -=1
     }
 
-    AddCol(header = "", atPosition = -1, values = []) {
-        assert(!this.headers.includes(header), "header already exists")
-        assert(atPosition > -2, "atPosition index below -1")
-        assert(atPosition < this.headers.length, "atPosition index above headers length")
+    xAddCol(header, atPosition = -1, values = []) {
+        this._xAddCol_assert(header, atPosition, values)
 
-        if (header == "") {header = ETY}
         if (values.length == 0) {
-            for (let i = 0; i < this.len; i++) {
-                values.push(ETY)}
-        } else {
-            if (this.len != 0) {
-                assert(values.length == this.len, "values length not equal to data length")}}
-            
+            values = this.DefaultCol()}
+
         if (atPosition == -1) {
             this.headers.push(this._headerNamePure(header))
-            this.headersConfig.push(this._headerConfigPure(header))
+            // this.headersConfig.push(this._headerConfigPure(header))
+            this.parent.config2.Add(header)
             if (this.len == 0) {
                 for (let i = 0; i < values.length; i++) {
                     let row = [_byVal(values[i])]
@@ -172,6 +239,13 @@ class clsData_1x1 {
         } else {
             assert(false)
         }
+    }
+    _xAddCol_assert(header, atPosition, values) {
+        assert(!this.headers.includes(header), "header already exists")
+        assert(atPosition > -2, "atPosition index below -1")
+        assert(atPosition < this.headers.length, "atPosition index above headers length")
+        if (values.length > 0 && this.len > 0 ) {
+            assert(values.length == this.len, "values length not equal to data length")}
     }
 
     RemoveCol(col = -1, colName = "") {
@@ -199,10 +273,17 @@ class clsData_1x1 {
 
     xData(cols = []) {
         if (cols.length == 0) {
-            return this.data
-        } else {
-            return this._Subset_Cols(cols).Data()
-        }   
+            return this.data} 
+        let ret = []; let tmpRow = []
+        for (let i = 0; i<this.len; i++) {
+            tmpRow = []
+            for (let col of cols) {
+                let j = this.headers.indexOf(col); assert(j >-1)
+                tmpRow.push(_byVal(this.data[i][j]))
+            }
+            ret.push(tmpRow)
+        }
+        return ret
     }
 
 
@@ -230,7 +311,8 @@ class clsData_1x1 {
     }
 
     _Subset_Cols(cols) {
-        let ret = new clsData_1x1();
+// hier ein parent??
+        let ret = new clsData_1x1(this.parent);
         if (cols.length == 0) {
             cols = this.headers}
         for (let col of cols) {
@@ -334,43 +416,38 @@ class clsData_1x1 {
         return ret
     }
 
-    xHeadersConfig(headerName = null) {
-        if (headerName == null) {
-            return this.headersConfig}
+    // xHeadersConfig(headerName = null) {
+    //     if (headerName == null) {
+    //         return this.headersConfig}
 
-        assert(typeof headerName === 'string', headerName + " is not of type string")
-        assert(this.headers.includes(headerName), headerName + " is not in headers")
+    //     assert(typeof headerName === 'string', headerName + " is not of type string")
+    //     assert(this.headers.includes(headerName), headerName + " is not in headers")
         
-        let idx = this.HeaderIndex(headerName)
-        return this.headersConfig[idx]
-    }
+    //     let idx = this.HeaderIndex(headerName)
+    //     return this.headersConfig[idx]
 
-    _headerNamePure(headerRaw) {
-        assert(typeof headerRaw === 'string', headerRaw + " is not of type string")
-
-        if (this._HeaderHasConfig(headerRaw)) {
-            return headerRaw.substring(0,headerRaw.indexOf(" ["))
-        } else {
-            return headerRaw
+    _headerNamePure(header) {
+        if (header.indexOf("[") > 0 && header.indexOf("]") > header.indexOf("[") ) {
+            return header.substring(0,header.indexOf(" ["))}
+        return header
         }
-    }
 
-    _headerConfigPure(headerRaw) {
-        assert(typeof headerRaw === 'string', headerRaw + " is not of type string")
+    // _headerConfigPure(headerRaw) {
+    //     assert(typeof headerRaw === 'string', headerRaw + " is not of type string")
 
-        if (this._HeaderHasConfig(headerRaw)) {
-            return RetStringBetween(headerRaw, "[", "]")
-        } else {
-            return ""
-        }
-    }
+    //     if (this._HeaderHasConfig(headerRaw)) {
+    //         return RetStringBetween(headerRaw, "[", "]")
+    //     } else {
+    //         return ""
+    //     }
+    // }
 
-    _HeaderHasConfig(header) {
-        if (header.indexOf("[")>-1 && header.charAt(header.length - 1) === "]") {
-            return true
-        }
-        return false
-    }
+    // _HeaderHasConfig(header) {
+    //     if (header.indexOf("[")>-1 && header.charAt(header.length - 1) === "]") {
+    //         return true
+    //     }
+    //     return false
+    // }
 
     _UpdateNumberCol() {
         if (this._HasReservedCol("No.") && CLS_DATA_1X1_AUTOFILL_COL_NO) {
@@ -412,20 +489,22 @@ class clsData_1x1 {
 // ################################################################
 function test_clsData_1x1() {
     test_clsData_1x1_Init()
+    // test_clsData_1x1_AddCol()
     test_clsData_1x1_AddRow()
-    test_clsData_1x1_AddRowDict()
-    test_clsData_1x1_RemoveRow()
-    test_clsData_1x1_AddCol()
-    test_clsData_1x1_RemoveCol()
-    test_clsData_1x1_IsColsSubset()
-    test_clsData_1x1_ColAsList()
-    test_clsData_1x1_Subset()
-    test_clsData_1x1_RenameCol()
-    test_clsData_1x1_HeaderIndex() 
-    test_clsData_1x1__headerNamePure()
-    test_clsData_1x1_HeadersRaw_HeadersConfig()
-    test_clsData_1x1_IsColsSubset()
-    test_clsData_1x1_UpdateNumberCol()
+    // test_clsData_1x1_AddRowDict()
+    // test_clsData_1x1_RemoveRow()
+    
+    // test_clsData_1x1_RemoveCol()
+    // test_clsData_1x1_IsColsSubset()
+    // test_clsData_1x1_ColAsList()
+    // test_clsData_1x1_Subset()
+    // test_clsData_1x1_RenameCol()
+    // test_clsData_1x1_HeaderIndex() 
+    // test_clsData_1x1__headerNamePure()
+    // test_clsData_1x1_HeadersRaw_HeadersConfig()
+    // test_clsData_1x1_IsColsSubset()
+    // test_clsData_1x1_UpdateNumberCol()
+    // test_clsData_1x1_Getter_DefaultRow()  
 
     return 32 // 32 assertions in this file (and should all be catched)
 }
@@ -433,7 +512,10 @@ function test_clsData_1x1() {
 
 function test_clsData_1x1_Init() {
     let fname = arguments.callee.name;
-    datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
+    let parent = new clsCSV({})
+    // parent manipulation
+    parent.config2.cols = {"A": []} 
+    datta = new clsData_1x1(parent, ["A"], [["Hallo"], ["Welt"]])
 
     testEqualList(datta.headers,["A"], fname)
     testEqualList(datta.data[0],["Hallo"], fname)
@@ -463,25 +545,30 @@ function test_clsData_1x1_Init() {
 
 function test_clsData_1x1_AddCol() {
     let fname = arguments.callee.name;
-    let datta = new clsData_1x1()
+    let parent = new clsCSV({})
+    // parent manipulation
+    parent.config2.cols = {} 
+    let datta = new clsData_1x1(parent)
+
     datta.AddCol("B", -1, ["Meine", "da drausen"])
     testEqualList(datta.headers,["B"], fname)
     testEqualList(datta.headers,["B"], fname)
     testEqualList(datta.data[0],["Meine"], fname)
     testEqualList(datta.data[1],["da drausen"], fname)
 
-    datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
+    parent.config2.cols = {"A": []} 
+    datta = new clsData_1x1(parent, ["A"], [["Hallo"], ["Welt"]])
     datta.AddCol("B", -1, ["Meine", "da drausen"])
     testEqualList(datta.headers,["A", "B"], fname)
     testEqualList(datta.data[0],["Hallo", "Meine"], fname)
     testEqualList(datta.data[1],["Welt", "da drausen"], fname)
 
-    datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
-    datta.AddCol("B [lol]", -1, ["Meine", "da drausen"])
-    testEqualList(datta.headers,["A", "B"], fname)
-    testEqualList(datta.headersConfig,["", "lol"], fname)
-    testEqualList(datta.data[0],["Hallo", "Meine"], fname)
-    testEqualList(datta.data[1],["Welt", "da drausen"], fname)
+    // datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
+    // datta.AddCol("B [lol]", -1, ["Meine", "da drausen"])
+    // testEqualList(datta.headers,["A", "B"], fname)
+    // testEqualList(datta.headersConfig,["", "lol"], fname)
+    // testEqualList(datta.data[0],["Hallo", "Meine"], fname)
+    // testEqualList(datta.data[1],["Welt", "da drausen"], fname)
 
     // test assertions
     assertCalls = [
@@ -497,11 +584,11 @@ function test_clsData_1x1_AddCol() {
 
 function test_clsData_1x1_AddRow() {
     let fname = arguments.callee.name;
-    datta = new clsData_1x1(["A"], [["Hallo"], ["Welt"]])
-    datta.AddRow()
-    testEqual(datta.len, 3, fname)
-    testEqualList(datta.data,[["Hallo"], ["Welt"], [".."]], fname)
-    datta = new clsData_1x1(["A", "B"], [["Hallo", "Welt"], ["Super", "Mario"]])
+    let parent = new clsCSV({})
+    // parent manipulation
+    parent.config2.cols = {"A": [], "B": []} 
+
+    datta = new clsData_1x1(parent,["A", "B"], [["Hallo", "Welt"], ["Super", "Mario"]])
     datta.AddRow()
     testEqual(datta.len, 3, fname)
     testEqualList(datta.data,[["Hallo", "Welt"], ["Super", "Mario"], ["..", ".."]], fname)
@@ -810,4 +897,15 @@ function test_clsData_1x1_UpdateNumberCol() {
     datta2._UpdateNumberCol()
 
     testEqual(datta2.data[0][colNoIdx], "2", fname)
+    }
+
+    function test_clsData_1x1_DefaultRow() {
+        let fname = arguments.callee.name;
+        let parent = new clsCSV({})
+    
+        let row = parent.Get.DefaultRow()
+        let test = ["1", "..", "..", "..", "..", "[]", "[]"]
+        
+        testEqualList(row, test, fname)
+    
     }

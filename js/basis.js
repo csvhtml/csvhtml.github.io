@@ -78,7 +78,7 @@ function typOf(variable) {
         return 'int'}
     if (typeof variable === 'boolean') {
         return 'bool'}
-    assert(false)
+    assert(false, String(variable))
 }
 
 function IsEqual(a,b, max_iterations = 100) {

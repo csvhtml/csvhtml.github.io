@@ -16,9 +16,10 @@ class clsCSV {
     constructor({egoname = '', TargetDivID = "", Mode = "default", InitCols = []}) {
         this.ActiveCell = new clsCSV_Cell()
         this.log = new clsCSV_Log()
-        this.config = new clsCSV_Config2(this)
+        this.config2 = new clsCSV_Config2(this, _byVal(InitCols), this._view(Mode)); 
 
         this.mode = new clsCSV_Config(Mode, InitCols)  
+        // this.Get = new clsCSV_Getter(this)
         this.TargetDivID = null
         
         this.filepath = ""
@@ -27,10 +28,11 @@ class clsCSV {
         
         this.ReadWrite = new clsCSV_ReadWriteCSV(this)
         
-        this.layout = new clsCSV_Layout({"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
+        this.layout = new clsCSV_Layout(this, {"TargetDivID": TargetDivID, "mode": this.mode, "log": this.log})
         // this.data1x1 = new clsData_1x1(this.mode.ActiveCols(),[this.mode.DefaultRow()])
-        this.data1x1 = new clsData_1x1(_byVal(JSONDICT["Template"]["headers"]),_byVal(JSONDICT["Template"]["data"]))
-        this.dataSubSet = new clsData_1x1()
+        // this.data1x1 = new clsData_1x1(_byVal(JSONDICT["Template"]["headers"]), _byVal(JSONDICT["Template"]["data"]))
+        this.data1x1 = new clsData_1x1(this, _byVal(InitCols))
+        this.dataSubSet = new clsData_1x1(this, _byVal(InitCols))
         this.filter = new clsCSV_DataFilter(this.data1x1.Headers(), this.data1x1.Data())
         this._DataSynch()
         this.sum = -1;          // sum = -1 inactive, sum >=0 sum is active
@@ -45,16 +47,19 @@ class clsCSV {
         // this.filterTags = []
         // this.filterTypes = []
         this._SetTargetDiv(TargetDivID)
-        this.SetMode()
         this.Print()
 
-        // work aorund for new confi2. Bring back original headers-----------------------
-        this.headers = _byVal(JSONDICT["Template"]["headers"])
+    
         //------------------------------------------------------------------------------
 
-        this.config.Extract_Config_From_Headers()
+        // this.config.Extract_Config_From_Headers()
 
         this.Get = new clsCSV_Getter(this)
+    }
+
+    _view(mode) {
+        if (mode == "sidebar") { return "sidebar"}
+        return ""
     }
 
     Click(div) {
@@ -79,7 +84,8 @@ class clsCSV {
     _DataSynch() {
         this.layout.DataSynch(this.data1x1.headers, this.data1x1.data, this.data1x1.headersConfig)
         // this.dataSubSet = this.data1x1.Subset({cols: this.filterCols, valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
-        this.dataSubSet = this.data1x1.Subset({cols: this.mode.Config["cols"], valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
+        // this.dataSubSet = this.data1x1.Subset({cols: this.mode.Config["cols"], valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
+        this.dataSubSet = this.data1x1.Subset({cols: this.config2.ColsVisible(), valueEquals: this.filterValueEquals, valueIncludes: this.filterValueIncludes}) 
         this.headers = this.dataSubSet.headers
         this.headersConfig = this.dataSubSet.headersConfig
         this.data = this.dataSubSet.data
@@ -90,19 +96,12 @@ class clsCSV {
     Print() {
         if (this.TargetDivID != null) {
             this._DataSynch()
-
-            if (this.mode.activeMode == "ulist") {
-                this.layout.PrintList(this.data)
-                return
-            } 
-            if (this.mode.ActiveCSVLayout() == "headersOnly") {
-                this.layout.PrintHeader(this.headers, this.headersConfig)
-                return
-            }
-            this.layout.Print(this.headers, this.data, this.headersConfig)
-            
+            if (["table", "sidebar"].indexOf(this.config2.ActiveView) >-1 ) {
+                this.layout.Print(this.config2.ColsVisible(), this.data, this.headersConfig)}
+            if (this.config2.ActiveView == "list") {
+                this.layout.PrintList(this.data)}
         }
-
+        return
     }
 
     ReadCSV(csvtext, delimiter = ";" ) {
@@ -119,22 +118,6 @@ class clsCSV {
         this.mode.SetConfigFromCSV(str012[2])
     }
 
-    //SetMode: Applies layout configuration from mode to csv
-
-    SetMode(mode = "") {
-        // if (mode == "") {
-        //     mode = this.mode.activeMode
-        // } else {
-        //     this.mode.SetMode(mode)
-        // }
-        // let MODE_Filter = this.mode.modes[mode]
-        // let MODE_Cols = this.mode.modes[this.mode.activeMode]
-        // this.filterValueEquals = MODE_Filter["valueEquals"]
-        // this.filterValueIncludes = MODE_Filter["valueIncludes"]
-        // this.filterCols = MODE_Cols["cols"]
-
-    }
-
     AddCol() {
         this.data1x1.AddCol()
         this.Print();
@@ -148,14 +131,7 @@ class clsCSV {
     }
 
     AddRow() {
-        let atPosition = this.ActiveRowIndex()
-        // let newRow = this.NewRowDefault(atPosition, this.mode.GetModeValueEquals());
-        let newRow = this.NewRowDefault(atPosition);
-        if (atPosition == -1) {atPosition = this.len}
-        this.data1x1.AddRow(atPosition, newRow)
-        // Update Numbering after atPosition
-        for (let i = atPosition;i< this.data1x1.len-1;i++) {
-            this.data1x1.data[i+1][0] = i + 2}
+        this.data1x1.AddRow(this.ActiveRowIndex())
         this.Print();
     }
 
@@ -221,24 +197,6 @@ class clsCSV {
             return this.data1x1.HeadersRaw(header)
         }
 
-    }
-
-    NewRowDefault(atPosition, TakveOverCols = []) {
-        let newRow = []
-        if (atPosition == -1) {
-            newRow = this.mode.DefaultRow(atPosition)
-
-        } else {
-            newRow = this.mode.DefaultRow(atPosition)
-            for (let i = 1; i < this.data1x1.headers.length; i++) {
-                if (TakveOverCols.includes(this.data1x1.headers[i])) {
-                    newRow[i] = this.data1x1.data[atPosition-1][i]
-                }
-                // newRow.push(String(this.data1x1.data[atPosition-1][i]))}
-            }
-        }
-
-        return newRow
     }
 
     Edit(divID) {

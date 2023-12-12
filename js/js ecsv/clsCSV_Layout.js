@@ -3,7 +3,8 @@
 // ################################################################
 
 class clsCSV_Layout {
-    constructor({TargetDivID = "", mode = null, log = null}) {
+    constructor(parent, {TargetDivID = "", mode = null, log = null}) {
+        this.parent = parent
         this.headers = []
         this.data = [[]]
         this.headersConfig = []
@@ -140,7 +141,10 @@ class clsCSV_Layout {
 
     xPrint(headers, data, headersConfig) {
         let egoDiv = document.getElementById(this.LayoutTargetDivID);
+        headers = this.parent.config2.ColsVisible()
+        data = this.parent.data1x1.Data(headers)
 
+        headersConfig = this.parent.config2.HeadersConfig()
         egoDiv.innerHTML = this.AsHTML.Table(headers, headersConfig, data)    
         this.ApplyHighlightToSite()
     }

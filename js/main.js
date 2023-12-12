@@ -21,8 +21,8 @@ cParameter.setAll(cURLHandler.parameter())
 // Main HTML Page Div Container                                   #
 // ################################################################
 const PAGE = {
-    "MyCSV": new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV"}),
-    "MySidebar": new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "sidebar"})
+    "MyCSV": new clsCSV({egoname: "ecsv", TargetDivID: "MyCSV", InitCols: _byVal(JSONDICT["Template"]["headers"])}),
+    "MySidebar": new clsCSV({egoname: "side", TargetDivID: "MySidebar", Mode: "sidebar", InitCols: _byVal(JSONDICT["Template"]["headers"])})
 }
 
 const PAGE_IF = new clsHtmlInterfaces()
